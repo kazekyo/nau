@@ -10,18 +10,16 @@
     "lodash.ismatch": "^4.4.0"
   },
   "devDependencies": {
-    "@babel/cli": "^7.1.2",
-    "@babel/core": "^7.1.2",
-    "@babel/preset-env": "^7.1.0",
-    "@babel/types": "^7.12.13",
+    "@babel/cli": "^7.12.13",
+    "@babel/core": "^7.12.13",
+    "@babel/plugin-proposal-class-properties": "^7.12.13",
+    "@babel/preset-env": "^7.12.13",
+    "@babel/preset-typescript": "^7.12.13",
     "@types/jest": "^26.0.20",
     "@types/lodash.ismatch": "^4.4.6",
     "@typescript-eslint/eslint-plugin": "^4.12.0",
     "@typescript-eslint/parser": "^4.12.0",
-    "babel-core": "^6.26.3",
-    "babel-eslint": "10.1.0",
     "babel-jest": "^26.6.3",
-    "babel-preset-env": "^1.7.0",
     "eslint": "^7.17.0",
     "eslint-config-prettier": "^7.1.0",
     "eslint-plugin-babel": "5.3.1",
@@ -49,9 +47,12 @@
     "url": "git+https://github.com/kazekyo/apollo-relay-style-pagination.git"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
-    "prepare": "npm run build",
-    "test": "jest"
+    "test": "jest",
+    "type-check": "tsc --noEmit",
+    "type-check:watch": "npm run type-check -- --watch",
+    "build": "npm run build:types && npm run build:js",
+    "build:types": "tsc --emitDeclarationOnly",
+    "build:js": "babel src --out-dir dist --extensions \".ts,.tsx\" --source-maps inline"
   },
   "types": "dist/index.d.ts",
   "peerDependencies": {
