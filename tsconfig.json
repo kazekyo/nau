@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "module": "umd",
+    "esModuleInterop": true,
+    "declaration": true,
+    "target": "es2019",
+    "sourceMap": true,
+    "baseUrl": ".",
+    "outDir": "dist",
+    "lib": ["es2019"],
+    "strict": true,
+    "moduleResolution": "node",
+    "skipLibCheck": true
+  }
+}
