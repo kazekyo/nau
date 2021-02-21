@@ -3,7 +3,7 @@ version: '3.7'
 services:
   frontend:
     build:
-      context: ./frontend
+      context: ./frontend-relay
       dockerfile: ./Dockerfile
     container_name: frontend
     command: npm run start

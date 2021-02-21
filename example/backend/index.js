@@ -10,8 +10,7 @@ const {
   connectionArgs,
   connectionDefinitions,
 } = require('graphql-relay');
-
-// TODO : description削除してよければ消す
+const cors = require('cors');
 
 const user1 = {
   id: '1',
@@ -87,7 +86,6 @@ const { nodeInterface, nodeField } = nodeDefinitions(
 
 const robotType = new GraphQLObjectType({
   name: 'robot',
-  description: '',
   interfaces: [nodeInterface],
   fields: () => ({
     id: globalIdField(),
@@ -104,7 +102,6 @@ const { connectionType: robotConnection } = connectionDefinitions({
 
 const userType = new GraphQLObjectType({
   name: 'User',
-  description: '',
   interfaces: [nodeInterface],
   fields: () => ({
     id: globalIdField(),
@@ -114,7 +111,6 @@ const userType = new GraphQLObjectType({
     },
     robots: {
       type: robotConnection,
-      description: 'robots',
       args: connectionArgs,
       resolve: (user, args) => connectionFromArray(user.robots.map(getRobot), args),
     },
@@ -219,6 +215,7 @@ const schema = new GraphQLSchema({
 });
 
 const app = express();
+app.use(cors());
 app.use(
   '/graphql',
   graphqlHTTP({
