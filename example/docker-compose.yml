@@ -1,0 +1,33 @@
+version: '3.7'
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: ./Dockerfile
+    container_name: frontend
+    command: npm run start
+    links:
+      - backend
+    volumes:
+      - ./frontend:/app:cached
+      - frontend-npm-data:/app/node_modules
+    ports:
+      - 3000:3000
+  backend:
+    build:
+      context: ./backend
+      dockerfile: ./Dockerfile
+    container_name: backend
+    command: node index.js
+    volumes:
+      - ./backend:/app:cached
+      - backend-npm-data:/app/node_modules
+    ports:
+      - 4000:4000
+
+volumes:
+  frontend-npm-data:
+    driver: local
+  backend-npm-data:
+    driver: local
