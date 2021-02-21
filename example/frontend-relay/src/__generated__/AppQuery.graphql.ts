@@ -33,6 +33,10 @@ fragment RobotListItem_robot on Robot {
   name
 }
 
+fragment RobotListItem_user on User {
+  id
+}
+
 fragment RobotList_user on User {
   id
   robots(first: 2) {
@@ -49,6 +53,7 @@ fragment RobotList_user on User {
       hasNextPage
     }
   }
+  ...RobotListItem_user
 }
 */
 
@@ -189,6 +194,18 @@ return {
                   }
                 ],
                 "storageKey": null
+              },
+              {
+                "kind": "ClientExtension",
+                "selections": [
+                  {
+                    "alias": null,
+                    "args": null,
+                    "kind": "ScalarField",
+                    "name": "__id",
+                    "storageKey": null
+                  }
+                ]
               }
             ],
             "storageKey": "robots(first:2)"
@@ -208,12 +225,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "7d251da430c8dc799551cd5830f9c252",
+    "cacheID": "e88320ebf7460f04daa7d9bcac80dc48",
     "id": null,
     "metadata": {},
     "name": "AppQuery",
     "operationKind": "query",
-    "text": "query AppQuery {\n  viewer {\n    id\n    name\n    ...RobotList_user\n  }\n}\n\nfragment RobotListItem_robot on Robot {\n  id\n  name\n}\n\nfragment RobotList_user on User {\n  id\n  robots(first: 2) {\n    edges {\n      node {\n        id\n        ...RobotListItem_robot\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n"
+    "text": "query AppQuery {\n  viewer {\n    id\n    name\n    ...RobotList_user\n  }\n}\n\nfragment RobotListItem_robot on Robot {\n  id\n  name\n}\n\nfragment RobotListItem_user on User {\n  id\n}\n\nfragment RobotList_user on User {\n  id\n  robots(first: 2) {\n    edges {\n      node {\n        id\n        ...RobotListItem_robot\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  ...RobotListItem_user\n}\n"
   }
 };
 })();
