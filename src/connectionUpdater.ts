@@ -23,7 +23,6 @@ type InsertNodeArgs<TData> = {
 
 export type DeleteNodeArgs<TData> = {
   node: Reference | StoreObject;
-  fragment: DocumentNode;
   connectionInfo: ConnectionInfo;
   cache: ApolloCache<TData>;
 };
@@ -82,7 +81,7 @@ export const deleteNode = <T>({ node, connectionInfo, cache }: DeleteNodeArgs<T>
         },
       ) => {
         const cacheId = cache.identify(node);
-        const edges = existingConnection.edges.filter((edge) => cache.identify(edge?.node) !== cacheId);
+        const edges = existingConnection.edges.filter((edge) => cache.identify(edge.node) !== cacheId);
         return {
           ...existingConnection,
           edges,
