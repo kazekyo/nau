@@ -14,9 +14,7 @@ type User implements Node {
 
   """The name of the user."""
   name: String
-
-  """robots"""
-  robots(after: String, first: Int, before: String, last: Int): robotConnection
+  robots(after: String, first: Int, before: String, last: Int): RobotConnection
 }
 
 """An object with an ID"""
@@ -26,12 +24,12 @@ interface Node {
 }
 
 """A connection to a list of items."""
-type robotConnection {
+type RobotConnection {
   """Information to aid in pagination."""
   pageInfo: PageInfo!
 
   """A list of edges."""
-  edges: [robotEdge]
+  edges: [RobotEdge]
 }
 
 """Information about pagination in a connection."""
@@ -50,15 +48,15 @@ type PageInfo {
 }
 
 """An edge in a connection."""
-type robotEdge {
+type RobotEdge {
   """The item at the end of the edge"""
-  node: robot
+  node: Robot
 
   """A cursor for use in pagination"""
   cursor: String!
 }
 
-type robot implements Node {
+type Robot implements Node {
   """The ID of an object"""
   id: ID!
 
@@ -73,7 +71,7 @@ type Mutation {
 }
 
 type AddRobotPayload {
-  robot: robot
+  robot: Robot
   clientMutationId: String
 }
 
@@ -84,7 +82,7 @@ input AddRobotInput {
 }
 
 type UpdateRobotPayload {
-  robot: robot
+  robot: Robot
   clientMutationId: String
 }
 
@@ -95,7 +93,7 @@ input UpdateRobotInput {
 }
 
 type RemoveRobotPayload {
-  robot: robot
+  robot: Robot
   clientMutationId: String
 }
 

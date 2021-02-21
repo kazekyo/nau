@@ -45,6 +45,10 @@ function getRobot(id) {
   return data.robot[id];
 }
 
+function getUser(id) {
+  return data.user[id];
+}
+
 let nextRobot = 9;
 function createRobot(robotName, userGlobalId) {
   const newRobot = {
@@ -77,15 +81,17 @@ const { nodeInterface, nodeField } = nodeDefinitions(
   (globalId) => {
     const { type, id } = fromGlobalId(globalId);
     switch (type) {
-      case 'robot':
-        return getrobot(id);
+      case 'Robot':
+        return getRobot(id);
+      case 'User':
+        return getUser(id);
     }
   },
   (obj) => (obj.robots ? userType : robotType),
 );
 
 const robotType = new GraphQLObjectType({
-  name: 'robot',
+  name: 'Robot',
   interfaces: [nodeInterface],
   fields: () => ({
     id: globalIdField(),

@@ -4,12 +4,14 @@ import { QueryRenderer } from 'react-relay';
 import environment from './relayEnviroment';
 import { AppQuery } from './__generated__/AppQuery.graphql';
 import { graphql } from 'babel-plugin-relay/macro';
+import RobotList from './RobotList';
 
 const query = graphql`
   query AppQuery {
     viewer {
       id
       name
+      ...RobotList_user
     }
   }
 `;
@@ -29,9 +31,15 @@ function App() {
             return <div>Loading...</div>;
           }
           return (
-            <div>
-              Viewer ID: {props.viewer?.id}, Name: {props.viewer?.name}
-            </div>
+            <>
+              <div>
+                Viewer ID: {props.viewer?.id}, Name: {props.viewer?.name}
+              </div>
+              <div>
+                Robots
+                {props.viewer && <RobotList user={props.viewer} />}
+              </div>
+            </>
           );
         }}
       />

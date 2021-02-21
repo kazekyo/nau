@@ -16,6 +16,25 @@ query AllFetchQuery {
   }
 }
 
+query FetchUser {
+  node(id: "VXNlcjox") {
+    id
+    ... on User {
+      name
+    }
+  }
+}
+
+
+query FetchRobot {
+  node(id: "Um9ib3Q6NQ==") {
+    id
+    ... on Robot {
+      name
+    }
+  }
+}
+
 mutation AddRobotMutation {
   addRobot(input: {robotName: "new robot", userId: "VXNlcjox"}) {
     robot {
@@ -26,7 +45,7 @@ mutation AddRobotMutation {
 }
 
 mutation UpdateRobotMutation {
-  updateRobot(input: {newRobotName: "updated robot", robotId: "cm9ib3Q6MQ=="}) {
+  updateRobot(input: {newRobotName: "updated robot", robotId: "Um9ib3Q6NQ=="}) {
     robot {
       id
       name
@@ -35,7 +54,7 @@ mutation UpdateRobotMutation {
 }
 
 mutation RemoveRobotMutation {
-  removeRobot(input: {robotId: "cm9ib3Q6MQ==", userId: "VXNlcjox"}) {
+  removeRobot(input: {robotId: "Um9ib3Q6NQ==", userId: "VXNlcjox"}) {
     robot {
       id
       name
