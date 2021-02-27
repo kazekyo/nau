@@ -35,7 +35,7 @@ const List: React.FC<{
           return (
             <div key={edge.node.id}>
               <div>
-                Edge cursor: ${edge.cursor},
+                Edge cursor: {edge.cursor},
                 <RobotListItem user={user} robot={edge.node} />
               </div>
             </div>
