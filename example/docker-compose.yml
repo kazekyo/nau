@@ -1,19 +1,28 @@
 version: '3.7'
 
 services:
-  frontend:
+  frontend-apollo:
+    build:
+      context: ./frontend-apollo
+      dockerfile: ./Dockerfile
+    container_name: frontend-apollo
+    command: npm run start
+    volumes:
+      - ./frontend-apollo:/app:cached
+      - frontend-apollo-npm-data:/app/node_modules
+    ports:
+      - 3001:3000
+  frontend-relay:
     build:
       context: ./frontend-relay
       dockerfile: ./Dockerfile
-    container_name: frontend
+    container_name: frontend-relay
     command: npm run start
-    links:
-      - backend
     volumes:
-      - ./frontend:/app:cached
-      - frontend-npm-data:/app/node_modules
+      - ./frontend-relay:/app:cached
+      - frontend-relay-npm-data:/app/node_modules
     ports:
-      - 3000:3000
+      - 3002:3000
   backend:
     build:
       context: ./backend
@@ -27,7 +36,9 @@ services:
       - 4000:4000
 
 volumes:
-  frontend-npm-data:
+  frontend-apollo-npm-data:
+    driver: local
+  frontend-relay-npm-data:
     driver: local
   backend-npm-data:
     driver: local
