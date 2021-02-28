@@ -149,15 +149,9 @@ export function relayStylePagination<TNode extends Reference>(keyArgs: KeyArgs =
 
       // We will remove duplidate edges if we have.
       const edges = [
-        ...removeDuplidateEdgeFromExisting({
-          existingEdges: prefix,
-          incomingEdges,
-        }),
-        ...incomingEdges,
-        ...removeDuplidateEdgeFromExisting({
-          existingEdges: suffix,
-          incomingEdges,
-        }),
+        ...prefix,
+        ...removeDuplidateEdgeFromIncoming({ existingEdges: [...prefix, ...suffix], incomingEdges }),
+        ...suffix,
       ];
 
       const pageInfo: TRelayPageInfo = {
@@ -207,17 +201,18 @@ export function relayStylePagination<TNode extends Reference>(keyArgs: KeyArgs =
   };
 }
 
-const removeDuplidateEdgeFromExisting = <TNode extends Reference>({
+const removeDuplidateEdgeFromIncoming = <TNode extends Reference>({
   existingEdges,
   incomingEdges,
 }: {
   existingEdges: TRelayEdge<TNode>[];
   incomingEdges: TRelayEdge<TNode>[];
 }): TRelayEdge<TNode>[] => {
-  return existingEdges.filter((existingEdge) => {
-    if (!('node' in existingEdge)) return false;
-    const duplicateEdge = incomingEdges.find((incomingEdge) => {
-      if (!('node' in incomingEdge)) return false;
+  if (existingEdges.length === 0) return incomingEdges;
+  return incomingEdges.filter((incomingEdge) => {
+    if (!('node' in incomingEdge)) return false;
+    const duplicateEdge = existingEdges.find((existingEdge) => {
+      if (!('node' in existingEdge)) return false;
       return existingEdge.node.__ref === incomingEdge.node.__ref;
     });
     return !duplicateEdge;
