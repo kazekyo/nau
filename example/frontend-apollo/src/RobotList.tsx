@@ -64,6 +64,7 @@ const List: React.FC = () => {
   if (!data) return null;
 
   const nodes = getNodesFromConnection({ connection: data.viewer.robots });
+  const edges = data.viewer.robots.edges;
 
   return (
     <>
@@ -79,7 +80,7 @@ const List: React.FC = () => {
           return (
             <div key={node.id}>
               <div>
-                {/* Edge cursor: {edge.cursor}, */}
+                Edge cursor: {edges[i].cursor},
                 <RobotListItem user={data.viewer} robot={node} />
               </div>
             </div>
