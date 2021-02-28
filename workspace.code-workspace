@@ -1,0 +1,17 @@
+{
+  "folders": [
+    {
+      "path": "."
+    },
+    {
+      "path": "example/frontend-apollo"
+    },
+    {
+      "path": "example/frontend-relay"
+    },
+    {
+      "path": "example/backend"
+    }
+  ],
+  "settings": {}
+}

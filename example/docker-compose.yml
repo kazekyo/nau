@@ -10,6 +10,7 @@ services:
     volumes:
       - ./frontend-apollo:/app:cached
       - frontend-apollo-npm-data:/app/node_modules
+      - ../.:/app/package
     ports:
       - 3001:3000
   frontend-relay:
