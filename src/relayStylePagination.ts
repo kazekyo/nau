@@ -50,8 +50,9 @@ export function relayStylePagination<TNode extends Reference>(keyArgs: KeyArgs =
       if (!existing) return;
 
       const edges: TRelayEdge<TNode>[] = [];
-      let startCursor = '';
-      let endCursor = '';
+      // We prioritize cursors that are in the existing.pageInfo.
+      let startCursor = existing.pageInfo.startCursor;
+      let endCursor = existing.pageInfo.endCursor;
       existing.edges.forEach((edge) => {
         // Edges themselves could be Reference objects, so it's important
         // to use readField to access the edge.edge.node property.
@@ -59,7 +60,7 @@ export function relayStylePagination<TNode extends Reference>(keyArgs: KeyArgs =
           edges.push(edge);
           if (edge.cursor) {
             startCursor = startCursor || edge.cursor;
-            endCursor = edge.cursor;
+            endCursor = endCursor || edge.cursor;
           }
         }
       });
