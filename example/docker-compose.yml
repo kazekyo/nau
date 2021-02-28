@@ -12,7 +12,7 @@ services:
       - frontend-apollo-npm-data:/app/node_modules
       - ../.:/app/package
     ports:
-      - 3001:3000
+      - 3001:3001
   frontend-relay:
     build:
       context: ./frontend-relay
@@ -23,7 +23,7 @@ services:
       - ./frontend-relay:/app:cached
       - frontend-relay-npm-data:/app/node_modules
     ports:
-      - 3002:3000
+      - 3002:3002
   backend:
     build:
       context: ./backend
