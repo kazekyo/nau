@@ -53,8 +53,7 @@ const insertNode = <T>({ node, fragment, connectionInfo, cache, edgeTypename, ty
           data: node,
           fragment: fragment,
         });
-        const cursor = `temp:${cache.identify(node)}`;
-        const newEdge = { __typename: edgeTypename, node: newNodeRef, cursor };
+        const newEdge = { __typename: edgeTypename, node: newNodeRef, cursor: '' };
         const edges =
           type === 'append' ? [...existingConnection.edges, newEdge] : [newEdge, ...existingConnection.edges];
         return {
