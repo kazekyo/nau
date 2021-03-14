@@ -1,5 +1,5 @@
 import { gql, useMutation, useQuery } from '@apollo/client';
-import { getNodesFromConnection, prependNode } from '@kazekyo/apollo-relay-style-pagination';
+import { generateConnectionId, getNodesFromConnection } from '@kazekyo/apollo-relay-style-pagination';
 import * as React from 'react';
 import RobotListItem, { RobotListItemFragments } from './RobotListItem';
 
@@ -28,9 +28,9 @@ const QUERY = gql`
 `;
 
 const ADD_ROBOT = gql`
-  mutation AddRobotMutation($input: AddRobotInput!) {
+  mutation AddRobotMutation($input: AddRobotInput!, $connections: [String!]!) {
     addRobot(input: $input) {
-      robot {
+      robot @prependNode(connections: $connections, edgeTypeName: "RobotEdge") {
         id
         ...RobotListItem_robot
       }
@@ -43,21 +43,7 @@ const List: React.FC = () => {
   const { data, error, loading, fetchMore } = useQuery(QUERY, {
     variables: { cursor: null },
   });
-  const [addRobot] = useMutation(ADD_ROBOT, {
-    update(cache, { data: result }) {
-      const newNode = result.addRobot.robot;
-      prependNode({
-        node: newNode,
-        fragment: RobotListItemFragments.robot,
-        edgeTypename: 'RobotEdge',
-        connectionInfo: {
-          object: data.viewer,
-          field: 'robots',
-        },
-        cache,
-      });
-    },
-  });
+  const [addRobot] = useMutation(ADD_ROBOT);
   if (loading || error || !data) {
     return null;
   }
@@ -66,11 +52,23 @@ const List: React.FC = () => {
   const nodes = getNodesFromConnection({ connection: data.viewer.robots });
   const edges = data.viewer.robots.edges;
 
+  const connectionId = generateConnectionId({
+    object: { id: data.viewer.id, __typename: data.viewer.__typename },
+    field: 'robots',
+  });
+
   return (
     <>
       <div>
         <button
-          onClick={() => void addRobot({ variables: { input: { robotName: 'new robot', userId: data.viewer.id } } })}
+          onClick={() =>
+            void addRobot({
+              variables: {
+                input: { robotName: 'new robot', userId: data.viewer.id },
+                connections: [connectionId],
+              },
+            })
+          }
         >
           Add Robot
         </button>
