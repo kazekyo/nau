@@ -7,6 +7,12 @@ import { DocumentNode, visit } from 'graphql/language';
 import isMatch from 'lodash.ismatch';
 import { encode, decode } from 'js-base64';
 
+type ConnectionInfo = {
+  object: { id: string; __typename: string };
+  field: string;
+  keyArgs?: Record<string, unknown>;
+};
+
 const INSERT_NODE_DIRECTIVES = ['appendNode', 'prependNode'];
 
 const transform = (input: DocumentNode) => {
@@ -53,11 +59,7 @@ const insertNode = <T>({
   edgeTypeName: string;
   type: string;
 }) => {
-  const connectionInfo = JSON.parse(decode(connectionId)) as {
-    object: { id: string; __typename: string };
-    field: string;
-    keyArgs: Record<string, unknown>;
-  };
+  const connectionInfo = JSON.parse(decode(connectionId)) as ConnectionInfo;
   cache.modify({
     id: connectionInfo.object && cache.identify(connectionInfo.object),
     fields: {
@@ -108,7 +110,4 @@ export const mutationUpdater = (): TypePolicy => {
   };
 };
 
-export const generateConnectionId = (connectionInfo: {
-  object: { id: string; __typename: string } | Record<string, unknown>;
-  field: string;
-}): string => encode(JSON.stringify(connectionInfo));
+export const generateConnectionId = (connectionInfo: ConnectionInfo): string => encode(JSON.stringify(connectionInfo));
