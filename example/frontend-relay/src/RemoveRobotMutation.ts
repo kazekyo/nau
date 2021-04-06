@@ -1,6 +1,5 @@
 import { graphql } from 'babel-plugin-relay/macro';
-import { commitMutation } from 'react-relay';
-import { Environment } from 'relay-runtime';
+import { Environment, commitMutation } from 'relay-runtime';
 import { Disposable } from 'relay-runtime/lib/util/RelayRuntimeTypes';
 import { RemoveRobotMutation } from './__generated__/RemoveRobotMutation.graphql';
 
