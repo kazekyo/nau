@@ -26,7 +26,7 @@ const client = new ApolloClient({
           ...mutationUpdater(),
         },
       },
-      { idFieldName: 'id', excludes: ['User'] },
+      { idFieldName: 'id' },
     ),
   }),
   link: links,
