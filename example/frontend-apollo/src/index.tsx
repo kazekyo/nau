@@ -12,31 +12,6 @@ import reportWebVitals from './reportWebVitals';
 
 const links = from([createMutationUpdaterLink(), new HttpLink({ uri: 'http://localhost:4000/graphql' })]);
 
-// TODO : Move apollo-relay-style-pagination/src
-type TypePolicies = { [key: string]: { [key: string]: unknown } };
-const idAsCacheId = (
-  typePolicies: TypePolicies,
-  options?: { idFieldName?: string; excludes?: string[] },
-): TypePolicies =>
-  Object.fromEntries(
-    Object.entries(typePolicies).map(([typeName, object]) => {
-      const excludes = options?.excludes || [];
-      const newObject = excludes.includes(typeName)
-        ? object
-        : {
-            ...object,
-            keyFields: (obj: Readonly<StoreObject>): string => {
-              if (options?.idFieldName) {
-                return obj[options.idFieldName] as string;
-              } else {
-                return obj.id as string;
-              }
-            },
-          };
-      return [typeName, newObject];
-    }),
-  );
-
 const client = new ApolloClient({
   cache: new InMemoryCache({
     typePolicies: idAsCacheId(
