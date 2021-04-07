@@ -3,6 +3,7 @@ import {
   createMutationUpdaterLink,
   mutationUpdater,
   relayStylePagination,
+  idAsCacheId,
 } from '@kazekyo/apollo-relay-style-pagination';
 import React from 'react';
 import ReactDOM from 'react-dom';
