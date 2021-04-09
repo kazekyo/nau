@@ -27,7 +27,7 @@ const transform = (input: DocumentNode) => {
     },
     Directive: {
       enter(node) {
-        if (INSERT_NODE_DIRECTIVES.includes(node.name.value)) {
+        if (['appendNode', 'prependNode', 'deleteNode'].includes(node.name.value)) {
           return null;
         }
       },
