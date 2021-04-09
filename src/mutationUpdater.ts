@@ -13,7 +13,7 @@ type ConnectionInfo = {
   keyArgs?: Record<string, unknown>;
 };
 
-const INSERT_NODE_DIRECTIVES = ['appendNode', 'prependNode'];
+const NODE_DIRECTIVES = ['appendNode', 'prependNode', 'deleteNode'];
 
 const transform = (input: DocumentNode) => {
   // TODO : Run only for mutation
@@ -27,7 +27,7 @@ const transform = (input: DocumentNode) => {
     },
     Directive: {
       enter(node) {
-        if (['appendNode', 'prependNode', 'deleteNode'].includes(node.name.value)) {
+        if (NODE_DIRECTIVES.includes(node.name.value)) {
           return null;
         }
       },
@@ -92,18 +92,22 @@ export const mutationUpdater = (): TypePolicy => {
   return {
     merge(existing: Reference, incoming: Reference, { cache, field, storeFieldName }) {
       const result = { ...existing, ...incoming };
-      const directiveName = field?.directives?.find((directive) =>
-        INSERT_NODE_DIRECTIVES.includes(directive.name.value),
-      )?.name.value;
+      const directiveName = field?.directives?.find((directive) => NODE_DIRECTIVES.includes(directive.name.value))?.name
+        .value;
       if (!directiveName) return result;
 
-      const connectionsStr = /"connections":(?<connections>\[[^\].]+\])/.exec(storeFieldName)?.groups?.connections;
-      const connections = connectionsStr && (JSON.parse(connectionsStr) as string[]);
-      const edgeTypeName = /"edgeTypeName":[^"]*"(?<edgeTypeName>.+)"/.exec(storeFieldName)?.groups?.edgeTypeName;
-      if (!connections || !edgeTypeName) return result;
-      connections.forEach((connectionId) =>
-        insertNode({ cache, nodeRef: incoming, connectionId, edgeTypeName, type: directiveName }),
-      );
+      if (directiveName == 'deleteNode') {
+        const cacheId = cache.identify(result);
+        cache.evict({ id: cacheId });
+      } else {
+        const connectionsStr = /"connections":(?<connections>\[[^\].]+\])/.exec(storeFieldName)?.groups?.connections;
+        const connections = connectionsStr && (JSON.parse(connectionsStr) as string[]);
+        const edgeTypeName = /"edgeTypeName":[^"]*"(?<edgeTypeName>.+)"/.exec(storeFieldName)?.groups?.edgeTypeName;
+        if (!connections || !edgeTypeName) return result;
+        connections.forEach((connectionId) =>
+          insertNode({ cache, nodeRef: incoming, connectionId, edgeTypeName, type: directiveName }),
+        );
+      }
 
       return result;
     },
