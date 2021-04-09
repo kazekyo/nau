@@ -13,7 +13,7 @@ type ConnectionInfo = {
   keyArgs?: Record<string, unknown>;
 };
 
-const NODE_DIRECTIVES = ['appendNode', 'prependNode', 'deleteNode'];
+const DIRECTIVE_NAMES = ['appendNode', 'prependNode', 'deleteRecord'];
 
 const transform = (input: DocumentNode) => {
   // TODO : Run only for mutation
@@ -27,7 +27,7 @@ const transform = (input: DocumentNode) => {
     },
     Directive: {
       enter(node) {
-        if (NODE_DIRECTIVES.includes(node.name.value)) {
+        if (DIRECTIVE_NAMES.includes(node.name.value)) {
           return null;
         }
       },
@@ -92,11 +92,11 @@ export const mutationUpdater = (): TypePolicy => {
   return {
     merge(existing: Reference, incoming: Reference, { cache, field, storeFieldName }) {
       const result = { ...existing, ...incoming };
-      const directiveName = field?.directives?.find((directive) => NODE_DIRECTIVES.includes(directive.name.value))?.name
+      const directiveName = field?.directives?.find((directive) => DIRECTIVE_NAMES.includes(directive.name.value))?.name
         .value;
       if (!directiveName) return result;
 
-      if (directiveName == 'deleteNode') {
+      if (directiveName == 'deleteRecord') {
         const cacheId = cache.identify(result);
         cache.evict({ id: cacheId });
       } else {

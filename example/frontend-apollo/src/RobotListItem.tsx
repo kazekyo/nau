@@ -19,7 +19,7 @@ export const RobotListItemFragments = {
 const REMOVE_ROBOT = gql`
   mutation RemoveRobotMutation($input: RemoveRobotInput!, $connections: [String!]!) {
     removeRobot(input: $input) {
-      robot @deleteNode {
+      robot @deleteRecord {
         id
       }
     }
