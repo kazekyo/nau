@@ -53,7 +53,7 @@ const List: React.FC = () => {
   const edges = data.viewer.robots.edges;
 
   const connectionId = generateConnectionId({
-    object: { id: data.viewer.id, __typename: data.viewer.__typename },
+    id: data.viewer.id,
     field: 'robots',
   });
 

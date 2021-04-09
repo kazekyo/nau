@@ -8,7 +8,7 @@ import isMatch from 'lodash.ismatch';
 import { encode, decode } from 'js-base64';
 
 type ConnectionInfo = {
-  object: { id: string; __typename: string };
+  id: string;
   field: string;
   keyArgs?: Record<string, unknown>;
 };
@@ -61,7 +61,7 @@ const insertNode = <T>({
 }) => {
   const connectionInfo = JSON.parse(decode(connectionId)) as ConnectionInfo;
   cache.modify({
-    id: connectionInfo.object && cache.identify(connectionInfo.object),
+    id: connectionInfo.id,
     fields: {
       [connectionInfo.field]: (
         existingConnection: StoreObject & {
