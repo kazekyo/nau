@@ -28,7 +28,10 @@ export type RobotList_user$key = {
 
 
 const node: ReaderFragment = (function(){
-var v0 = {
+var v0 = [
+  "robots"
+],
+v1 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
@@ -55,15 +58,28 @@ return {
         "count": "count",
         "cursor": "cursor",
         "direction": "forward",
-        "path": [
-          "robots"
-        ]
+        "path": (v0/*: any*/)
       }
-    ]
+    ],
+    "refetch": {
+      "connection": {
+        "forward": {
+          "count": "count",
+          "cursor": "cursor"
+        },
+        "backward": null,
+        "path": (v0/*: any*/)
+      },
+      "fragmentPathInResult": [
+        "node"
+      ],
+      "operation": require('./RobotList_PaginationQuery.graphql.ts'),
+      "identifierField": "id"
+    }
   },
   "name": "RobotList_user",
   "selections": [
-    (v0/*: any*/),
+    (v1/*: any*/),
     {
       "alias": "robots",
       "args": null,
@@ -88,7 +104,7 @@ return {
               "name": "node",
               "plural": false,
               "selections": [
-                (v0/*: any*/),
+                (v1/*: any*/),
                 {
                   "alias": null,
                   "args": null,
@@ -164,5 +180,5 @@ return {
   "abstractKey": null
 };
 })();
-(node as any).hash = '210e3f3b5f577b247f116a4b85a43efb';
+(node as any).hash = '1256f3de0daf57b1e5c9392ebfb00578';
 export default node;

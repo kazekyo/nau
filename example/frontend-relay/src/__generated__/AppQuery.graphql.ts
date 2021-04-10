@@ -213,7 +213,7 @@ return {
           {
             "alias": null,
             "args": (v2/*: any*/),
-            "filters": [],
+            "filters": null,
             "handle": "connection",
             "key": "RobotList_robots",
             "kind": "LinkedHandle",

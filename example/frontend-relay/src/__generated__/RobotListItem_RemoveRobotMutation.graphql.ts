@@ -8,25 +8,25 @@ export type RemoveRobotInput = {
     userId: string;
     clientMutationId?: string | null;
 };
-export type RemoveRobotMutationVariables = {
+export type RobotListItem_RemoveRobotMutationVariables = {
     input: RemoveRobotInput;
 };
-export type RemoveRobotMutationResponse = {
+export type RobotListItem_RemoveRobotMutationResponse = {
     readonly removeRobot: {
         readonly robot: {
             readonly id: string;
         } | null;
     } | null;
 };
-export type RemoveRobotMutation = {
-    readonly response: RemoveRobotMutationResponse;
-    readonly variables: RemoveRobotMutationVariables;
+export type RobotListItem_RemoveRobotMutation = {
+    readonly response: RobotListItem_RemoveRobotMutationResponse;
+    readonly variables: RobotListItem_RemoveRobotMutationVariables;
 };
 
 
 
 /*
-mutation RemoveRobotMutation(
+mutation RobotListItem_RemoveRobotMutation(
   $input: RemoveRobotInput!
 ) {
   removeRobot(input: $input) {
@@ -64,7 +64,7 @@ return {
     "argumentDefinitions": (v0/*: any*/),
     "kind": "Fragment",
     "metadata": null,
-    "name": "RemoveRobotMutation",
+    "name": "RobotListItem_RemoveRobotMutation",
     "selections": [
       {
         "alias": null,
@@ -97,7 +97,7 @@ return {
   "operation": {
     "argumentDefinitions": (v0/*: any*/),
     "kind": "Operation",
-    "name": "RemoveRobotMutation",
+    "name": "RobotListItem_RemoveRobotMutation",
     "selections": [
       {
         "alias": null,
@@ -134,14 +134,14 @@ return {
     ]
   },
   "params": {
-    "cacheID": "efc071922aa451d35dc0bb0b7e97fcad",
+    "cacheID": "2446452a085193c5d38638a7cd4d7523",
     "id": null,
     "metadata": {},
-    "name": "RemoveRobotMutation",
+    "name": "RobotListItem_RemoveRobotMutation",
     "operationKind": "mutation",
-    "text": "mutation RemoveRobotMutation(\n  $input: RemoveRobotInput!\n) {\n  removeRobot(input: $input) {\n    robot {\n      id\n    }\n  }\n}\n"
+    "text": "mutation RobotListItem_RemoveRobotMutation(\n  $input: RemoveRobotInput!\n) {\n  removeRobot(input: $input) {\n    robot {\n      id\n    }\n  }\n}\n"
   }
 };
 })();
-(node as any).hash = '242249d5ee3c783ff9903654830aba01';
+(node as any).hash = '043e86c6be008865ffa9cb1df141bbfe';
 export default node;
