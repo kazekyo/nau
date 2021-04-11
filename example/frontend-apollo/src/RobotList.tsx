@@ -1,4 +1,4 @@
-import { gql, useMutation, useQuery } from '@apollo/client';
+import { gql, useMutation, useQuery, useSubscription } from '@apollo/client';
 import { generateConnectionId, getNodesFromConnection } from '@kazekyo/apollo-relay-style-pagination';
 import * as React from 'react';
 import RobotListItem, { RobotListItemFragments } from './RobotListItem';
@@ -39,11 +39,37 @@ const ADD_ROBOT = gql`
   ${RobotListItemFragments.robot}
 `;
 
+const ROBOT_ADDED_SUBSCRIPTION = gql`
+  subscription RobotAddedSubscription {
+    robotAdded {
+      robot {
+        id
+        name
+      }
+    }
+  }
+`;
+
+const ROBOT_REMOVED_SUBSCRIPTION = gql`
+  subscription RobotAddedSubscription {
+    robotRemoved {
+      id
+    }
+  }
+`;
+
 const List: React.FC = () => {
   const { data, error, loading, fetchMore } = useQuery(QUERY, {
     variables: { cursor: null },
   });
   const [addRobot] = useMutation(ADD_ROBOT);
+
+  const { data: robotAddedData } = useSubscription(ROBOT_ADDED_SUBSCRIPTION);
+  console.log(robotAddedData);
+
+  const { data: robotRemovedData } = useSubscription(ROBOT_REMOVED_SUBSCRIPTION);
+  console.log(robotRemovedData);
+
   if (loading || error || !data) {
     return null;
   }
