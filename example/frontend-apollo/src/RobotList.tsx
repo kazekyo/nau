@@ -4,7 +4,7 @@ import * as React from 'react';
 import RobotListItem, { RobotListItemFragments } from './RobotListItem';
 
 const QUERY = gql`
-  query ProjectListWithCursor($cursor: String) {
+  query RobotListQuery($cursor: String) {
     viewer {
       id
       robots(first: 2, after: $cursor) {
@@ -52,10 +52,7 @@ const List: React.FC = () => {
   const nodes = getNodesFromConnection({ connection: data.viewer.robots });
   const edges = data.viewer.robots.edges;
 
-  const connectionId = generateConnectionId({
-    id: data.viewer.id,
-    field: 'robots',
-  });
+  const connectionId = generateConnectionId({ id: data.viewer.id, field: 'robots' });
 
   return (
     <>

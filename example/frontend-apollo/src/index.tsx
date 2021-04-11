@@ -1,9 +1,9 @@
 import { ApolloClient, ApolloProvider, from, HttpLink, InMemoryCache } from '@apollo/client';
 import {
   createMutationUpdaterLink,
-  idAsCacheId,
   mutationUpdater,
   relayStylePagination,
+  setIdAsCacheKey,
 } from '@kazekyo/apollo-relay-style-pagination';
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -15,7 +15,7 @@ const links = from([createMutationUpdaterLink(), new HttpLink({ uri: 'http://loc
 
 const client = new ApolloClient({
   cache: new InMemoryCache({
-    typePolicies: idAsCacheId(
+    typePolicies: setIdAsCacheKey(
       {
         User: {
           fields: {

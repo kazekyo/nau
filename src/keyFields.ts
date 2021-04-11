@@ -1,7 +1,7 @@
 import { StoreObject } from '@apollo/client';
 
 export type TypePolicies = { [key: string]: { [key: string]: unknown } };
-export const idAsCacheId = (
+export const setIdAsCacheKey = (
   typePolicies: TypePolicies,
   options?: { idFieldName?: string; excludes?: string[] },
 ): TypePolicies =>
