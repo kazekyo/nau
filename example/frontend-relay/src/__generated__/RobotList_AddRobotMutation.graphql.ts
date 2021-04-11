@@ -9,12 +9,11 @@ export type AddRobotInput = {
     userId: string;
     clientMutationId?: string | null;
 };
-export type AddRobotMutationVariables = {
+export type RobotList_AddRobotMutationVariables = {
     input: AddRobotInput;
     connections: Array<string>;
-    edgeTypeName: string;
 };
-export type AddRobotMutationResponse = {
+export type RobotList_AddRobotMutationResponse = {
     readonly addRobot: {
         readonly robot: {
             readonly id: string;
@@ -22,15 +21,15 @@ export type AddRobotMutationResponse = {
         } | null;
     } | null;
 };
-export type AddRobotMutation = {
-    readonly response: AddRobotMutationResponse;
-    readonly variables: AddRobotMutationVariables;
+export type RobotList_AddRobotMutation = {
+    readonly response: RobotList_AddRobotMutationResponse;
+    readonly variables: RobotList_AddRobotMutationVariables;
 };
 
 
 
 /*
-mutation AddRobotMutation(
+mutation RobotList_AddRobotMutation(
   $input: AddRobotInput!
 ) {
   addRobot(input: $input) {
@@ -56,21 +55,16 @@ var v0 = {
 v1 = {
   "defaultValue": null,
   "kind": "LocalArgument",
-  "name": "edgeTypeName"
-},
-v2 = {
-  "defaultValue": null,
-  "kind": "LocalArgument",
   "name": "input"
 },
-v3 = [
+v2 = [
   {
     "kind": "Variable",
     "name": "input",
     "variableName": "input"
   }
 ],
-v4 = {
+v3 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
@@ -81,16 +75,15 @@ return {
   "fragment": {
     "argumentDefinitions": [
       (v0/*: any*/),
-      (v1/*: any*/),
-      (v2/*: any*/)
+      (v1/*: any*/)
     ],
     "kind": "Fragment",
     "metadata": null,
-    "name": "AddRobotMutation",
+    "name": "RobotList_AddRobotMutation",
     "selections": [
       {
         "alias": null,
-        "args": (v3/*: any*/),
+        "args": (v2/*: any*/),
         "concreteType": "AddRobotPayload",
         "kind": "LinkedField",
         "name": "addRobot",
@@ -104,7 +97,7 @@ return {
             "name": "robot",
             "plural": false,
             "selections": [
-              (v4/*: any*/),
+              (v3/*: any*/),
               {
                 "args": null,
                 "kind": "FragmentSpread",
@@ -123,16 +116,15 @@ return {
   "kind": "Request",
   "operation": {
     "argumentDefinitions": [
-      (v2/*: any*/),
-      (v0/*: any*/),
-      (v1/*: any*/)
+      (v1/*: any*/),
+      (v0/*: any*/)
     ],
     "kind": "Operation",
-    "name": "AddRobotMutation",
+    "name": "RobotList_AddRobotMutation",
     "selections": [
       {
         "alias": null,
-        "args": (v3/*: any*/),
+        "args": (v2/*: any*/),
         "concreteType": "AddRobotPayload",
         "kind": "LinkedField",
         "name": "addRobot",
@@ -146,7 +138,7 @@ return {
             "name": "robot",
             "plural": false,
             "selections": [
-              (v4/*: any*/),
+              (v3/*: any*/),
               {
                 "alias": null,
                 "args": null,
@@ -172,9 +164,9 @@ return {
                 "variableName": "connections"
               },
               {
-                "kind": "Variable",
+                "kind": "Literal",
                 "name": "edgeTypeName",
-                "variableName": "edgeTypeName"
+                "value": "RobotEdge"
               }
             ]
           }
@@ -184,14 +176,14 @@ return {
     ]
   },
   "params": {
-    "cacheID": "86e8a4307fd70def7bfb91568aaf4ae2",
+    "cacheID": "7d62cfde821be312ff7cc0b704debabf",
     "id": null,
     "metadata": {},
-    "name": "AddRobotMutation",
+    "name": "RobotList_AddRobotMutation",
     "operationKind": "mutation",
-    "text": "mutation AddRobotMutation(\n  $input: AddRobotInput!\n) {\n  addRobot(input: $input) {\n    robot {\n      id\n      ...RobotListItem_robot\n    }\n  }\n}\n\nfragment RobotListItem_robot on Robot {\n  id\n  name\n}\n"
+    "text": "mutation RobotList_AddRobotMutation(\n  $input: AddRobotInput!\n) {\n  addRobot(input: $input) {\n    robot {\n      id\n      ...RobotListItem_robot\n    }\n  }\n}\n\nfragment RobotListItem_robot on Robot {\n  id\n  name\n}\n"
   }
 };
 })();
-(node as any).hash = 'a2cca70240079ee8a51ffc04ccc75c13';
+(node as any).hash = 'ca6d758e1b2ca2619e8e9d0d62c6c852';
 export default node;

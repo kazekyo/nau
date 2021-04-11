@@ -5,12 +5,12 @@
 import { ConcreteRequest } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
 export type RobotList_PaginationQueryVariables = {
-    count: number;
+    count?: number | null;
     cursor?: string | null;
-    userId: string;
+    id: string;
 };
 export type RobotList_PaginationQueryResponse = {
-    readonly user: {
+    readonly node: {
         readonly " $fragmentRefs": FragmentRefs<"RobotList_user">;
     } | null;
 };
@@ -23,11 +23,11 @@ export type RobotList_PaginationQuery = {
 
 /*
 query RobotList_PaginationQuery(
-  $count: Int!
+  $count: Int = 2
   $cursor: String
-  $userId: ID!
+  $id: ID!
 ) {
-  user: node(id: $userId) {
+  node(id: $id) {
     __typename
     ...RobotList_user_1G22uz
     id
@@ -66,7 +66,7 @@ fragment RobotList_user_1G22uz on User {
 const node: ConcreteRequest = (function(){
 var v0 = [
   {
-    "defaultValue": null,
+    "defaultValue": 2,
     "kind": "LocalArgument",
     "name": "count"
   },
@@ -78,14 +78,14 @@ var v0 = [
   {
     "defaultValue": null,
     "kind": "LocalArgument",
-    "name": "userId"
+    "name": "id"
   }
 ],
 v1 = [
   {
     "kind": "Variable",
     "name": "id",
-    "variableName": "userId"
+    "variableName": "id"
   }
 ],
 v2 = {
@@ -122,7 +122,7 @@ return {
     "name": "RobotList_PaginationQuery",
     "selections": [
       {
-        "alias": "user",
+        "alias": null,
         "args": (v1/*: any*/),
         "concreteType": null,
         "kind": "LinkedField",
@@ -159,7 +159,7 @@ return {
     "name": "RobotList_PaginationQuery",
     "selections": [
       {
-        "alias": "user",
+        "alias": null,
         "args": (v1/*: any*/),
         "concreteType": null,
         "kind": "LinkedField",
@@ -260,7 +260,7 @@ return {
               {
                 "alias": null,
                 "args": (v4/*: any*/),
-                "filters": [],
+                "filters": null,
                 "handle": "connection",
                 "key": "RobotList_robots",
                 "kind": "LinkedHandle",
@@ -276,14 +276,14 @@ return {
     ]
   },
   "params": {
-    "cacheID": "a5d63fe584924fba1567abbbf99e6789",
+    "cacheID": "ab601a639bfe4d0efc99cc0c77c00866",
     "id": null,
     "metadata": {},
     "name": "RobotList_PaginationQuery",
     "operationKind": "query",
-    "text": "query RobotList_PaginationQuery(\n  $count: Int!\n  $cursor: String\n  $userId: ID!\n) {\n  user: node(id: $userId) {\n    __typename\n    ...RobotList_user_1G22uz\n    id\n  }\n}\n\nfragment RobotListItem_robot on Robot {\n  id\n  name\n}\n\nfragment RobotListItem_user on User {\n  id\n}\n\nfragment RobotList_user_1G22uz on User {\n  id\n  robots(first: $count, after: $cursor) {\n    edges {\n      node {\n        id\n        ...RobotListItem_robot\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  ...RobotListItem_user\n}\n"
+    "text": "query RobotList_PaginationQuery(\n  $count: Int = 2\n  $cursor: String\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...RobotList_user_1G22uz\n    id\n  }\n}\n\nfragment RobotListItem_robot on Robot {\n  id\n  name\n}\n\nfragment RobotListItem_user on User {\n  id\n}\n\nfragment RobotList_user_1G22uz on User {\n  id\n  robots(first: $count, after: $cursor) {\n    edges {\n      node {\n        id\n        ...RobotListItem_robot\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  ...RobotListItem_user\n}\n"
   }
 };
 })();
-(node as any).hash = 'fe2305760851bb084454b6373a0810d8';
+(node as any).hash = '1256f3de0daf57b1e5c9392ebfb00578';
 export default node;

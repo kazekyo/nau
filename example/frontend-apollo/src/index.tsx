@@ -1,23 +1,35 @@
+import { ApolloClient, ApolloProvider, from, HttpLink, InMemoryCache } from '@apollo/client';
+import {
+  createMutationUpdaterLink,
+  mutationUpdater,
+  relayStylePagination,
+  setIdAsCacheKey,
+} from '@kazekyo/apollo-relay-style-pagination';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
 import App from './App';
+import './index.css';
 import reportWebVitals from './reportWebVitals';
-import { ApolloClient, InMemoryCache } from '@apollo/client';
-import { ApolloProvider } from '@apollo/client';
-import { relayStylePagination } from '@kazekyo/apollo-relay-style-pagination';
+
+const links = from([createMutationUpdaterLink(), new HttpLink({ uri: 'http://localhost:4000/graphql' })]);
 
 const client = new ApolloClient({
-  uri: 'http://localhost:4000/graphql',
   cache: new InMemoryCache({
-    typePolicies: {
-      User: {
-        fields: {
-          robots: relayStylePagination(),
+    typePolicies: setIdAsCacheKey(
+      {
+        User: {
+          fields: {
+            robots: relayStylePagination(),
+          },
+        },
+        Robot: {
+          ...mutationUpdater(),
         },
       },
-    },
+      { idFieldName: 'id' },
+    ),
   }),
+  link: links,
 });
 
 ReactDOM.render(

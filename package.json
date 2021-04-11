@@ -7,6 +7,8 @@
     "url": "https://github.com/kazekyo/apollo-relay-style-pagination/issues"
   },
   "dependencies": {
+    "graphql": "^15.5.0",
+    "js-base64": "^3.6.0",
     "lodash.ismatch": "^4.4.0"
   },
   "devDependencies": {
@@ -54,5 +56,8 @@
     "build:types": "tsc --build tsconfig.build.json",
     "build:js": "babel src --out-dir dist --extensions \".ts,.tsx\" --source-maps inline --ignore example"
   },
-  "types": "dist/index.d.ts"
+  "types": "dist/index.d.ts",
+  "peerDependencies": {
+    "@apollo/client": "^3.3.11"
+  }
 }
