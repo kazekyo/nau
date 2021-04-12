@@ -28,9 +28,9 @@ const QUERY = gql`
 `;
 
 const ADD_ROBOT = gql`
-  mutation AddRobotMutation($input: AddRobotInput!, $connections: [String!]!) {
+  mutation AddRobotMutation($input: AddRobotInput!, $connections: [String!]!, $edgeTypeName: String!) {
     addRobot(input: $input) {
-      robot @prependNode(connections: $connections, edgeTypeName: "RobotEdge") {
+      robot @prependNode(connections: $connections, edgeTypeName: $edgeTypeName) {
         id
         ...RobotListItem_robot
       }
@@ -63,6 +63,7 @@ const List: React.FC = () => {
               variables: {
                 input: { robotName: 'new robot', userId: data.viewer.id },
                 connections: [connectionId],
+                edgeTypeName: "RobotEdge"
               },
             })
           }
