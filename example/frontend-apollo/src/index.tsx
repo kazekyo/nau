@@ -41,6 +41,9 @@ const client = new ApolloClient({
         Robot: {
           ...mutationUpdater(),
         },
+        RobotRemovedPayload: {
+          ...mutationUpdater(),
+        },
       },
       { idFieldName: 'id' },
     ),

@@ -40,9 +40,9 @@ const ADD_ROBOT = gql`
 `;
 
 const ROBOT_ADDED_SUBSCRIPTION = gql`
-  subscription RobotAddedSubscription {
+  subscription RobotAddedSubscription($connections: [String!]!, $edgeTypeName: String!) {
     robotAdded {
-      robot {
+      robot @prependNode(connections: $connections, edgeTypeName: $edgeTypeName) {
         id
         name
       }
@@ -52,7 +52,7 @@ const ROBOT_ADDED_SUBSCRIPTION = gql`
 
 const ROBOT_REMOVED_SUBSCRIPTION = gql`
   subscription RobotAddedSubscription {
-    robotRemoved {
+    robotRemoved @deleteRecord {
       id
     }
   }
@@ -64,7 +64,14 @@ const List: React.FC = () => {
   });
   const [addRobot] = useMutation(ADD_ROBOT);
 
-  const { data: robotAddedData } = useSubscription(ROBOT_ADDED_SUBSCRIPTION);
+  const connectionId = generateConnectionId({ id: data?.viewer?.id, field: 'robots' });
+
+  const { data: robotAddedData } = useSubscription(ROBOT_ADDED_SUBSCRIPTION, {
+    variables: {
+      connections: [connectionId],
+      edgeTypeName: 'RobotEdge',
+    },
+  });
   console.log(robotAddedData);
 
   const { data: robotRemovedData } = useSubscription(ROBOT_REMOVED_SUBSCRIPTION);
@@ -78,8 +85,6 @@ const List: React.FC = () => {
   const nodes = getNodesFromConnection({ connection: data.viewer.robots });
   const edges = data.viewer.robots.edges;
 
-  const connectionId = generateConnectionId({ id: data.viewer.id, field: 'robots' });
-
   return (
     <>
       <div>
@@ -89,7 +94,7 @@ const List: React.FC = () => {
               variables: {
                 input: { robotName: 'new robot', userId: data.viewer.id },
                 connections: [connectionId],
-                edgeTypeName: "RobotEdge"
+                edgeTypeName: 'RobotEdge',
               },
             })
           }
