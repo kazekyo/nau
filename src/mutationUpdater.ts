@@ -17,22 +17,40 @@ const DIRECTIVE_NAMES = ['appendNode', 'prependNode', 'deleteRecord'];
 
 const transform = (input: DocumentNode) => {
   // TODO : Run only for mutation
-  return visit(input, {
-    VariableDefinition: {
-      enter(node) {
-        if (node.variable.name.value === 'connections') {
-          return null;
-        }
-      },
-    },
-    Directive: {
-      enter(node) {
-        if (DIRECTIVE_NAMES.includes(node.name.value)) {
-          return null;
-        }
-      },
-    },
+  const isQueryOperation = input.definitions.some(element => {
+    return element.kind === 'OperationDefinition' && element.operation === 'query' ? true : false;
   });
+
+  if (isQueryOperation === true) {
+    return input;
+  } else {
+    return visit(input, {
+      OperationDefinition: {
+        enter(node) {
+        }
+      },
+      VariableDefinition: {
+        enter(node) {
+          if (node.variable.name.value === 'connections') {
+            return null;
+          }
+          if (node.variable.name.value === 'edgeTypeName') {
+            return null;
+          }
+        },
+        leave(node) {
+          return node;
+        }
+      },
+      Directive: {
+        enter(node) {
+          if (DIRECTIVE_NAMES.includes(node.name.value)) {
+            return null;
+          }
+        }
+      },
+    });
+  }
 };
 
 export const createMutationUpdaterLink = (): ApolloLink => {
