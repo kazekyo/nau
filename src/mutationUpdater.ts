@@ -3,7 +3,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 import { ApolloCache, ApolloLink, Reference, StoreObject, TypePolicy } from '@apollo/client';
-import { DocumentNode, visit } from 'graphql/language';
+import { DocumentNode, ValueNode, visit } from 'graphql/language';
 import isMatch from 'lodash.ismatch';
 import { encode, decode } from 'js-base64';
 
@@ -16,41 +16,42 @@ type ConnectionInfo = {
 const DIRECTIVE_NAMES = ['appendNode', 'prependNode', 'deleteRecord'];
 
 const transform = (input: DocumentNode) => {
-  // TODO : Run only for mutation
   const isQueryOperation = input.definitions.some(element => {
-    return element.kind === 'OperationDefinition' && element.operation === 'query' ? true : false;
+    return element.kind === 'OperationDefinition' && element.operation === 'query';
   });
 
-  if (isQueryOperation === true) {
+  let argumentNames: string[] = [];
+
+  if (isQueryOperation) {
     return input;
-  } else {
-    return visit(input, {
-      OperationDefinition: {
-        enter(node) {
-        }
-      },
-      VariableDefinition: {
-        enter(node) {
-          if (node.variable.name.value === 'connections') {
-            return null;
-          }
-          if (node.variable.name.value === 'edgeTypeName') {
-            return null;
-          }
-        },
-        leave(node) {
-          return node;
-        }
-      },
-      Directive: {
-        enter(node) {
-          if (DIRECTIVE_NAMES.includes(node.name.value)) {
-            return null;
-          }
-        }
-      },
-    });
   }
+  
+  visit(input, {
+    Directive: {
+      enter(node) {
+        if(node.arguments !== undefined && node.arguments?.length > 0) {
+          argumentNames = node.arguments.map((m) => m.name.value);
+        }
+      }
+    },
+  });
+
+  return visit(input, {
+    VariableDefinition: {
+      enter(node) {
+        if (argumentNames.includes(node.variable.name.value)) {
+          return null;
+        }
+      }
+    },
+    Directive: {
+      enter(node) {
+        if (DIRECTIVE_NAMES.includes(node.name.value)) {
+          return null;
+        }
+      }
+    },
+  });
 };
 
 export const createMutationUpdaterLink = (): ApolloLink => {
