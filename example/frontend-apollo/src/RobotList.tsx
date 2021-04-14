@@ -75,7 +75,7 @@ const List: React.FC = () => {
 
   const { data: robotRemovedData } = useSubscription(ROBOT_REMOVED_SUBSCRIPTION);
 
-  if (loading || error || !data || data === undefined) {
+  if (loading || error || !data) {
     return null;
   }
   if (!data) return null;

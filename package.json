@@ -7,11 +7,9 @@
     "url": "https://github.com/kazekyo/apollo-relay-style-pagination/issues"
   },
   "dependencies": {
-    "@apollo/client": "^3.3.14",
     "graphql": "^15.5.0",
     "js-base64": "^3.6.0",
-    "lodash.ismatch": "^4.4.0",
-    "subscriptions-transport-ws": "^0.9.18"
+    "lodash.ismatch": "^4.4.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.12.13",
