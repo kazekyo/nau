@@ -1,6 +1,9 @@
-import { ApolloClient, ApolloProvider, from, HttpLink, InMemoryCache } from '@apollo/client';
+import { ApolloClient, ApolloProvider, from, HttpLink, InMemoryCache, split } from '@apollo/client';
+import { WebSocketLink } from '@apollo/client/link/ws';
+import { getMainDefinition } from '@apollo/client/utilities';
 import {
   createMutationUpdaterLink,
+  isSubscription,
   mutationUpdater,
   relayStylePagination,
   setIdAsCacheKey,
@@ -11,7 +14,18 @@ import App from './App';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
 
-const links = from([createMutationUpdaterLink(), new HttpLink({ uri: 'http://localhost:4000/graphql' })]);
+const wsLink = new WebSocketLink({
+  uri: 'ws://localhost:4000/subscriptions',
+  options: {
+    reconnect: true,
+  },
+});
+
+const splitLink = split(
+  ({ query }) => isSubscription(query),
+  from([createMutationUpdaterLink(), wsLink]),
+  from([createMutationUpdaterLink(), new HttpLink({ uri: 'http://localhost:4000/graphql' })]),
+);
 
 const client = new ApolloClient({
   cache: new InMemoryCache({
@@ -25,11 +39,14 @@ const client = new ApolloClient({
         Robot: {
           ...mutationUpdater(),
         },
+        RobotRemovedPayload: {
+          ...mutationUpdater(),
+        },
       },
       { idFieldName: 'id' },
     ),
   }),
-  link: links,
+  link: splitLink,
 });
 
 ReactDOM.render(

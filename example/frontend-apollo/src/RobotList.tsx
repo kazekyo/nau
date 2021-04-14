@@ -1,4 +1,4 @@
-import { gql, useMutation, useQuery } from '@apollo/client';
+import { gql, useMutation, useQuery, useSubscription } from '@apollo/client';
 import { generateConnectionId, getNodesFromConnection } from '@kazekyo/apollo-relay-style-pagination';
 import * as React from 'react';
 import RobotListItem, { RobotListItemFragments } from './RobotListItem';
@@ -39,11 +39,42 @@ const ADD_ROBOT = gql`
   ${RobotListItemFragments.robot}
 `;
 
+const ROBOT_ADDED_SUBSCRIPTION = gql`
+  subscription RobotAddedSubscription($connections: [String!]!, $edgeTypeName: String!) {
+    robotAdded {
+      robot @prependNode(connections: $connections, edgeTypeName: $edgeTypeName) {
+        id
+        name
+      }
+    }
+  }
+`;
+
+const ROBOT_REMOVED_SUBSCRIPTION = gql`
+  subscription RobotAddedSubscription {
+    robotRemoved @deleteRecord {
+      id
+    }
+  }
+`;
+
 const List: React.FC = () => {
   const { data, error, loading, fetchMore } = useQuery(QUERY, {
     variables: { cursor: null },
   });
   const [addRobot] = useMutation(ADD_ROBOT);
+
+  const connectionId = generateConnectionId({ id: data?.viewer?.id, field: 'robots' });
+
+  useSubscription(ROBOT_ADDED_SUBSCRIPTION, {
+    variables: {
+      connections: [connectionId],
+      edgeTypeName: 'RobotEdge',
+    },
+  });
+
+  useSubscription(ROBOT_REMOVED_SUBSCRIPTION);
+
   if (loading || error || !data) {
     return null;
   }
@@ -51,8 +82,6 @@ const List: React.FC = () => {
 
   const nodes = getNodesFromConnection({ connection: data.viewer.robots });
   const edges = data.viewer.robots.edges;
-
-  const connectionId = generateConnectionId({ id: data.viewer.id, field: 'robots' });
 
   return (
     <>
@@ -63,7 +92,7 @@ const List: React.FC = () => {
               variables: {
                 input: { robotName: 'new robot', userId: data.viewer.id },
                 connections: [connectionId],
-                edgeTypeName: "RobotEdge"
+                edgeTypeName: 'RobotEdge',
               },
             })
           }

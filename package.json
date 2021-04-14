@@ -58,6 +58,6 @@
   },
   "types": "dist/index.d.ts",
   "peerDependencies": {
-    "@apollo/client": "^3.3.11"
+    "@apollo/client": "^3.3.15"
   }
 }

@@ -1,6 +1,14 @@
 const express = require('express');
 const { graphqlHTTP } = require('express-graphql');
-const { GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLSchema, GraphQLString } = require('graphql');
+const {
+  execute,
+  subscribe,
+  GraphQLID,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLSchema,
+  GraphQLString,
+} = require('graphql');
 const {
   nodeDefinitions,
   globalIdField,
@@ -11,6 +19,11 @@ const {
   connectionDefinitions,
 } = require('graphql-relay');
 const cors = require('cors');
+const { SubscriptionServer } = require('subscriptions-transport-ws');
+const { createServer } = require('http');
+const { PubSub } = require('graphql-subscriptions');
+
+const pubsub = new PubSub();
 
 const user1 = {
   id: '1',
@@ -58,6 +71,7 @@ function createRobot(robotName, userGlobalId) {
   const { _type, id: userId } = fromGlobalId(userGlobalId);
   data.robot[newRobot.id] = newRobot;
   data.user[userId].robots.push(newRobot.id);
+  pubsub.publish(ROBOT_ADDED_TOPIC, newRobot);
   return newRobot;
 }
 
@@ -74,6 +88,7 @@ function deleteRobot(robotGlobalId, userGlobalId) {
   const deletedRobot = data.robot[robotId];
   delete data.robot[robotId];
   data.user[userId].robots = data.user[userId].robots.filter((id) => id !== robotId);
+  pubsub.publish(ROBOT_REMOVED_TOPIC, robotGlobalId);
   return deletedRobot;
 }
 
@@ -96,7 +111,7 @@ const robotType = new GraphQLObjectType({
   fields: () => ({
     id: globalIdField(),
     name: {
-      type: GraphQLString,
+      type: new GraphQLNonNull(GraphQLString),
       description: 'The name of the robot.',
     },
   }),
@@ -146,7 +161,7 @@ const addRobotMutation = mutationWithClientMutationId({
   },
   outputFields: {
     robot: {
-      type: robotType,
+      type: new GraphQLNonNull(robotType),
       resolve: (payload) => getRobot(payload.robotId),
     },
   },
@@ -170,7 +185,7 @@ const updateRobotMutation = mutationWithClientMutationId({
   },
   outputFields: {
     robot: {
-      type: robotType,
+      type: new GraphQLNonNull(robotType),
       resolve: (payload) => getRobot(payload.robotId),
     },
   },
@@ -194,7 +209,7 @@ const removeRobotMutation = mutationWithClientMutationId({
   },
   outputFields: {
     robot: {
-      type: robotType,
+      type: new GraphQLNonNull(robotType),
       resolve: (payload) => payload.robot,
     },
   },
@@ -215,9 +230,49 @@ const mutationType = new GraphQLObjectType({
   }),
 });
 
+const ROBOT_ADDED_TOPIC = 'robot_added_topic';
+const ROBOT_REMOVED_TOPIC = 'robot_removed_topic';
+
+const robotAddedPayloadType = new GraphQLObjectType({
+  name: 'RobotAddedPayload',
+  fields: {
+    robot: {
+      type: new GraphQLNonNull(robotType),
+      resolve: (source) => source,
+    },
+  },
+});
+
+const robotRemovedPayloadType = new GraphQLObjectType({
+  name: 'RobotRemovedPayload',
+  fields: {
+    id: {
+      type: new GraphQLNonNull(GraphQLID),
+      resolve: (source) => source,
+    },
+  },
+});
+
+const subscriptionType = new GraphQLObjectType({
+  name: 'Subscription',
+  fields: {
+    robotAdded: {
+      type: new GraphQLNonNull(robotAddedPayloadType),
+      subscribe: () => pubsub.asyncIterator(ROBOT_ADDED_TOPIC),
+      resolve: (source) => source,
+    },
+    robotRemoved: {
+      type: new GraphQLNonNull(robotRemovedPayloadType),
+      subscribe: () => pubsub.asyncIterator(ROBOT_REMOVED_TOPIC),
+      resolve: (source) => source,
+    },
+  },
+});
+
 const schema = new GraphQLSchema({
   query: queryType,
   mutation: mutationType,
+  subscription: subscriptionType,
 });
 
 const app = express();
@@ -226,8 +281,21 @@ app.use(
   '/graphql',
   graphqlHTTP({
     schema: schema,
-    graphiql: true,
+    graphiql: { subscriptionEndpoint: `ws://localhost:4000/subscriptions` },
   }),
 );
-app.listen(4000);
+const ws = createServer(app);
+ws.listen(4000, () => {
+  new SubscriptionServer(
+    {
+      execute,
+      subscribe,
+      schema,
+    },
+    {
+      server: ws,
+      path: '/subscriptions',
+    },
+  );
+});
 console.log('Running a GraphQL API server at http://localhost:4000/graphql');
