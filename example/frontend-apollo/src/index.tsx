@@ -3,6 +3,7 @@ import { WebSocketLink } from '@apollo/client/link/ws';
 import { getMainDefinition } from '@apollo/client/utilities';
 import {
   createMutationUpdaterLink,
+  isSubscription,
   mutationUpdater,
   relayStylePagination,
   setIdAsCacheKey,
@@ -21,10 +22,7 @@ const wsLink = new WebSocketLink({
 });
 
 const splitLink = split(
-  ({ query }) => {
-    const definition = getMainDefinition(query);
-    return definition.kind === 'OperationDefinition' && definition.operation === 'subscription';
-  },
+  ({ query }) => isSubscription(query),
   from([createMutationUpdaterLink(), wsLink]),
   from([createMutationUpdaterLink(), new HttpLink({ uri: 'http://localhost:4000/graphql' })]),
 );

@@ -15,13 +15,13 @@ type ConnectionInfo = {
 
 const DIRECTIVE_NAMES = ['appendNode', 'prependNode', 'deleteRecord'];
 
-export function isQuery(query: DocumentNode) {
+const isQuery = (query: DocumentNode): boolean => {
   return query.definitions.some(element => {
     return element.kind === 'OperationDefinition' && element.operation === 'query';
   });
 }
 
-export function isSubscription(query: DocumentNode) {
+export const isSubscription = (query: DocumentNode): boolean => {
   return query.definitions.some(element => {
     return element.kind === 'OperationDefinition' && element.operation === 'subscription';
   });
@@ -127,7 +127,6 @@ const insertNode = <T>({
 export const mutationUpdater = (): TypePolicy => {
   return {
     merge(existing: Reference, incoming: Reference, { cache, field, storeFieldName }) {
-
       const result = { ...existing, ...incoming };
       const directiveName = field?.directives?.find((directive) => DIRECTIVE_NAMES.includes(directive.name.value))?.name
         .value;

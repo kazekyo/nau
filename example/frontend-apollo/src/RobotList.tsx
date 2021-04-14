@@ -66,14 +66,14 @@ const List: React.FC = () => {
 
   const connectionId = generateConnectionId({ id: data?.viewer?.id, field: 'robots' });
 
-  const { data: robotAddedData } = useSubscription(ROBOT_ADDED_SUBSCRIPTION, {
+  useSubscription(ROBOT_ADDED_SUBSCRIPTION, {
     variables: {
       connections: [connectionId],
       edgeTypeName: 'RobotEdge',
     },
   });
 
-  const { data: robotRemovedData } = useSubscription(ROBOT_REMOVED_SUBSCRIPTION);
+  useSubscription(ROBOT_REMOVED_SUBSCRIPTION);
 
   if (loading || error || !data) {
     return null;
