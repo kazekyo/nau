@@ -72,12 +72,10 @@ const List: React.FC = () => {
       edgeTypeName: 'RobotEdge',
     },
   });
-  console.log(robotAddedData);
 
   const { data: robotRemovedData } = useSubscription(ROBOT_REMOVED_SUBSCRIPTION);
-  console.log(robotRemovedData);
 
-  if (loading || error || !data) {
+  if (loading || error || !data || data === undefined) {
     return null;
   }
   if (!data) return null;

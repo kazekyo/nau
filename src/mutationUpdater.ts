@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
-import { ApolloCache, ApolloLink, Reference, StoreObject, TypePolicy } from '@apollo/client';
+import { ApolloCache, ApolloLink, FetchResult, Observable, Reference, StoreObject, TypePolicy } from '@apollo/client';
 import { DocumentNode, ValueNode, visit } from 'graphql/language';
 import isMatch from 'lodash.ismatch';
 import { encode, decode } from 'js-base64';
@@ -15,14 +15,22 @@ type ConnectionInfo = {
 
 const DIRECTIVE_NAMES = ['appendNode', 'prependNode', 'deleteRecord'];
 
-const transform = (input: DocumentNode) => {
-  const isQueryOperation = input.definitions.some(element => {
+export function isQuery(query: DocumentNode) {
+  return query.definitions.some(element => {
     return element.kind === 'OperationDefinition' && element.operation === 'query';
   });
+}
 
+export function isSubscription(query: DocumentNode) {
+  return query.definitions.some(element => {
+    return element.kind === 'OperationDefinition' && element.operation === 'subscription';
+  });
+}
+
+const transform = (input: DocumentNode) => {
   let argumentNames: string[] = [];
 
-  if (isQueryOperation) {
+  if (isQuery(input)) {
     return input;
   }
   
@@ -57,8 +65,14 @@ const transform = (input: DocumentNode) => {
 export const createMutationUpdaterLink = (): ApolloLink => {
   return new ApolloLink((operation, forward) => {
     operation.query = transform(operation.query);
-    // TODO : Consider subscriptions
-    // https://github.com/cult-of-coders/apollo-client-transformers/blob/master/src/index.ts
+    if (isSubscription(operation.query)) {
+      return new Observable<FetchResult>(observer =>
+        forward(operation).subscribe(response =>
+          observer.next(response),
+        ),
+      );
+    }
+
     return forward(operation).map(({ data, ...response }) => {
       return { ...response, data };
     });
@@ -84,7 +98,7 @@ const insertNode = <T>({
     fields: {
       [connectionInfo.field]: (
         existingConnection: StoreObject & {
-          edges: StoreObject[];
+          edges: ReadonlyArray<{ node: { __ref: string } }>;
           args?: Record<string, unknown>;
         },
       ) => {
@@ -93,6 +107,9 @@ const insertNode = <T>({
           connectionInfo.keyArgs &&
           !isMatch(existingConnection.args, connectionInfo.keyArgs)
         ) {
+          return { ...existingConnection };
+        }
+        if (existingConnection.edges.find((edge) => edge.node.__ref === nodeRef.__ref)) {
           return { ...existingConnection };
         }
         const newEdge = { __typename: edgeTypeName, node: nodeRef, cursor: '' };
@@ -110,6 +127,7 @@ const insertNode = <T>({
 export const mutationUpdater = (): TypePolicy => {
   return {
     merge(existing: Reference, incoming: Reference, { cache, field, storeFieldName }) {
+
       const result = { ...existing, ...incoming };
       const directiveName = field?.directives?.find((directive) => DIRECTIVE_NAMES.includes(directive.name.value))?.name
         .value;

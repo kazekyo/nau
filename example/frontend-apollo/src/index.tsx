@@ -25,7 +25,7 @@ const splitLink = split(
     const definition = getMainDefinition(query);
     return definition.kind === 'OperationDefinition' && definition.operation === 'subscription';
   },
-  wsLink,
+  from([createMutationUpdaterLink(), wsLink]),
   from([createMutationUpdaterLink(), new HttpLink({ uri: 'http://localhost:4000/graphql' })]),
 );
 
