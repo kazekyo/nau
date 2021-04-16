@@ -2,7 +2,16 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
-import { ApolloCache, ApolloLink, FetchResult, Observable, Reference, StoreObject, TypePolicy } from '@apollo/client';
+import {
+  ApolloCache,
+  ApolloLink,
+  FetchResult,
+  FieldFunctionOptions,
+  Observable,
+  Reference,
+  StoreObject,
+  TypePolicy,
+} from '@apollo/client';
 import { DocumentNode, visit } from 'graphql/language';
 import { decode, encode } from 'js-base64';
 import isMatch from 'lodash.ismatch';
@@ -124,13 +133,27 @@ const insertNode = <T>({
   });
 };
 
+const nonNullable = <T>(value: T): value is NonNullable<T> => value != null;
+
 export const mutationUpdater = (): TypePolicy => {
   return {
-    merge(existing: Reference, incoming: Reference, { cache, field, storeFieldName }) {
+    merge(existing: Reference, incoming: Reference, { cache, field, storeFieldName }: FieldFunctionOptions) {
       const result = { ...existing, ...incoming };
       const directiveName = field?.directives?.find((directive) => DIRECTIVE_NAMES.includes(directive.name.value))?.name
         .value;
       if (!directiveName) return result;
+
+      if (!incoming.__ref) {
+        const fieldNames =
+          field?.selectionSet?.selections
+            .map((selection) => (selection.kind === 'Field' ? selection.name.value : null))
+            .filter(nonNullable) || [];
+        throw new Error(
+          `Cache key such as id does not exist. The only fields that exist are [${fieldNames.join(
+            ', ',
+          )}]. Please add the cache key to Mutation/Subscription. Location: ${storeFieldName}`,
+        );
+      }
 
       if (directiveName == 'deleteRecord') {
         const cacheId = cache.identify(result);
