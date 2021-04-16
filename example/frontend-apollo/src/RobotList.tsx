@@ -58,13 +58,8 @@ const ROBOT_REMOVED_SUBSCRIPTION = gql`
   }
 `;
 
-const List: React.FC = () => {
-  const { data, error, loading, fetchMore } = useQuery(QUERY, {
-    variables: { cursor: null },
-  });
-  const [addRobot] = useMutation(ADD_ROBOT);
-
-  const connectionId = generateConnectionId({ id: data?.viewer?.id, field: 'robots' });
+const Subscription: React.FC<{ userId: string }> = ({ userId }) => {
+  const connectionId = generateConnectionId({ id: userId, field: 'robots' });
 
   useSubscription(ROBOT_ADDED_SUBSCRIPTION, {
     variables: {
@@ -74,17 +69,27 @@ const List: React.FC = () => {
   });
 
   useSubscription(ROBOT_REMOVED_SUBSCRIPTION);
+  return <></>;
+};
+
+const List: React.FC = () => {
+  const { data, error, loading, fetchMore } = useQuery(QUERY, {
+    variables: { cursor: null },
+  });
+  const [addRobot] = useMutation(ADD_ROBOT);
 
   if (loading || error || !data) {
     return null;
   }
   if (!data) return null;
 
+  const connectionId = generateConnectionId({ id: data.viewer.id, field: 'robots' });
   const nodes = getNodesFromConnection({ connection: data.viewer.robots });
   const edges = data.viewer.robots.edges;
 
   return (
     <>
+      <Subscription userId={data.viewer.id} />
       <div>
         <button
           onClick={() =>
