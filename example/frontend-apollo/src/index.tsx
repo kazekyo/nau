@@ -20,32 +20,30 @@ const wsLink = new WebSocketLink({
     reconnect: true,
   },
 });
+const cache = new InMemoryCache({
+  typePolicies: setIdAsCacheKey(
+    {
+      User: {
+        fields: {
+          robots: relayStylePagination(),
+        },
+      },
+      Robot: {
+        // ...mutationUpdater(),
+      }
+    },
+    { idFieldName: 'id' },
+  ),
+});
 
 const splitLink = split(
   ({ query }) => isSubscription(query),
-  from([createMutationUpdaterLink(), wsLink]),
-  from([createMutationUpdaterLink(), new HttpLink({ uri: 'http://localhost:4000/graphql' })]),
+  from([createMutationUpdaterLink(cache), wsLink]),
+  from([createMutationUpdaterLink(cache), new HttpLink({ uri: 'http://localhost:4000/graphql' })]),
 );
 
 const client = new ApolloClient({
-  cache: new InMemoryCache({
-    typePolicies: setIdAsCacheKey(
-      {
-        User: {
-          fields: {
-            robots: relayStylePagination(),
-          },
-        },
-        Robot: {
-          ...mutationUpdater(),
-        },
-        RobotRemovedPayload: {
-          ...mutationUpdater(),
-        },
-      },
-      { idFieldName: 'id' },
-    ),
-  }),
+  cache: cache,
   link: splitLink,
 });
 

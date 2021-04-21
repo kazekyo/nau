@@ -105,6 +105,26 @@ const { nodeInterface, nodeField } = nodeDefinitions(
   (obj) => (obj.robots ? userType : robotType),
 );
 
+const barType = new GraphQLObjectType({
+  name: 'Bar',
+  fields: () => ({
+    robot: {
+      type: new GraphQLNonNull(robotType),
+      resolve: (source) => source,
+    },
+  }),
+});
+
+const fooType = new GraphQLObjectType({
+  name: 'Foo',
+  fields: () => ({
+    bar: {
+      type: new GraphQLNonNull(barType),
+      resolve: (source) => source,
+    },
+  }),
+});
+
 const robotType = new GraphQLObjectType({
   name: 'Robot',
   interfaces: [nodeInterface],
@@ -208,15 +228,19 @@ const removeRobotMutation = mutationWithClientMutationId({
     },
   },
   outputFields: {
-    robot: {
-      type: new GraphQLNonNull(robotType),
-      resolve: (payload) => payload.robot,
+    foo: {
+      type: new GraphQLNonNull(fooType),
+      resolve: (payload) => payload.foo.bar.robot,
     },
   },
   mutateAndGetPayload: ({ robotId, userId }) => {
     const deletedRobot = deleteRobot(robotId, userId);
     return {
-      robot: deletedRobot,
+      foo: {
+        bar: {
+          robot: deletedRobot,
+        },
+      },
     };
   },
 });

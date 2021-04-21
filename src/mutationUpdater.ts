@@ -3,9 +3,13 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 import { ApolloCache, ApolloLink, FetchResult, Observable, Reference, StoreObject, TypePolicy } from '@apollo/client';
+import { print } from 'graphql';
 import { DocumentNode, visit } from 'graphql/language';
 import { decode, encode } from 'js-base64';
 import isMatch from 'lodash.ismatch';
+import _ from 'lodash';
+
+let directivePath: String[] = [];
 
 type ConnectionInfo = {
   id: string;
@@ -27,6 +31,10 @@ export const isSubscription = (query: DocumentNode): boolean => {
   });
 };
 
+export const isArray = (a: any) => {
+    return (!!a) && (a.constructor === Array);
+};
+
 const transform = (input: DocumentNode) => {
   let argumentNames: string[] = [];
 
@@ -40,6 +48,7 @@ const transform = (input: DocumentNode) => {
         if (node.arguments !== undefined && node.arguments?.length > 0) {
           argumentNames = node.arguments.map((m) => m.name.value);
         }
+        
       },
     },
   });
@@ -53,8 +62,28 @@ const transform = (input: DocumentNode) => {
       },
     },
     Directive: {
-      enter(node) {
+      enter(node, key, parent, path, ancestors) {
         if (DIRECTIVE_NAMES.includes(node.name.value)) {
+         
+          if ((node.name.value === 'appendNode' || node.name.value === 'prependNode') && node.arguments !== undefined && node.arguments?.length > 0) {
+            // console.log(node);
+            var connections = node.arguments.map((m) => m.name.value === 'connections' ? m : null);
+            var edgeTypeName = node.arguments.map((m) => m.name.value === 'edgeTypeName' ? m : null);
+            console.log(connections);
+            // console.log(edgeTypeName);
+          }
+          if (node.name.value === 'deleteRecord') {
+            directivePath = [];
+            ancestors.filter((ancestor, key) => {
+              if (isArray(ancestor)) {
+                Object.values(ancestor).forEach(element => {
+                  if (element.name.value !== "__typename" && element.kind === "Field") {
+                    directivePath.push(element.name.value);
+                  }
+                });
+              }
+            });
+          }
           return null;
         }
       },
@@ -62,18 +91,25 @@ const transform = (input: DocumentNode) => {
   });
 };
 
-export const createMutationUpdaterLink = (): ApolloLink => {
+export const createMutationUpdaterLink = (cache: any): ApolloLink => {
   return new ApolloLink((operation, forward) => {
     operation.query = transform(operation.query);
     if (isSubscription(operation.query)) {
       return new Observable<FetchResult>((observer) =>
-        forward(operation).subscribe((response) => observer.next(response)),
+        forward(operation).subscribe((response) => {
+          observer.next(response);
+        })
       );
     }
 
     if (!forward) return null;
 
     return forward(operation).map(({ data, ...response }) => {
+      var directivePathString = _.join(directivePath, '.');
+      if (_.has(data, directivePathString)) {
+        const cacheId = cache.identify(_.get(data, directivePathString));
+        cache.evict({ id: cacheId });
+      }
       return { ...response, data };
     });
   });
@@ -133,6 +169,7 @@ export const mutationUpdater = (): TypePolicy => {
       if (!directiveName) return result;
 
       if (directiveName == 'deleteRecord') {
+
         const cacheId = cache.identify(result);
         cache.evict({ id: cacheId });
       } else {
