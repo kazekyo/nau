@@ -10,6 +10,9 @@ import isMatch from 'lodash.ismatch';
 import _ from 'lodash';
 
 let directivePath: String[] = [];
+let connectionId: any;
+let edgeTypeName: any;
+let directiveName: string;
 
 type ConnectionInfo = {
   id: string;
@@ -66,10 +69,34 @@ const transform = (input: DocumentNode) => {
         if (DIRECTIVE_NAMES.includes(node.name.value)) {
          
           if ((node.name.value === 'appendNode' || node.name.value === 'prependNode') && node.arguments !== undefined && node.arguments?.length > 0) {
+            /*
+            // console.log("=======node=======");
             // console.log(node);
-            var connections = node.arguments.map((m) => m.name.value === 'connections' ? m : null);
-            var edgeTypeName = node.arguments.map((m) => m.name.value === 'edgeTypeName' ? m : null);
-            console.log(connections);
+            ancestors.filter((ancestor, key) => {
+              if (isArray(ancestor)) {
+                console.log("=======ancestors array=======");
+                console.log(ancestor);
+              } else {
+                console.log("=======ancestors object=======");
+                console.log(ancestor);
+              }
+            });
+            */
+            directivePath = [];
+            ancestors.filter((ancestor, key) => {
+              if (isArray(ancestor)) {
+                Object.values(ancestor).forEach(element => {
+                  if (element.name.value !== "__typename" && element.kind === "Field") {
+                    directivePath.push(element.name.value);
+                  }
+                });
+              }
+            });
+            console.log(directivePath);
+            connectionId = node.arguments.map((m) => m.name.value === 'connections' ? m : null);
+            edgeTypeName = node.arguments.map((m) => m.name.value === 'edgeTypeName' ? m : null);
+            directiveName = node.name.value.toString();
+            // console.log(directivePath);
             // console.log(edgeTypeName);
           }
           if (node.name.value === 'deleteRecord') {
@@ -109,6 +136,9 @@ export const createMutationUpdaterLink = (cache: any): ApolloLink => {
       if (_.has(data, directivePathString)) {
         const cacheId = cache.identify(_.get(data, directivePathString));
         cache.evict({ id: cacheId });
+      }
+      if (_.has(data, directivePathString) && connectionId && edgeTypeName && directiveName) {
+          insertNode({ cache, nodeRef: _.get(data, directivePathString), connectionId, edgeTypeName, type: directiveName });
       }
       return { ...response, data };
     });
