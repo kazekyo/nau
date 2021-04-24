@@ -10,8 +10,8 @@ import isMatch from 'lodash.ismatch';
 import _ from 'lodash';
 
 let directivePath: String[] = [];
-let connectionId: any;
-let edgeTypeName: any;
+let connectionId: string;
+let edgeTypeName: string;
 let directiveName: string;
 
 type ConnectionInfo = {
@@ -38,7 +38,7 @@ export const isArray = (a: any) => {
     return (!!a) && (a.constructor === Array);
 };
 
-const transform = (input: DocumentNode) => {
+const transform = (input: DocumentNode, variables: Record<string, any>) => {
   let argumentNames: string[] = [];
 
   if (isQuery(input)) {
@@ -68,20 +68,9 @@ const transform = (input: DocumentNode) => {
       enter(node, key, parent, path, ancestors) {
         if (DIRECTIVE_NAMES.includes(node.name.value)) {
          
-          if ((node.name.value === 'appendNode' || node.name.value === 'prependNode') && node.arguments !== undefined && node.arguments?.length > 0) {
-            /*
-            // console.log("=======node=======");
-            // console.log(node);
-            ancestors.filter((ancestor, key) => {
-              if (isArray(ancestor)) {
-                console.log("=======ancestors array=======");
-                console.log(ancestor);
-              } else {
-                console.log("=======ancestors object=======");
-                console.log(ancestor);
-              }
-            });
-            */
+          if ((node.name.value === 'appendNode' || node.name.value === 'prependNode') && node.arguments !== undefined && node.arguments?.length > 0) {            
+            directiveName = node.name.value.toString();
+
             directivePath = [];
             ancestors.filter((ancestor, key) => {
               if (isArray(ancestor)) {
@@ -92,13 +81,15 @@ const transform = (input: DocumentNode) => {
                 });
               }
             });
-            console.log(directivePath);
-            connectionId = node.arguments.map((m) => m.name.value === 'connections' ? m : null);
-            edgeTypeName = node.arguments.map((m) => m.name.value === 'edgeTypeName' ? m : null);
-            directiveName = node.name.value.toString();
-            // console.log(directivePath);
-            // console.log(edgeTypeName);
+
+            if (_.has(variables, 'connections') && variables.connections.length > 0) {
+              connectionId = variables.connections[0];
+            }
+            if (_.has(variables, 'edgeTypeName')) {
+              edgeTypeName = variables.edgeTypeName;
+            }
           }
+
           if (node.name.value === 'deleteRecord') {
             directivePath = [];
             ancestors.filter((ancestor, key) => {
@@ -120,7 +111,7 @@ const transform = (input: DocumentNode) => {
 
 export const createMutationUpdaterLink = (cache: any): ApolloLink => {
   return new ApolloLink((operation, forward) => {
-    operation.query = transform(operation.query);
+    operation.query = transform(operation.query, operation.variables);
     if (isSubscription(operation.query)) {
       return new Observable<FetchResult>((observer) =>
         forward(operation).subscribe((response) => {
@@ -157,7 +148,7 @@ const insertNode = <T>({
   connectionId: string;
   edgeTypeName: string;
   type: string;
-}) => {
+  }) => {
   const connectionInfo = JSON.parse(decode(connectionId)) as ConnectionInfo;
   cache.modify({
     id: connectionInfo.id,
