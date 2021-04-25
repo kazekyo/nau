@@ -10,7 +10,7 @@ import isMatch from 'lodash.ismatch';
 import _ from 'lodash';
 
 let directivePath: String[] = [];
-let connectionId: string;
+let connections: string[] = [];
 let edgeTypeName: string;
 let directiveName: string;
 
@@ -83,7 +83,7 @@ const transform = (input: DocumentNode, variables: Record<string, any>) => {
             });
 
             if (_.has(variables, 'connections') && variables.connections.length > 0) {
-              connectionId = variables.connections[0];
+              connections = variables.connections;
             }
             if (_.has(variables, 'edgeTypeName')) {
               edgeTypeName = variables.edgeTypeName;
@@ -128,8 +128,10 @@ export const createMutationUpdaterLink = (cache: any): ApolloLink => {
         const cacheId = cache.identify(_.get(data, directivePathString));
         cache.evict({ id: cacheId });
       }
-      if (_.has(data, directivePathString) && connectionId && edgeTypeName && directiveName) {
-          insertNode({ cache, nodeRef: _.get(data, directivePathString), connectionId, edgeTypeName, type: directiveName });
+      if (_.has(data, directivePathString) && edgeTypeName && directiveName && connections.length > 0) {
+        connections.forEach((connectionId) =>
+          insertNode({ cache, nodeRef: _.get(data, directivePathString), connectionId, edgeTypeName, type: directiveName })
+        );
       }
       return { ...response, data };
     });
