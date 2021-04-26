@@ -3,13 +3,12 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 import { ApolloCache, ApolloLink, FetchResult, Observable, Reference, StoreObject, TypePolicy } from '@apollo/client';
-import { print } from 'graphql';
 import { DocumentNode, visit } from 'graphql/language';
 import { decode, encode } from 'js-base64';
 import isMatch from 'lodash.ismatch';
 import _ from 'lodash';
 
-let directivePath: String[] = [];
+let directivePath: string[] = [];
 let connections: string[] = [];
 let edgeTypeName: string;
 let directiveName: string;
@@ -34,8 +33,8 @@ export const isSubscription = (query: DocumentNode): boolean => {
   });
 };
 
-export const isArray = (a: any) => {
-    return (!!a) && (a.constructor === Array);
+export const isArray = (a: any): boolean => {
+  return !!a && a.constructor === Array;
 };
 
 const transform = (input: DocumentNode, variables: Record<string, any>) => {
@@ -51,7 +50,6 @@ const transform = (input: DocumentNode, variables: Record<string, any>) => {
         if (node.arguments !== undefined && node.arguments?.length > 0) {
           argumentNames = node.arguments.map((m) => m.name.value);
         }
-        
       },
     },
   });
@@ -67,15 +65,18 @@ const transform = (input: DocumentNode, variables: Record<string, any>) => {
     Directive: {
       enter(node, key, parent, path, ancestors) {
         if (DIRECTIVE_NAMES.includes(node.name.value)) {
-         
-          if ((node.name.value === 'appendNode' || node.name.value === 'prependNode') && node.arguments !== undefined && node.arguments?.length > 0) {            
+          if (
+            (node.name.value === 'appendNode' || node.name.value === 'prependNode') &&
+            node.arguments !== undefined &&
+            node.arguments?.length > 0
+          ) {
             directiveName = node.name.value.toString();
 
             directivePath = [];
-            ancestors.filter((ancestor, key) => {
+            ancestors.filter((ancestor) => {
               if (isArray(ancestor)) {
-                Object.values(ancestor).forEach(element => {
-                  if (element.name.value !== "__typename" && element.kind === "Field") {
+                Object.values(ancestor).forEach((element) => {
+                  if (element.name.value !== '__typename' && element.kind === 'Field') {
                     directivePath.push(element.name.value);
                   }
                 });
@@ -92,10 +93,10 @@ const transform = (input: DocumentNode, variables: Record<string, any>) => {
 
           if (node.name.value === 'deleteRecord') {
             directivePath = [];
-            ancestors.filter((ancestor, key) => {
+            ancestors.filter((ancestor) => {
               if (isArray(ancestor)) {
-                Object.values(ancestor).forEach(element => {
-                  if (element.name.value !== "__typename" && element.kind === "Field") {
+                Object.values(ancestor).forEach((element) => {
+                  if (element.name.value !== '__typename' && element.kind === 'Field') {
                     directivePath.push(element.name.value);
                   }
                 });
@@ -116,21 +117,27 @@ export const createMutationUpdaterLink = (cache: any): ApolloLink => {
       return new Observable<FetchResult>((observer) =>
         forward(operation).subscribe((response) => {
           observer.next(response);
-        })
+        }),
       );
     }
 
     if (!forward) return null;
 
     return forward(operation).map(({ data, ...response }) => {
-      var directivePathString = _.join(directivePath, '.');
+      const directivePathString = _.join(directivePath, '.');
       if (_.has(data, directivePathString)) {
         const cacheId = cache.identify(_.get(data, directivePathString));
         cache.evict({ id: cacheId });
       }
       if (_.has(data, directivePathString) && edgeTypeName && directiveName && connections.length > 0) {
         connections.forEach((connectionId) =>
-          insertNode({ cache, nodeRef: _.get(data, directivePathString), connectionId, edgeTypeName, type: directiveName })
+          insertNode({
+            cache,
+            nodeRef: _.get(data, directivePathString),
+            connectionId,
+            edgeTypeName,
+            type: directiveName,
+          }),
         );
       }
       return { ...response, data };
@@ -150,7 +157,7 @@ const insertNode = <T>({
   connectionId: string;
   edgeTypeName: string;
   type: string;
-  }) => {
+}) => {
   const connectionInfo = JSON.parse(decode(connectionId)) as ConnectionInfo;
   cache.modify({
     id: connectionInfo.id,
@@ -192,7 +199,6 @@ export const mutationUpdater = (): TypePolicy => {
       if (!directiveName) return result;
 
       if (directiveName == 'deleteRecord') {
-
         const cacheId = cache.identify(result);
         cache.evict({ id: cacheId });
       } else {
