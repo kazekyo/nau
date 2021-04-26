@@ -39,6 +39,8 @@ export const isArray = (a: any): boolean => {
 
 const transform = (input: DocumentNode, variables: Record<string, any>) => {
   let argumentNames: string[] = [];
+  let argConnName: string[] = [];
+  let argEdgeName: string[] = [];
 
   if (isQuery(input)) {
     return input;
@@ -49,6 +51,12 @@ const transform = (input: DocumentNode, variables: Record<string, any>) => {
       enter(node) {
         if (node.arguments !== undefined && node.arguments?.length > 0) {
           argumentNames = node.arguments.map((m) => m.name.value);
+          argConnName = _.map(node.arguments, (m) =>
+            m.value.kind === 'Variable' && m.name.value === 'connections' ? m.value.name.value : '',
+          );
+          argEdgeName = node.arguments.map((m) =>
+            m.value.kind === 'Variable' && m.name.value === 'edgeTypeName' ? m.value.name.value : '',
+          );
         }
       },
     },
@@ -71,11 +79,12 @@ const transform = (input: DocumentNode, variables: Record<string, any>) => {
             node.arguments?.length > 0
           ) {
             directiveName = node.name.value;
-
-            if (_.has(variables, 'connections') && variables.connections.length > 0) {
+            connections = [];
+            if (argConnName.length > 0 && _.has(variables, argConnName[0])) {
               connections = variables.connections;
             }
-            if (_.has(variables, 'edgeTypeName')) {
+            edgeTypeName = '';
+            if (argEdgeName.length > 0 && _.has(variables, argEdgeName[0])) {
               edgeTypeName = variables.edgeTypeName;
             }
           }
@@ -118,15 +127,15 @@ export const createMutationUpdaterLink = (cache: any): ApolloLink => {
         cache.evict({ id: cacheId });
       }
       if (_.has(data, directivePathString) && edgeTypeName && directiveName && connections.length > 0) {
-        connections.forEach((connectionId) =>
+        connections.forEach((connectionId) => {
           insertNode({
             cache,
             nodeRef: _.get(data, directivePathString),
             connectionId,
             edgeTypeName,
             type: directiveName,
-          }),
-        );
+          });
+        });
       }
       return { ...response, data };
     });
@@ -141,7 +150,8 @@ const insertNode = <T>({
   type,
 }: {
   cache: ApolloCache<T>;
-  nodeRef: Reference;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  nodeRef: any;
   connectionId: string;
   edgeTypeName: string;
   type: string;
@@ -152,7 +162,7 @@ const insertNode = <T>({
     fields: {
       [connectionInfo.field]: (
         existingConnection: StoreObject & {
-          edges: ReadonlyArray<{ node: { __ref: string } }>;
+          edges: ReadonlyArray<{ node: { __ref?: string; id?: string } }>;
           args?: Record<string, unknown>;
         },
       ) => {
@@ -163,7 +173,12 @@ const insertNode = <T>({
         ) {
           return { ...existingConnection };
         }
-        if (existingConnection.edges.find((edge) => edge.node.__ref === nodeRef.__ref)) {
+        const property = nodeRef['__ref'] !== undefined ? '__ref' : 'id';
+        if (
+          existingConnection.edges.find(
+            (edge) => edge.node.__ref === nodeRef[property] || edge.node.id === nodeRef[property],
+          )
+        ) {
           return { ...existingConnection };
         }
         const newEdge = { __typename: edgeTypeName, node: nodeRef, cursor: '' };
