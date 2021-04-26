@@ -1,10 +1,8 @@
 import { ApolloClient, ApolloProvider, from, HttpLink, InMemoryCache, split } from '@apollo/client';
 import { WebSocketLink } from '@apollo/client/link/ws';
-import { getMainDefinition } from '@apollo/client/utilities';
 import {
   createMutationUpdaterLink,
   isSubscription,
-  mutationUpdater,
   relayStylePagination,
   setIdAsCacheKey,
 } from '@kazekyo/apollo-relay-style-pagination';

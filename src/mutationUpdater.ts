@@ -70,18 +70,7 @@ const transform = (input: DocumentNode, variables: Record<string, any>) => {
             node.arguments !== undefined &&
             node.arguments?.length > 0
           ) {
-            directiveName = node.name.value.toString();
-
-            directivePath = [];
-            ancestors.filter((ancestor) => {
-              if (isArray(ancestor)) {
-                Object.values(ancestor).forEach((element) => {
-                  if (element.name.value !== '__typename' && element.kind === 'Field') {
-                    directivePath.push(element.name.value);
-                  }
-                });
-              }
-            });
+            directiveName = node.name.value;
 
             if (_.has(variables, 'connections') && variables.connections.length > 0) {
               connections = variables.connections;
@@ -91,18 +80,17 @@ const transform = (input: DocumentNode, variables: Record<string, any>) => {
             }
           }
 
-          if (node.name.value === 'deleteRecord') {
-            directivePath = [];
-            ancestors.filter((ancestor) => {
-              if (isArray(ancestor)) {
-                Object.values(ancestor).forEach((element) => {
-                  if (element.name.value !== '__typename' && element.kind === 'Field') {
-                    directivePath.push(element.name.value);
-                  }
-                });
-              }
-            });
-          }
+          directivePath = [];
+          ancestors.filter((ancestor) => {
+            if (isArray(ancestor)) {
+              Object.values(ancestor).forEach((element) => {
+                if (element.name.value !== '__typename' && element.kind === 'Field') {
+                  directivePath.push(element.name.value);
+                }
+              });
+            }
+          });
+
           return null;
         }
       },
