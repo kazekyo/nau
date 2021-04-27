@@ -36,8 +36,8 @@ const cache = new InMemoryCache({
 
 const splitLink = split(
   ({ query }) => isSubscription(query),
-  from([createMutationUpdaterLink(cache), wsLink]),
-  from([createMutationUpdaterLink(cache), new HttpLink({ uri: 'http://localhost:4000/graphql' })]),
+  from([createMutationUpdaterLink(cache, 'id'), wsLink]),
+  from([createMutationUpdaterLink(cache, 'id'), new HttpLink({ uri: 'http://localhost:4000/graphql' })]),
 );
 
 const client = new ApolloClient({
