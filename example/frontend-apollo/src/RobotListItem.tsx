@@ -14,6 +14,12 @@ export const RobotListItemFragments = {
       name
     }
   `,
+  robot2: gql`
+    fragment RobotListItem_robot2 on Robot {
+      id
+      name
+    }
+  `,
 };
 
 const REMOVE_ROBOT = gql`
@@ -34,7 +40,7 @@ const ListItem: FC<{
   user: { id: string };
   robot: { id: string; name: string };
 }> = ({ user, robot }) => {
-  const [removeRobot] = useMutation(REMOVE_ROBOT);
+  const [removeRobot] = useMutation(REMOVE_ROBOT, { fetchPolicy: 'no-cache' });
 
   return (
     <>

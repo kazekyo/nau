@@ -2,16 +2,29 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
-import { ApolloCache, ApolloLink, FetchResult, Observable, StoreObject } from '@apollo/client';
-import { DocumentNode, visit } from 'graphql/language';
+import {
+  ApolloCache,
+  ApolloLink,
+  FetchResult,
+  gql,
+  InMemoryCache,
+  Observable,
+  Reference,
+  StoreObject,
+} from '@apollo/client';
+import { DocumentNode, FragmentDefinitionNode, print, SelectionSetNode, visit } from 'graphql/language';
 import { decode, encode } from 'js-base64';
-import isMatch from 'lodash.ismatch';
 import _ from 'lodash';
+import isMatch from 'lodash.ismatch';
 
+// TODO : 戻り値にしたい
 let directivePath: string[] = [];
 let connections: string[] = [];
 let edgeTypeName: string;
 let directiveName: string;
+let fragmentSelectionSet: SelectionSetNode | undefined;
+let fragmentDefinitions: FragmentDefinitionNode[] = [];
+let deleteCacheId: string | undefined = undefined;
 
 type ConnectionInfo = {
   id: string;
@@ -33,6 +46,7 @@ export const isSubscription = (query: DocumentNode): boolean => {
   });
 };
 
+// TODO : typeのチェックがゆるいので別の方法を使う
 export const isArray = (a: any): boolean => {
   return !!a && a.constructor === Array;
 };
@@ -41,6 +55,7 @@ const transform = (input: DocumentNode, variables: Record<string, any>) => {
   let argumentNames: string[] = [];
   let argConnNames: string[] = [];
   let argEdgeNames: string[] = [];
+  fragmentSelectionSet = undefined;
 
   if (isQuery(input)) {
     return input;
@@ -51,6 +66,7 @@ const transform = (input: DocumentNode, variables: Record<string, any>) => {
       enter(node) {
         if (node.arguments !== undefined && node.arguments?.length > 0) {
           argumentNames = _.map(node.arguments, (m) => m.name.value);
+          // TODO : なぜ複数形になってしまうのか確認する
           argConnNames = _.map(node.arguments, (m) =>
             m.value.kind === 'Variable' && m.name.value === 'connections'
               ? m.value.name.value
@@ -58,6 +74,7 @@ const transform = (input: DocumentNode, variables: Record<string, any>) => {
               ? m.name.value
               : '',
           );
+          // TODO : なぜ複数形になってしまうのか確認する
           argEdgeNames = _.map(node.arguments, (m) =>
             m.value.kind === 'Variable' && m.name.value === 'edgeTypeName'
               ? m.value.name.value
@@ -86,6 +103,13 @@ const transform = (input: DocumentNode, variables: Record<string, any>) => {
             node.arguments !== undefined &&
             node.arguments?.length > 0
           ) {
+            const directiveNode = ancestors[ancestors.length - 1];
+            if (directiveNode && 'selectionSet' in directiveNode && directiveNode.selectionSet) {
+              fragmentSelectionSet = directiveNode.selectionSet;
+              fragmentDefinitions = input.definitions.filter(
+                (value): value is FragmentDefinitionNode => value.kind === 'FragmentDefinition',
+              );
+            }
             directiveName = node.name.value;
             connections = [];
             if (argConnNames.length > 0) {
@@ -113,6 +137,7 @@ const transform = (input: DocumentNode, variables: Record<string, any>) => {
           ancestors.filter((ancestor) => {
             if (isArray(ancestor)) {
               Object.values(ancestor).forEach((element) => {
+                // TODO : よりスマートに書きたい
                 if (element.name.value !== '__typename' && element.kind === 'Field') {
                   directivePath.push(element.name.value);
                 }
@@ -127,7 +152,8 @@ const transform = (input: DocumentNode, variables: Record<string, any>) => {
   });
 };
 
-export const createMutationUpdaterLink = (cache: any, fieldName: string): ApolloLink => {
+// TODO : operationのgetContextしたらcacheがあるのでそれ使えば良かった
+export const createMutationUpdaterLink = (cache: InMemoryCache, fieldName: string): ApolloLink => {
   return new ApolloLink((operation, forward) => {
     operation.query = transform(operation.query, operation.variables);
     if (isSubscription(operation.query)) {
@@ -140,26 +166,45 @@ export const createMutationUpdaterLink = (cache: any, fieldName: string): Apollo
 
     if (!forward) return null;
 
+    // TODO : setIdAsCacheするのではなく、idを一度戻してtypenameを取り出した後にapolloのidを特定したほうが良さそう
     return forward(operation).map(({ data, ...response }) => {
-      console.log('directivePath ', directivePath);
       const directivePathString = _.join(directivePath, '.');
       if (_.has(data, directivePathString) && edgeTypeName && directiveName && connections.length > 0) {
-        console.log('INSERT ');
         connections.forEach((connectionId) => {
+          const node = _.get(data, directivePathString);
+          // TODO : addTypenameしてなかったら動かないとコメントで書いておく
+          // console.log(node);
+          if (!fragmentSelectionSet) return;
+          const mainFragment: FragmentDefinitionNode = {
+            directives: [],
+            kind: 'FragmentDefinition',
+            name: { kind: 'Name', value: 'MutationUpdaterWriteFragment' },
+            selectionSet: fragmentSelectionSet,
+            typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: node.__typename } },
+          };
+          const document = gql`
+            ${print(mainFragment)}
+            ${fragmentDefinitions.map((definiton) => print(definiton))}
+          `;
+          // console.log(print(document));
+          const nodeRef = cache.writeFragment({
+            id: node.id,
+            data: node,
+            fragment: document,
+            fragmentName: 'MutationUpdaterWriteFragment',
+          });
+          if (!nodeRef) return;
           insertNode({
             cache,
-            nodeRef: _.get(data, directivePathString),
+            nodeRef: nodeRef,
             connectionId,
             edgeTypeName,
             type: directiveName,
-            fieldName: fieldName,
           });
         });
       } else if (_.has(data, directivePathString)) {
-        console.log('DELETE ');
-        console.log('directivePathString ', directivePathString);
+        // TODO : これがオブジェクトではなくちゃんとidを指していないと、deletedIdなどの名前のfieldに対応できない
         const cacheId = cache.identify(_.get(data, directivePathString));
-        console.log('cacheId ', cacheId);
         cache.evict({ id: cacheId });
       }
       return { ...response, data };
@@ -167,21 +212,20 @@ export const createMutationUpdaterLink = (cache: any, fieldName: string): Apollo
   });
 };
 
+// TODO : refだけを使用するように戻す
 const insertNode = <T>({
   cache,
   nodeRef,
   connectionId,
   edgeTypeName,
   type,
-  fieldName,
 }: {
   cache: ApolloCache<T>;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  nodeRef: any;
+  nodeRef: Reference;
   connectionId: string;
   edgeTypeName: string;
   type: string;
-  fieldName: string;
 }) => {
   const connectionInfo = JSON.parse(decode(connectionId)) as ConnectionInfo;
   cache.modify({
@@ -200,12 +244,7 @@ const insertNode = <T>({
         ) {
           return { ...existingConnection };
         }
-        const property = nodeRef['__ref'] !== undefined ? '__ref' : fieldName;
-        if (
-          existingConnection.edges.find(
-            (edge) => edge.node.__ref === nodeRef[property] || edge.node.id === nodeRef[property],
-          )
-        ) {
+        if (existingConnection.edges.find((edge) => edge.node.__ref === nodeRef.__ref)) {
           return { ...existingConnection };
         }
         const newEdge = { __typename: edgeTypeName, node: nodeRef, cursor: '' };
@@ -219,32 +258,5 @@ const insertNode = <T>({
     },
   });
 };
-
-/*
-export const mutationUpdater = (): TypePolicy => {
-  return {
-    merge(existing: Reference, incoming: Reference, { cache, field, storeFieldName }) {
-      const result = { ...existing, ...incoming };
-      const directiveName = field?.directives?.find((directive) => DIRECTIVE_NAMES.includes(directive.name.value))?.name
-        .value;
-      if (!directiveName) return result;
-      
-      if (directiveName == 'deleteRecord') {
-        const cacheId = cache.identify(result);
-        cache.evict({ id: cacheId });
-      } else {
-        const connectionsStr = /"connections":(?<connections>\[[^\].]+\])/.exec(storeFieldName)?.groups?.connections;
-        const connections = connectionsStr && (JSON.parse(connectionsStr) as string[]);
-        const edgeTypeName = /"edgeTypeName":[^"]*"(?<edgeTypeName>.+)"/.exec(storeFieldName)?.groups?.edgeTypeName;
-        if (!connections || !edgeTypeName) return result;
-        connections.forEach((connectionId) =>
-          insertNode({ cache, nodeRef: incoming, connectionId, edgeTypeName, type: directiveName }),
-        );
-      }
-      return result;
-    },
-  };
-};
-*/
 
 export const generateConnectionId = (connectionInfo: ConnectionInfo): string => encode(JSON.stringify(connectionInfo));

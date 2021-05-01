@@ -33,10 +33,12 @@ const ADD_ROBOT = gql`
       robot @prependNode(connections: $connections, edgeTypeName: $edgeTypeName) {
         id
         ...RobotListItem_robot
+        ...RobotListItem_robot2
       }
     }
   }
   ${RobotListItemFragments.robot}
+  ${RobotListItemFragments.robot2}
 `;
 
 const ROBOT_ADDED_SUBSCRIPTION = gql`

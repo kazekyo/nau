@@ -28,7 +28,10 @@ const cache = new InMemoryCache({
       },
       Robot: {
         // ...mutationUpdater(),
-      }
+      },
+      // RobotRemovedPayload: {
+      //   // ...mutationUpdater(),
+      // },
     },
     { idFieldName: 'id' },
   ),
