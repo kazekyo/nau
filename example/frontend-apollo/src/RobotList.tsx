@@ -52,8 +52,8 @@ const ROBOT_ADDED_SUBSCRIPTION = gql`
 
 const ROBOT_REMOVED_SUBSCRIPTION = gql`
   subscription RobotAddedSubscription {
-    robotRemoved @deleteRecord {
-      id
+    robotRemoved {
+      id @deleteRecord
     }
   }
 `;

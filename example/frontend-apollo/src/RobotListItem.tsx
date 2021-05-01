@@ -1,4 +1,4 @@
-import { gql, useMutation, useSubscription } from '@apollo/client';
+import { gql, useMutation } from '@apollo/client';
 import * as React from 'react';
 import { FC } from 'react';
 
@@ -19,8 +19,8 @@ export const RobotListItemFragments = {
 const REMOVE_ROBOT = gql`
   mutation RemoveRobotMutation($input: RemoveRobotInput!) {
     removeRobot(input: $input) {
-      robot @deleteRecord {
-        id
+      robot {
+        id @deleteRecord
       }
     }
   }
