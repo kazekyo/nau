@@ -21,15 +21,15 @@ export const withCacheUpdater = ({
     if (existingTypePolicyKeys.includes(type)) {
       const existingTypePolicy = existingTypePolicies[type];
       const cacheUpdaterMergeFunction = cacheUpdater().merge as FieldMergeFunction<Reference, Reference>;
-      const mergeFunction: FieldMergeFunction<Reference, Reference> = (existing, incoming, options, ...other) => {
-        cacheUpdaterMergeFunction(existing, incoming, options, ...other);
+      const mergeFunction: FieldMergeFunction<Reference, Reference> = (existing, incoming, options, ...rest) => {
+        cacheUpdaterMergeFunction(existing, incoming, options, ...rest);
         if (existingTypePolicy.merge === false || !existing) {
           return incoming;
         } else if (existingTypePolicy.merge === true || !existingTypePolicy.merge) {
           return options.mergeObjects(existing, incoming);
         } else {
           // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-          return existingTypePolicy.merge(existing, incoming, options, ...other);
+          return existingTypePolicy.merge(existing, incoming, options, ...rest);
         }
       };
       typePolicy = {

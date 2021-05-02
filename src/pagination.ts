@@ -35,14 +35,14 @@ export type TIncomingRelay<TNode> = {
 
 export type RelayFieldPolicy<TNode> = FieldPolicy<TExistingRelay<TNode>, TIncomingRelay<TNode>, TIncomingRelay<TNode>>;
 
-// This function is a bit different from the one provided by Apollo.
+// This function is a bit different from relayStylePagination provided by Apollo.
 // 1. it removes duplicate edges.
 //  As a result of the misaligned cursor,
 //  if a client gets data from a server with duplicate nodes,
 //  it will remove duplicate edges from a list.
 // 2. it sets a args to a connection.
 //  The args is needed to identify the connection to be updated.
-export function relayStylePagination<TNode extends Reference>(keyArgs: KeyArgs = false): RelayFieldPolicy<TNode> {
+export function relayPaginationFieldPolicy<TNode extends Reference>(keyArgs: KeyArgs = false): RelayFieldPolicy<TNode> {
   return {
     keyArgs,
 

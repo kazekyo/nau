@@ -1,5 +1,5 @@
 import { gql, useMutation, useQuery, useSubscription } from '@apollo/client';
-import { generateConnectionId, getNodesFromConnection } from '@kazekyo/apollo-relay-style-pagination';
+import { generateConnectionId, getNodesFromConnection } from '@kazekyo/nau';
 import * as React from 'react';
 import RobotListItem, { RobotListItemFragments } from './RobotListItem';
 

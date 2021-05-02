@@ -3,9 +3,9 @@ import { WebSocketLink } from '@apollo/client/link/ws';
 import {
   createCacheUpdaterLink,
   isSubscriptionOperation,
-  relayStylePagination,
+  relayPaginationFieldPolicy,
   withCacheUpdater,
-} from '@kazekyo/apollo-relay-style-pagination';
+} from '@kazekyo/nau';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
@@ -32,7 +32,7 @@ const client = new ApolloClient({
       typePolicies: {
         User: {
           fields: {
-            robots: relayStylePagination(),
+            robots: relayPaginationFieldPolicy(),
           },
         },
       },
