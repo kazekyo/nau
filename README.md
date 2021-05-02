@@ -97,8 +97,6 @@ const REMOVE_ROBOT = gql`
 `;
 ```
 
-### Fragment-based pagination
-Coming soon.
 
 ## TODO
 - [ ] Fragment-based pagination
