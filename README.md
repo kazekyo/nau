@@ -1,23 +1,26 @@
-# nau
+<h1 align="center">
+nau 🧶
+</h1>
 nau is a library that makes Apollo Client more powerful.
 if your server to follow Relay Specification, nau will provide you with a magical developer experience.
 
-# Our Goal
+## Our Goal
 This library is inspired by Relay and we have reproduced some features of Relay.
 However, the goal is not to create a full copy of Relay on Apollo Client.
+
 Our goal is to make Apollo Client more powerful by integrating Relay Specification with Apollo Client.
 
-# Getting Started
+## Getting Started
 ```
 npm install @kazekyo/nau
 ```
 > ⚠️ The package is currently under heavy development. It is possible that all version updates will have breaking changes.
 
-# Usage
+## Usage
 Currently, there is no complete documentation.
 Check [example code](https://github.com/kazekyo/nau/tree/main/example/frontend-apollo) for details.
 
-## Setup
+### Setup
 ```ts
 const splitLink = split(
   ({ query }) => isSubscriptionOperation(query),
@@ -43,7 +46,7 @@ const client = new ApolloClient({
 ```
 Now `User.robots` can be paginated. And `Robot`, `RobotRemovedPayload`, and `User` can also use our directives.
 
-## Directives
+### Directives
 If you want to add node to the list, use `@appendNode`/`@prependNode` directives.
 ```tsx
 const ADD_ROBOT = gql`
