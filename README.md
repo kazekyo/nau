@@ -7,6 +7,12 @@ This library is inspired by Relay and we have reproduced some features of Relay.
 However, the goal is not to create a full copy of Relay on Apollo Client.
 Our goal is to make Apollo Client more powerful by integrating Relay Specification with Apollo Client.
 
+# Getting Started
+```
+npm install @kazekyo/nau
+```
+> ⚠️ The package is currently under heavy development. It is possible that all version updates will have breaking changes.
+
 # Usage
 Currently, there is no complete documentation.
 Check [example code](https://github.com/kazekyo/nau/tree/main/example/frontend-apollo) for details.
