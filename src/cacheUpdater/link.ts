@@ -14,15 +14,13 @@ export const isSubscriptionOperation = (query: DocumentNode): boolean => {
 };
 
 const transform = (input: DocumentNode): DocumentNode => {
-  if (isQueryOperation(input)) {
-    return input;
-  }
+  if (isQueryOperation(input)) return input;
 
   let argumentNames: string[] = [];
   visit(input, {
     Directive: {
       enter(node) {
-        if (node.arguments !== undefined && node.arguments?.length > 0) {
+        if (node.arguments && node.arguments.length > 0) {
           argumentNames = node.arguments.map((m) => m.name.value);
         }
       },
@@ -58,8 +56,6 @@ export const createCacheUpdaterLink = (): ApolloLink => {
 
     if (!forward) return null;
 
-    return forward(operation).map(({ data, ...response }) => {
-      return { ...response, data };
-    });
+    return forward(operation).map((response) => response);
   });
 };

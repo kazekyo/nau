@@ -3,8 +3,8 @@ import { WebSocketLink } from '@apollo/client/link/ws';
 import {
   createCacheUpdaterLink,
   isSubscriptionOperation,
-  cacheUpdater,
   relayStylePagination,
+  withCacheUpdater,
 } from '@kazekyo/apollo-relay-style-pagination';
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -27,20 +27,16 @@ const splitLink = split(
 
 const client = new ApolloClient({
   cache: new InMemoryCache({
-    typePolicies: {
-      User: {
-        fields: {
-          robots: relayStylePagination(),
+    typePolicies: withCacheUpdater({
+      targetTypes: ['Robot', 'RobotRemovedPayload', 'User'],
+      typePolicies: {
+        User: {
+          fields: {
+            robots: relayStylePagination(),
+          },
         },
       },
-      Robot: {
-        // TODO : Don't overwrite user's merge
-        ...cacheUpdater(),
-      },
-      RobotRemovedPayload: {
-        ...cacheUpdater(),
-      },
-    },
+    }),
   }),
   link: splitLink,
 });

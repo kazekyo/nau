@@ -1,17 +1,26 @@
 import { decode } from 'js-base64';
 
 export type CacheIdGenerator = (globalId: string) => string | undefined;
-export const defaultCacheIdGenerator = (globalId: string): string | undefined => {
-  let typename: string | undefined = undefined;
-  const globalIdStr = decode(globalId);
-  if (globalIdStr.includes(':')) {
-    // graphql-relay-js
-    typename = globalIdStr.split(':')[0];
-  } else if (globalIdStr.includes('|')) {
-    // graphql-ruby
-    typename = globalIdStr.split('|')[0];
-  }
 
-  if (!typename) return undefined;
+const ERROR_MESSAGE = `Cannot convert global id to apollo's cache id.
+We only support the following global id: \`typename:id\` or \`typename|id\` format string encoded in Base64.
+You should set custom cacheIdGenerator in cacheUpdater parameter.`;
+
+export const defaultCacheIdGenerator = (globalId: string): string | undefined => {
+  const globalIdStr = decode(globalId);
+  let splitStr: string | undefined;
+  if (globalIdStr.includes(':')) {
+    // ex. graphql-relay-js
+    splitStr = ':';
+  } else if (globalIdStr.includes('|')) {
+    // ex. graphql-ruby
+    splitStr = '|';
+  }
+  if (!splitStr) throw Error(ERROR_MESSAGE);
+
+  const array = globalIdStr.split(splitStr);
+  if (array.length !== 2) throw Error(ERROR_MESSAGE);
+
+  const typename = array[0];
   return `${typename}:${globalId}`;
 };
