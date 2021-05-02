@@ -2,7 +2,7 @@
 nau is a library that makes Apollo Client more powerful.
 if your server to follow Relay Specification, nau will provide you with a magical developer experience.
 
-# Goal
+# Our Goal
 This library is inspired by Relay and we have reproduced some features of Relay.
 However, the goal is not to create a full copy of Relay on Apollo Client.
 Our goal is to make Apollo Client more powerful by integrating Relay Specification with Apollo Client.
@@ -44,7 +44,7 @@ const client = new ApolloClient({
 Now `User.robots` can be paginated. And `Robot`, `RobotRemovedPayload`, and `User` can also use our directives.
 
 ## Directives
-If you want to add node to the list, use `@appendNode`/`@prependNode` directive.
+If you want to add node to the list, use `@appendNode`/`@prependNode` directives.
 ```tsx
 const ADD_ROBOT = gql`
   mutation AddRobotMutation($input: AddRobotInput!, $connections: [String!]!, $edgeTypeName: String!) {
@@ -101,6 +101,6 @@ const REMOVE_ROBOT = gql`
 Coming soon.
 
 ## TODO
-- [] Fragment-based pagination
-- [] Documentation
-- [] Testing
+- [ ] Fragment-based pagination
+- [ ] Documentation
+- [ ] Testing
