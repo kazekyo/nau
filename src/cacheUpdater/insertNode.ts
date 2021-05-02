@@ -41,16 +41,24 @@ export const insertNodesToConnections = ({
   const edgeTypeName = getEdgeTypeNameFromStoreFieldName(storeFieldName);
   const connections = getConnectionsFromStoreFieldName(storeFieldName);
   if (!connections || !edgeTypeName) return;
-  connections.forEach((connectionId) =>
+  connections.forEach((connectionId) => {
+    const connectionInfo = JSON.parse(decode(connectionId)) as ConnectionInfo;
+    if (!connectionInfo.id || !connectionInfo.field) {
+      const blankField = !connectionInfo.id ? 'id' : 'field';
+      throw Error(
+        `\`${blankField}\` in connectionId set in @${directiveName} cannot be undefined, null and an empty string.`,
+      );
+    }
+
     insertNode({
       cache,
       nodeRef: object,
-      connectionId,
+      connectionInfo,
       edgeTypeName,
       type: directiveName,
       cacheIdGenerator,
-    }),
-  );
+    });
+  });
 };
 
 const getConnectionsFromStoreFieldName = (storeFieldName: FieldFunctionOptions['storeFieldName']) => {
@@ -73,19 +81,18 @@ const getChildrenFieldNames = (field: FieldNode | null) => {
 const insertNode = <T>({
   cache,
   nodeRef,
-  connectionId,
+  connectionInfo,
   edgeTypeName,
   type,
   cacheIdGenerator,
 }: {
   cache: ApolloCache<T>;
   nodeRef: Reference;
-  connectionId: string;
+  connectionInfo: ConnectionInfo;
   edgeTypeName: string;
   type: string;
   cacheIdGenerator: CacheIdGenerator;
 }) => {
-  const connectionInfo = JSON.parse(decode(connectionId)) as ConnectionInfo;
   cache.modify({
     id: cacheIdGenerator(connectionInfo.id),
     fields: {
