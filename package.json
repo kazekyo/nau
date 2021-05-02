@@ -1,10 +1,10 @@
 {
-  "name": "@kazekyo/apollo-relay-style-pagination",
+  "name": "@kazekyo/nau",
   "description": "",
   "version": "0.0.8",
   "author": "kazekyo",
   "bugs": {
-    "url": "https://github.com/kazekyo/apollo-relay-style-pagination/issues"
+    "url": "https://github.com/kazekyo/nau/issues"
   },
   "dependencies": {
     "graphql": "^15.5.0",
@@ -34,7 +34,7 @@
   "files": [
     "dist"
   ],
-  "homepage": "https://github.com/kazekyo/apollo-relay-style-pagination#readme",
+  "homepage": "https://github.com/kazekyo/nau#readme",
   "keywords": [
     "apollo",
     "relay",
@@ -46,7 +46,7 @@
   "main": "dist/index.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kazekyo/apollo-relay-style-pagination.git"
+    "url": "git+https://github.com/kazekyo/nau.git"
   },
   "scripts": {
     "test": "jest",

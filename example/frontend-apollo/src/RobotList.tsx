@@ -1,5 +1,5 @@
 import { gql, useMutation, useQuery, useSubscription } from '@apollo/client';
-import { generateConnectionId, getNodesFromConnection } from '@kazekyo/apollo-relay-style-pagination';
+import { generateConnectionId, getNodesFromConnection } from '@kazekyo/nau';
 import * as React from 'react';
 import RobotListItem, { RobotListItemFragments } from './RobotListItem';
 
@@ -52,8 +52,8 @@ const ROBOT_ADDED_SUBSCRIPTION = gql`
 
 const ROBOT_REMOVED_SUBSCRIPTION = gql`
   subscription RobotAddedSubscription {
-    robotRemoved @deleteRecord {
-      id
+    robotRemoved {
+      id @deleteRecord
     }
   }
 `;

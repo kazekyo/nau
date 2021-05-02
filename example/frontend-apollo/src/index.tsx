@@ -1,13 +1,11 @@
 import { ApolloClient, ApolloProvider, from, HttpLink, InMemoryCache, split } from '@apollo/client';
 import { WebSocketLink } from '@apollo/client/link/ws';
-import { getMainDefinition } from '@apollo/client/utilities';
 import {
-  createMutationUpdaterLink,
-  isSubscription,
-  mutationUpdater,
-  relayStylePagination,
-  setIdAsCacheKey,
-} from '@kazekyo/apollo-relay-style-pagination';
+  createCacheUpdaterLink,
+  isSubscriptionOperation,
+  relayPaginationFieldPolicy,
+  withCacheUpdater,
+} from '@kazekyo/nau';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
@@ -22,29 +20,23 @@ const wsLink = new WebSocketLink({
 });
 
 const splitLink = split(
-  ({ query }) => isSubscription(query),
-  from([createMutationUpdaterLink(), wsLink]),
-  from([createMutationUpdaterLink(), new HttpLink({ uri: 'http://localhost:4000/graphql' })]),
+  ({ query }) => isSubscriptionOperation(query),
+  from([createCacheUpdaterLink(), wsLink]),
+  from([createCacheUpdaterLink(), new HttpLink({ uri: 'http://localhost:4000/graphql' })]),
 );
 
 const client = new ApolloClient({
   cache: new InMemoryCache({
-    typePolicies: setIdAsCacheKey(
-      {
+    typePolicies: withCacheUpdater({
+      targetTypes: ['Robot', 'RobotRemovedPayload', 'User'],
+      typePolicies: {
         User: {
           fields: {
-            robots: relayStylePagination(),
+            robots: relayPaginationFieldPolicy(),
           },
         },
-        Robot: {
-          ...mutationUpdater(),
-        },
-        RobotRemovedPayload: {
-          ...mutationUpdater(),
-        },
       },
-      { idFieldName: 'id' },
-    ),
+    }),
   }),
   link: splitLink,
 });
