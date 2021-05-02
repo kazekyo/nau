@@ -4,7 +4,6 @@
   "private": true,
   "dependencies": {
     "@apollo/client": "3.3.16",
-    "@kazekyo/apollo-relay-style-pagination": "file:./package",
     "@kazekyo/nau": "file:./package",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
