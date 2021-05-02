@@ -1,8 +1,7 @@
 <h1 align="center">
 nau 🧶
 </h1>
-nau is a library that makes Apollo Client more powerful.
-if your server to follow Relay Specification, nau will provide you with a magical developer experience.
+nau is a library that makes Apollo Client more powerful. if your server follows Relay Specification, nau will provide you with a magical developer experience.
 
 ## Our Goal
 This library is inspired by Relay and we have reproduced some features of Relay.
@@ -14,7 +13,7 @@ Our goal is to make Apollo Client more powerful by integrating Relay Specificati
 ```
 npm install @kazekyo/nau
 ```
-> ⚠️ The package is currently under heavy development. It is possible that all version updates will have breaking changes.
+> ⚠️ The package is currently under heavy development. All version updates may have breaking changes.
 
 ## Usage
 Currently, there is no complete documentation.
@@ -87,7 +86,7 @@ const List: React.FC = () => {
   );
 };
 ```
-If you want to remove a data from the cache, use `@deleteRecord` directive.
+If you want to remove data from the cache, use `@deleteRecord` directive.
 ```tsx
 const REMOVE_ROBOT = gql`
   mutation RemoveRobotMutation($input: RemoveRobotInput!) {
