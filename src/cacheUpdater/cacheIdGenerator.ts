@@ -10,10 +10,10 @@ export const defaultCacheIdGenerator = (globalId: string): string | undefined =>
   const globalIdStr = decode(globalId);
   let splitStr: string | undefined;
   if (globalIdStr.includes(':')) {
-    // ex. graphql-relay-js
+    // e.g. graphql-relay-js
     splitStr = ':';
   } else if (globalIdStr.includes('|')) {
-    // ex. graphql-ruby
+    // e.g. graphql-ruby
     splitStr = '|';
   }
   if (!splitStr) throw Error(ERROR_MESSAGE);
