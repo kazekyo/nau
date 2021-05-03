@@ -4,7 +4,7 @@ import { decode, encode } from 'js-base64';
 import isMatch from 'lodash.ismatch';
 import { nonNullable } from '../utils';
 import { CacheIdGenerator } from './cacheIdGenerator';
-import { findDirectiveName, INSERT_NODE_DIRECTIVE_NAMES } from './directiveName';
+import { findDirectiveName, INSERT_NODE_DIRECTIVE_NAMES, DirectiveName } from './directiveName';
 
 type ConnectionInfo = {
   id: string;
@@ -14,16 +14,61 @@ type ConnectionInfo = {
 
 export const generateConnectionId = (connectionInfo: ConnectionInfo): string => encode(JSON.stringify(connectionInfo));
 
+const validate = ({
+  connectionInfo,
+  cacheIdGenerator,
+  directiveName,
+  readField,
+  toReference,
+}: {
+  connectionInfo: ConnectionInfo;
+  cacheIdGenerator: CacheIdGenerator;
+  directiveName: DirectiveName;
+} & Pick<FieldFunctionOptions, 'readField' | 'toReference'>):
+  | { success: false; errorMessage: string }
+  | { success: true } => {
+  if (!connectionInfo.id || !connectionInfo.field) {
+    const blankField = !connectionInfo.id ? 'id' : 'field';
+    return {
+      success: false,
+      errorMessage: `\`${blankField}\` in connectionId set in @${directiveName} cannot be undefined, null and an empty string.`,
+    };
+  }
+
+  const parentRefKey = cacheIdGenerator(connectionInfo.id);
+  const parentRef = toReference(parentRefKey);
+  if (!parentRef) {
+    return {
+      success: false,
+      errorMessage: `\`${parentRefKey}\` does not exist in the cache of Apollo.`,
+    };
+  }
+
+  const targetFieldData = readField({ fieldName: connectionInfo.field, from: parentRef });
+  if (!targetFieldData) {
+    const typename = readField<string | undefined>({ fieldName: '__typename', from: parentRef });
+    const typenameMessage = typename ? ` in ${typename}(${parentRef.__ref})` : '';
+    return {
+      success: false,
+      errorMessage: `A connection named \`${connectionInfo.field}\` does not exist${typenameMessage}.`,
+    };
+  }
+
+  return { success: true };
+};
+
 export const insertNodesToConnections = ({
   object,
   cacheIdGenerator,
   cache,
   field,
   storeFieldName,
+  readField,
+  toReference,
 }: {
   object: Reference;
   cacheIdGenerator: CacheIdGenerator;
-} & Pick<FieldFunctionOptions, 'cache' | 'field' | 'storeFieldName'>): void => {
+} & Pick<FieldFunctionOptions, 'cache' | 'field' | 'storeFieldName' | 'readField' | 'toReference'>): void => {
   const directiveName = findDirectiveName({
     fieldOrSelection: field,
     directiveNames: INSERT_NODE_DIRECTIVE_NAMES,
@@ -43,11 +88,10 @@ export const insertNodesToConnections = ({
   if (!connections || !edgeTypeName) return;
   connections.forEach((connectionId) => {
     const connectionInfo = JSON.parse(decode(connectionId)) as ConnectionInfo;
-    if (!connectionInfo.id || !connectionInfo.field) {
-      const blankField = !connectionInfo.id ? 'id' : 'field';
-      throw Error(
-        `\`${blankField}\` in connectionId set in @${directiveName} cannot be undefined, null and an empty string.`,
-      );
+
+    const validateResult = validate({ connectionInfo, cacheIdGenerator, directiveName, readField, toReference });
+    if (!validateResult.success) {
+      throw Error(validateResult.errorMessage);
     }
 
     insertNode({

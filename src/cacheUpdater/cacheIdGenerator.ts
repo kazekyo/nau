@@ -1,12 +1,12 @@
 import { decode } from 'js-base64';
 
-export type CacheIdGenerator = (globalId: string) => string | undefined;
+export type CacheIdGenerator = (globalId: string) => string;
 
 const ERROR_MESSAGE = `Cannot convert global id to apollo's cache id.
 We only support the following global id: \`typename:id\` or \`typename|id\` format string encoded in Base64.
 You should set custom cacheIdGenerator in cacheUpdater parameter.`;
 
-export const defaultCacheIdGenerator = (globalId: string): string | undefined => {
+export const defaultCacheIdGenerator = (globalId: string): string => {
   const globalIdStr = decode(globalId);
   let splitStr: string | undefined;
   if (globalIdStr.includes(':')) {
