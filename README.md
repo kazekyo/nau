@@ -1,7 +1,7 @@
 <h1 align="center">
-nau 🧶
+Nau 🧶
 </h1>
-nau is a library that makes Apollo Client more powerful. if your server follows Relay Specification, nau will provide you with a magical developer experience.
+Nau is a library that makes Apollo Client more powerful. if your server follows Relay Specification, Nau will provide you with a magical developer experience.
 
 ## Our Goal
 This library is inspired by Relay and we have reproduced some features of Relay.
