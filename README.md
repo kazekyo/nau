@@ -99,6 +99,72 @@ const REMOVE_ROBOT = gql`
 `;
 ```
 
+## Pagination using Fragment
+You can use pagination with Fragment.
+
+Create a fragment that looks like the following:
+```tsx
+export const RobotListFragments = {
+  user: gql`
+    fragment RobotList_user on User
+    @argumentDefinitions(
+      count: { type: "Int", defaultValue: 2 }
+      cursor: { type: "String" }
+      keyword: { type: "String" }
+    )
+    @refetchable(queryName: "RobotList_PaginationQuery") {
+      id
+      robots(first: $count, after: $cursor, keyword: $keyword) @nauConnection {
+        edges {
+          node {
+            id
+            name
+          }
+          cursor
+        }
+        pageInfo {
+          hasNextPage
+          endCursor
+        }
+      }
+    }
+  `,
+};
+```
+
+Each time you click the button, a new page will be retrieved.
+```tsx
+const List: React.FC<{ user: { id: string } }> = ({ user }) => {
+  const paginationData = usePaginationFragment({
+    id: user.id,
+    fragment: RobotListFragments.user,
+    fragmentName: 'RobotList_user',
+  });
+  const { loadNext, hasNext, data } = paginationData;
+  if (!data) return null;
+
+  const nodes = getNodesFromConnection({ connection: data.robots });
+  return (
+    <>
+      <div>
+        {nodes.map((node, i) => {
+          return (
+            <div key={node.id}>
+              <div>
+                {node.name}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      <button onClick={() => loadNext(2)} disabled={!hasNext}>
+        Load more
+      </button>
+    </>
+  );
+};
+```
+
 ## TODO
 - [ ] Documentation
 - [ ] Testing
