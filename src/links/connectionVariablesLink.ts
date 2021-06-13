@@ -1,9 +1,8 @@
 import { ApolloLink, Operation } from '@apollo/client';
 import { getOperationDefinition } from '@apollo/client/utilities';
-import { print } from 'graphql';
 import { OperationDefinitionNode, VariableDefinitionNode } from 'graphql/language';
 import { nonNullable } from '../utils';
-import { createApolloLink, ContextType } from './utils';
+import { ContextType, createApolloLink } from './utils';
 
 const transform = (operation: Operation): Operation => {
   const documentNode = operation.query;

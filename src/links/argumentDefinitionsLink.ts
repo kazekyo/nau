@@ -8,7 +8,6 @@ import {
   FragmentDefinitionNode,
   FragmentSpreadNode,
   OperationDefinitionNode,
-  print,
   ValueNode,
   VariableNode,
   visit,

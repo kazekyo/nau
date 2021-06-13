@@ -1,4 +1,5 @@
-import { ApolloQueryResult, DocumentNode, gql, useApolloClient } from '@apollo/client';
+import { ApolloQueryResult, gql, useApolloClient } from '@apollo/client';
+import { DocumentNode } from 'graphql/language';
 import { useCallback, useEffect, useState } from 'react';
 import { defaultCacheIdGenerator } from '../';
 import { ContextType } from '../links/utils';

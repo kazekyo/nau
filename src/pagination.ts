@@ -79,7 +79,7 @@ export function relayPaginationFieldPolicy<TNode extends Reference>(keyArgs: Key
       };
     },
 
-    merge(existing = makeEmptyData(), incoming, { args, isReference, readField, field, storage, cache }) {
+    merge(existing = makeEmptyData(), incoming, { args, isReference, readField, field }) {
       const incomingEdges = incoming.edges
         ? incoming.edges.map((edge) => {
             if (isReference((edge = { ...edge }))) {
