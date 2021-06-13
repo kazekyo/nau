@@ -8,15 +8,15 @@ export type CacheUpdaterOptions = {
 };
 
 export const withCacheUpdater = ({
-  targetTypes,
+  directiveAvailableTypes,
   typePolicies: existingTypePolicies,
 }: {
-  targetTypes: string[];
+  directiveAvailableTypes: string[];
   typePolicies: TypePolicies;
 }): TypePolicies => {
   const existingTypePolicyKeys = Object.keys(existingTypePolicies);
 
-  const typePolicyArray = targetTypes.map((type): [string, TypePolicy] => {
+  const typePolicyArray = directiveAvailableTypes.map((type): [string, TypePolicy] => {
     let typePolicy: TypePolicy = cacheUpdater();
     if (existingTypePolicyKeys.includes(type)) {
       const existingTypePolicy = existingTypePolicies[type];

@@ -23,7 +23,7 @@ const splitLink = split(
 const client = new ApolloClient({
   cache: new InMemoryCache({
     typePolicies: withCacheUpdater({
-      targetTypes: ['Robot', 'RobotRemovedPayload', 'User'],
+      directiveAvailableTypes: ['Robot', 'RobotRemovedPayload', 'User'],
       typePolicies: {
         User: {
           fields: {

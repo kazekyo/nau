@@ -30,7 +30,7 @@ const splitLink = split(
 const client = new ApolloClient({
   cache: new InMemoryCache({
     typePolicies: withCacheUpdater({
-      targetTypes: ['Robot', 'RobotRemovedPayload', 'User'],
+      directiveAvailableTypes: ['Robot', 'RobotRemovedPayload', 'User'],
       typePolicies: {
         User: {
           fields: {
@@ -45,7 +45,7 @@ const client = new ApolloClient({
 ```
 Now `User.robots` can be paginated. And `Robot`, `RobotRemovedPayload`, and `User` can also use our directives.
 
-### Directives
+### Cache directives
 If you want to add a data to the list, use `@appendNode`/`@prependNode` directives.
 ```tsx
 const ADD_ROBOT = gql`
@@ -99,8 +99,6 @@ const REMOVE_ROBOT = gql`
 `;
 ```
 
-
 ## TODO
-- [ ] Fragment-based pagination
 - [ ] Documentation
 - [ ] Testing
