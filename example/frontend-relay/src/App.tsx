@@ -17,7 +17,7 @@ const App: React.FC = () => {
         }
       }
     `,
-    {},
+    { searchKeyword: 'robot' },
   );
   if (!viewer) return null;
   return (

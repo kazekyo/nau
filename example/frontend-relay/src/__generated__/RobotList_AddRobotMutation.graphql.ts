@@ -18,7 +18,7 @@ export type RobotList_AddRobotMutationResponse = {
         readonly robot: {
             readonly id: string;
             readonly " $fragmentRefs": FragmentRefs<"RobotListItem_robot">;
-        } | null;
+        };
     } | null;
 };
 export type RobotList_AddRobotMutation = {

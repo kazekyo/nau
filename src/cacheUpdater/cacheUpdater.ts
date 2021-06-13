@@ -47,27 +47,19 @@ export const cacheUpdater = (
   { cacheIdGenerator }: CacheUpdaterOptions = { cacheIdGenerator: defaultCacheIdGenerator },
 ): TypePolicy => {
   return {
-    merge(
-      existing: Reference,
-      incoming: Reference,
-      { cache, field, storeFieldName, readField, mergeObjects }: FieldFunctionOptions,
-    ) {
-      const mergedObject = mergeObjects(existing, incoming);
+    merge(existing: Reference, incoming: Reference, options: FieldFunctionOptions) {
+      const mergedObject = options.mergeObjects(existing, incoming);
 
       deleteRecordFromChildrenField({
         object: mergedObject,
         cacheIdGenerator: cacheIdGenerator,
-        cache,
-        field,
-        readField,
+        ...options,
       });
 
       insertNodesToConnections({
         object: mergedObject,
         cacheIdGenerator,
-        cache,
-        field,
-        storeFieldName,
+        ...options,
       });
 
       return mergedObject;

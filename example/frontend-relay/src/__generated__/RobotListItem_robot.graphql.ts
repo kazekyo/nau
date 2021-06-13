@@ -6,7 +6,7 @@ import { ReaderFragment } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
 export type RobotListItem_robot = {
     readonly id: string;
-    readonly name: string | null;
+    readonly name: string;
     readonly " $refType": "RobotListItem_robot";
 };
 export type RobotListItem_robot$data = RobotListItem_robot;

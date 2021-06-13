@@ -15,7 +15,7 @@ export type RobotListItem_RemoveRobotMutationResponse = {
     readonly removeRobot: {
         readonly robot: {
             readonly id: string;
-        } | null;
+        };
     } | null;
 };
 export type RobotListItem_RemoveRobotMutation = {

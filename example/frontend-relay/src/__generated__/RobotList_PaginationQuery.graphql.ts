@@ -7,6 +7,7 @@ import { FragmentRefs } from "relay-runtime";
 export type RobotList_PaginationQueryVariables = {
     count?: number | null;
     cursor?: string | null;
+    keyword?: string | null;
     id: string;
 };
 export type RobotList_PaginationQueryResponse = {
@@ -25,11 +26,12 @@ export type RobotList_PaginationQuery = {
 query RobotList_PaginationQuery(
   $count: Int = 2
   $cursor: String
+  $keyword: String
   $id: ID!
 ) {
   node(id: $id) {
     __typename
-    ...RobotList_user_1G22uz
+    ...RobotList_user_2BDVGC
     id
   }
 }
@@ -43,9 +45,9 @@ fragment RobotListItem_user on User {
   id
 }
 
-fragment RobotList_user_1G22uz on User {
+fragment RobotList_user_2BDVGC on User {
   id
-  robots(first: $count, after: $cursor) {
+  robots(first: $count, after: $cursor, keyword: $keyword) {
     edges {
       node {
         id
@@ -64,45 +66,53 @@ fragment RobotList_user_1G22uz on User {
 */
 
 const node: ConcreteRequest = (function(){
-var v0 = [
-  {
-    "defaultValue": 2,
-    "kind": "LocalArgument",
-    "name": "count"
-  },
-  {
-    "defaultValue": null,
-    "kind": "LocalArgument",
-    "name": "cursor"
-  },
-  {
-    "defaultValue": null,
-    "kind": "LocalArgument",
-    "name": "id"
-  }
-],
-v1 = [
+var v0 = {
+  "defaultValue": 2,
+  "kind": "LocalArgument",
+  "name": "count"
+},
+v1 = {
+  "defaultValue": null,
+  "kind": "LocalArgument",
+  "name": "cursor"
+},
+v2 = {
+  "defaultValue": null,
+  "kind": "LocalArgument",
+  "name": "id"
+},
+v3 = {
+  "defaultValue": null,
+  "kind": "LocalArgument",
+  "name": "keyword"
+},
+v4 = [
   {
     "kind": "Variable",
     "name": "id",
     "variableName": "id"
   }
 ],
-v2 = {
+v5 = {
+  "kind": "Variable",
+  "name": "keyword",
+  "variableName": "keyword"
+},
+v6 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "__typename",
   "storageKey": null
 },
-v3 = {
+v7 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "id",
   "storageKey": null
 },
-v4 = [
+v8 = [
   {
     "kind": "Variable",
     "name": "after",
@@ -112,18 +122,24 @@ v4 = [
     "kind": "Variable",
     "name": "first",
     "variableName": "count"
-  }
+  },
+  (v5/*: any*/)
 ];
 return {
   "fragment": {
-    "argumentDefinitions": (v0/*: any*/),
+    "argumentDefinitions": [
+      (v0/*: any*/),
+      (v1/*: any*/),
+      (v2/*: any*/),
+      (v3/*: any*/)
+    ],
     "kind": "Fragment",
     "metadata": null,
     "name": "RobotList_PaginationQuery",
     "selections": [
       {
         "alias": null,
-        "args": (v1/*: any*/),
+        "args": (v4/*: any*/),
         "concreteType": null,
         "kind": "LinkedField",
         "name": "node",
@@ -140,7 +156,8 @@ return {
                 "kind": "Variable",
                 "name": "cursor",
                 "variableName": "cursor"
-              }
+              },
+              (v5/*: any*/)
             ],
             "kind": "FragmentSpread",
             "name": "RobotList_user"
@@ -154,26 +171,31 @@ return {
   },
   "kind": "Request",
   "operation": {
-    "argumentDefinitions": (v0/*: any*/),
+    "argumentDefinitions": [
+      (v0/*: any*/),
+      (v1/*: any*/),
+      (v3/*: any*/),
+      (v2/*: any*/)
+    ],
     "kind": "Operation",
     "name": "RobotList_PaginationQuery",
     "selections": [
       {
         "alias": null,
-        "args": (v1/*: any*/),
+        "args": (v4/*: any*/),
         "concreteType": null,
         "kind": "LinkedField",
         "name": "node",
         "plural": false,
         "selections": [
-          (v2/*: any*/),
-          (v3/*: any*/),
+          (v6/*: any*/),
+          (v7/*: any*/),
           {
             "kind": "InlineFragment",
             "selections": [
               {
                 "alias": null,
-                "args": (v4/*: any*/),
+                "args": (v8/*: any*/),
                 "concreteType": "RobotConnection",
                 "kind": "LinkedField",
                 "name": "robots",
@@ -195,7 +217,7 @@ return {
                         "name": "node",
                         "plural": false,
                         "selections": [
-                          (v3/*: any*/),
+                          (v7/*: any*/),
                           {
                             "alias": null,
                             "args": null,
@@ -203,7 +225,7 @@ return {
                             "name": "name",
                             "storageKey": null
                           },
-                          (v2/*: any*/)
+                          (v6/*: any*/)
                         ],
                         "storageKey": null
                       },
@@ -259,8 +281,10 @@ return {
               },
               {
                 "alias": null,
-                "args": (v4/*: any*/),
-                "filters": null,
+                "args": (v8/*: any*/),
+                "filters": [
+                  "keyword"
+                ],
                 "handle": "connection",
                 "key": "RobotList_robots",
                 "kind": "LinkedHandle",
@@ -276,14 +300,14 @@ return {
     ]
   },
   "params": {
-    "cacheID": "ab601a639bfe4d0efc99cc0c77c00866",
+    "cacheID": "23b086157bad7a7a9f801e4533656dfd",
     "id": null,
     "metadata": {},
     "name": "RobotList_PaginationQuery",
     "operationKind": "query",
-    "text": "query RobotList_PaginationQuery(\n  $count: Int = 2\n  $cursor: String\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...RobotList_user_1G22uz\n    id\n  }\n}\n\nfragment RobotListItem_robot on Robot {\n  id\n  name\n}\n\nfragment RobotListItem_user on User {\n  id\n}\n\nfragment RobotList_user_1G22uz on User {\n  id\n  robots(first: $count, after: $cursor) {\n    edges {\n      node {\n        id\n        ...RobotListItem_robot\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  ...RobotListItem_user\n}\n"
+    "text": "query RobotList_PaginationQuery(\n  $count: Int = 2\n  $cursor: String\n  $keyword: String\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...RobotList_user_2BDVGC\n    id\n  }\n}\n\nfragment RobotListItem_robot on Robot {\n  id\n  name\n}\n\nfragment RobotListItem_user on User {\n  id\n}\n\nfragment RobotList_user_2BDVGC on User {\n  id\n  robots(first: $count, after: $cursor, keyword: $keyword) {\n    edges {\n      node {\n        id\n        ...RobotListItem_robot\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  ...RobotListItem_user\n}\n"
   }
 };
 })();
-(node as any).hash = '1256f3de0daf57b1e5c9392ebfb00578';
+(node as any).hash = '329a881d05e0e2ab2d0e6cd8eb95ea53';
 export default node;
