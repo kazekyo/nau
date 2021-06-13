@@ -1,13 +1,19 @@
-import { gql, useMutation, useQuery, useSubscription } from '@apollo/client';
-import { generateConnectionId, getNodesFromConnection } from '@kazekyo/nau';
+import { gql, useMutation, useSubscription } from '@apollo/client';
+import { generateConnectionId, getNodesFromConnection, usePaginationFragment } from '@kazekyo/nau';
 import * as React from 'react';
 import RobotListItem, { RobotListItemFragments } from './RobotListItem';
 
-const QUERY = gql`
-  query RobotListQuery($cursor: String) {
-    viewer {
+export const RobotListFragments = {
+  user: gql`
+    fragment RobotList_user on User
+    @argumentDefinitions(
+      count: { type: "Int", defaultValue: 2 }
+      cursor: { type: "String" }
+      keyword: { type: "String" }
+    )
+    @refetchable(queryName: "RobotList_PaginationQuery") {
       id
-      robots(first: 2, after: $cursor) {
+      robots(first: $count, after: $cursor, keyword: $keyword) @nauConnection {
         edges {
           node {
             id
@@ -16,16 +22,16 @@ const QUERY = gql`
           cursor
         }
         pageInfo {
-          endCursor
           hasNextPage
+          endCursor
         }
       }
       ...RobotListItem_user
     }
-  }
-  ${RobotListItemFragments.robot}
-  ${RobotListItemFragments.user}
-`;
+    ${RobotListItemFragments.user}
+    ${RobotListItemFragments.robot}
+  `,
+};
 
 const ADD_ROBOT = gql`
   mutation AddRobotMutation($input: AddRobotInput!, $connections: [String!]!, $edgeTypeName: String!) {
@@ -72,30 +78,35 @@ const Subscription: React.FC<{ userId: string }> = ({ userId }) => {
   return <></>;
 };
 
-const List: React.FC = () => {
-  const { data, error, loading, fetchMore } = useQuery(QUERY, {
-    variables: { cursor: null },
-  });
+type RobotsType = { edges: { node: { id: string; name: string }; cursor: string }[] };
+type ReturnType = { robots: RobotsType };
+
+const List: React.FC<{
+  user: { id: string };
+}> = ({ user }) => {
   const [addRobot] = useMutation(ADD_ROBOT);
-
-  if (loading || error || !data) {
-    return null;
-  }
+  const paginationData = usePaginationFragment<ReturnType>({
+    id: user.id,
+    fragment: RobotListFragments.user,
+    fragmentName: 'RobotList_user',
+  });
+  const { loadNext, hasNext, data } = paginationData;
   if (!data) return null;
+  const { robots } = data;
 
-  const connectionId = generateConnectionId({ id: data.viewer.id, field: 'robots' });
-  const nodes = getNodesFromConnection({ connection: data.viewer.robots });
-  const edges = data.viewer.robots.edges;
+  const connectionId = generateConnectionId({ id: user.id, field: 'robots' });
+  const nodes = getNodesFromConnection({ connection: robots });
+  const edges = robots.edges;
 
   return (
     <>
-      <Subscription userId={data.viewer.id} />
+      <Subscription userId={user.id} />
       <div>
         <button
           onClick={() =>
             void addRobot({
               variables: {
-                input: { robotName: 'new robot', userId: data.viewer.id },
+                input: { robotName: 'new robot', userId: user.id },
                 connections: [connectionId],
                 edgeTypeName: 'RobotEdge',
               },
@@ -111,16 +122,13 @@ const List: React.FC = () => {
             <div key={node.id}>
               <div>
                 Edge cursor: {edges[i].cursor},
-                <RobotListItem user={data.viewer} robot={node} />
+                <RobotListItem user={user} robot={node} />
               </div>
             </div>
           );
         })}
       </div>
-      <button
-        onClick={() => fetchMore({ variables: { cursor: data.viewer.robots.pageInfo.endCursor } })}
-        disabled={!fetchMore || !data.viewer.robots.pageInfo.hasNextPage}
-      >
+      <button onClick={() => loadNext(2)} disabled={!hasNext}>
         Load more
       </button>
     </>

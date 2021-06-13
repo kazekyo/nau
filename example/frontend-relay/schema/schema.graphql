@@ -1,35 +1,24 @@
-type Query {
-  viewer: User
-
-  """Fetches an object given its ID"""
-  node(
-    """The ID of an object"""
-    id: ID!
-  ): Node
+input AddRobotInput {
+  robotName: String!
+  userId: ID!
+  clientMutationId: String
 }
 
-type User implements Node {
-  """The ID of an object"""
-  id: ID!
+type AddRobotPayload {
+  robot: Robot!
+  clientMutationId: String
+}
 
-  """The name of the user."""
-  name: String
-  robots(after: String, first: Int, before: String, last: Int): RobotConnection
+type Mutation {
+  addRobot(input: AddRobotInput!): AddRobotPayload
+  updateRobot(input: UpdateRobotInput!): UpdateRobotPayload
+  removeRobot(input: RemoveRobotInput!): RemoveRobotPayload
 }
 
 """An object with an ID"""
 interface Node {
   """The id of the object."""
   id: ID!
-}
-
-"""A connection to a list of items."""
-type RobotConnection {
-  """Information to aid in pagination."""
-  pageInfo: PageInfo!
-
-  """A list of edges."""
-  edges: [RobotEdge]
 }
 
 """Information about pagination in a connection."""
@@ -47,6 +36,48 @@ type PageInfo {
   endCursor: String
 }
 
+type Query {
+  viewer: User
+
+  """Fetches an object given its ID"""
+  node(
+    """The ID of an object"""
+    id: ID!
+  ): Node
+}
+
+input RemoveRobotInput {
+  robotId: String!
+  userId: ID!
+  clientMutationId: String
+}
+
+type RemoveRobotPayload {
+  robot: Robot!
+  clientMutationId: String
+}
+
+type Robot implements Node {
+  """The ID of an object"""
+  id: ID!
+
+  """The name of the robot."""
+  name: String!
+}
+
+type RobotAddedPayload {
+  robot: Robot!
+}
+
+"""A connection to a list of items."""
+type RobotConnection {
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [RobotEdge]
+}
+
 """An edge in a connection."""
 type RobotEdge {
   """The item at the end of the edge"""
@@ -56,34 +87,13 @@ type RobotEdge {
   cursor: String!
 }
 
-type Robot implements Node {
-  """The ID of an object"""
+type RobotRemovedPayload {
   id: ID!
-
-  """The name of the robot."""
-  name: String
 }
 
-type Mutation {
-  addRobot(input: AddRobotInput!): AddRobotPayload
-  updateRobot(input: UpdateRobotInput!): UpdateRobotPayload
-  removeRobot(input: RemoveRobotInput!): RemoveRobotPayload
-}
-
-type AddRobotPayload {
-  robot: Robot
-  clientMutationId: String
-}
-
-input AddRobotInput {
-  robotName: String!
-  userId: ID!
-  clientMutationId: String
-}
-
-type UpdateRobotPayload {
-  robot: Robot
-  clientMutationId: String
+type Subscription {
+  robotAdded: RobotAddedPayload!
+  robotRemoved: RobotRemovedPayload!
 }
 
 input UpdateRobotInput {
@@ -92,13 +102,16 @@ input UpdateRobotInput {
   clientMutationId: String
 }
 
-type RemoveRobotPayload {
-  robot: Robot
+type UpdateRobotPayload {
+  robot: Robot!
   clientMutationId: String
 }
 
-input RemoveRobotInput {
-  robotId: String!
-  userId: ID!
-  clientMutationId: String
+type User implements Node {
+  """The ID of an object"""
+  id: ID!
+
+  """The name of the user."""
+  name: String
+  robots(after: String, first: Int, before: String, last: Int, keyword: String): RobotConnection
 }

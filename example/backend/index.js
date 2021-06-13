@@ -132,8 +132,12 @@ const userType = new GraphQLObjectType({
     },
     robots: {
       type: robotConnection,
-      args: connectionArgs,
-      resolve: (user, args) => connectionFromArray(user.robots.map(getRobot), args),
+      args: { ...connectionArgs, keyword: { type: GraphQLString } },
+      resolve: (user, args) => {
+        const robots = user.robots.map(getRobot);
+        const array = args.keyword ? robots.filter((robot) => robot.name.match(args.keyword)) : robots;
+        return connectionFromArray(array, args);
+      },
     },
   }),
 });

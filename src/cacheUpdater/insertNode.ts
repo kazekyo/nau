@@ -85,6 +85,7 @@ export const insertNodesToConnections = ({
 
   const edgeTypeName = getEdgeTypeNameFromStoreFieldName(storeFieldName);
   const connections = getConnectionsFromStoreFieldName(storeFieldName);
+
   if (!connections || !edgeTypeName) return;
   connections.forEach((connectionId) => {
     const connectionInfo = JSON.parse(decode(connectionId)) as ConnectionInfo;

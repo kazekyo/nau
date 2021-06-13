@@ -79,7 +79,7 @@ export function relayPaginationFieldPolicy<TNode extends Reference>(keyArgs: Key
       };
     },
 
-    merge(existing = makeEmptyData(), incoming, { args, isReference, readField }) {
+    merge(existing = makeEmptyData(), incoming, { args, isReference, readField, field, storage, cache }) {
       const incomingEdges = incoming.edges
         ? incoming.edges.map((edge) => {
             if (isReference((edge = { ...edge }))) {
@@ -125,25 +125,16 @@ export function relayPaginationFieldPolicy<TNode extends Reference>(keyArgs: Key
       }
 
       let prefix = existing.edges;
-      let suffix: typeof prefix = [];
+      const suffix: typeof prefix = [];
 
-      if (args && args.after) {
-        // This comparison does not need to use readField("cursor", edge),
-        // because we stored the cursor field of any Reference edges as an
-        // extra property of the Reference object.
-        const index = prefix.findIndex((edge) => edge.cursor === args.after);
-        if (index >= 0) {
-          prefix = prefix.slice(0, index + 1);
-          // suffix = []; // already true
-        }
-      } else if (args && args.before) {
-        const index = prefix.findIndex((edge) => edge.cursor === args.before);
-        suffix = index < 0 ? prefix : prefix.slice(index);
-        prefix = [];
-      } else if (incoming.edges) {
-        // If we have neither args.after nor args.before, the incoming
+      const argsAfter = field?.arguments?.find((argumentNode) => argumentNode.name.value === 'after');
+      const argsBefore = field?.arguments?.find((argumentNode) => argumentNode.name.value === 'before');
+
+      if (!argsAfter && !argsBefore) {
+        // If we have neither argsAfter nor argsBefore, the incoming
         // edges cannot be spliced into the existing edges, so they must
-        // replace the existing edges. See #6592 for a motivating example.
+        // replace the existing edges.
+        // See https://github.com/apollographql/apollo-client/issues/6592 for a motivating example.
         prefix = [];
       }
 

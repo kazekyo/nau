@@ -15,10 +15,14 @@ const List: React.FC<{
   >(
     graphql`
       fragment RobotList_user on User
-      @argumentDefinitions(count: { type: "Int", defaultValue: 2 }, cursor: { type: "String" })
+      @argumentDefinitions(
+        count: { type: "Int", defaultValue: 2 }
+        cursor: { type: "String" }
+        keyword: { type: "String" }
+      )
       @refetchable(queryName: "RobotList_PaginationQuery") {
         id
-        robots(first: $count, after: $cursor) @connection(key: "RobotList_robots") {
+        robots(first: $count, after: $cursor, keyword: $keyword) @connection(key: "RobotList_robots") {
           __id
           edges {
             node {

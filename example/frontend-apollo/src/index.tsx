@@ -1,11 +1,6 @@
 import { ApolloClient, ApolloProvider, from, HttpLink, InMemoryCache, split } from '@apollo/client';
 import { WebSocketLink } from '@apollo/client/link/ws';
-import {
-  createCacheUpdaterLink,
-  isSubscriptionOperation,
-  relayPaginationFieldPolicy,
-  withCacheUpdater,
-} from '@kazekyo/nau';
+import { isSubscriptionOperation, nauLink, relayPaginationFieldPolicy, withCacheUpdater } from '@kazekyo/nau';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
@@ -21,8 +16,8 @@ const wsLink = new WebSocketLink({
 
 const splitLink = split(
   ({ query }) => isSubscriptionOperation(query),
-  from([createCacheUpdaterLink(), wsLink]),
-  from([createCacheUpdaterLink(), new HttpLink({ uri: 'http://localhost:4000/graphql' })]),
+  from([nauLink, wsLink]),
+  from([nauLink, new HttpLink({ uri: 'http://localhost:4000/graphql' })]),
 );
 
 const client = new ApolloClient({

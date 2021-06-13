@@ -49,6 +49,11 @@ return {
       "defaultValue": null,
       "kind": "LocalArgument",
       "name": "cursor"
+    },
+    {
+      "defaultValue": null,
+      "kind": "LocalArgument",
+      "name": "keyword"
     }
   ],
   "kind": "Fragment",
@@ -82,7 +87,13 @@ return {
     (v1/*: any*/),
     {
       "alias": "robots",
-      "args": null,
+      "args": [
+        {
+          "kind": "Variable",
+          "name": "keyword",
+          "variableName": "keyword"
+        }
+      ],
       "concreteType": "RobotConnection",
       "kind": "LinkedField",
       "name": "__RobotList_robots_connection",
@@ -180,5 +191,5 @@ return {
   "abstractKey": null
 };
 })();
-(node as any).hash = '1256f3de0daf57b1e5c9392ebfb00578';
+(node as any).hash = '329a881d05e0e2ab2d0e6cd8eb95ea53';
 export default node;

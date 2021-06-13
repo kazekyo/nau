@@ -1,15 +1,17 @@
 import { gql, useQuery } from '@apollo/client';
 import React from 'react';
 import './App.css';
-import RobotList from './RobotList';
+import RobotList, { RobotListFragments } from './RobotList';
 
 const APP_QUERY = gql`
   query AppQuery {
     viewer {
       id
       name
+      ...RobotList_user
     }
   }
+  ${RobotListFragments.user}
 `;
 
 function App() {
@@ -25,7 +27,7 @@ function App() {
       </div>
       <div>
         Robots
-        {data.viewer && <RobotList />}
+        {data.viewer && <RobotList user={data.viewer} />}
       </div>
     </div>
   );
