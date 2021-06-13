@@ -99,7 +99,7 @@ const REMOVE_ROBOT = gql`
 `;
 ```
 
-## Pagination using Fragment
+### Pagination using Fragment
 You can use pagination with Fragment.
 
 Create a fragment that looks like the following:
