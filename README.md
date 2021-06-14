@@ -135,12 +135,11 @@ export const RobotListFragments = {
 Each time you click the button, a new page will be retrieved.
 ```tsx
 const List: React.FC<{ user: { id: string } }> = ({ user }) => {
-  const paginationData = usePaginationFragment({
+  const { loadNext, hasNext, data } = usePaginationFragment({
     id: user.id,
     fragment: RobotListFragments.user,
     fragmentName: 'RobotList_user',
   });
-  const { loadNext, hasNext, data } = paginationData;
   if (!data) return null;
 
   const nodes = getNodesFromConnection({ connection: data.robots });
