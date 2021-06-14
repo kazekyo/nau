@@ -146,13 +146,9 @@ const List: React.FC<{ user: { id: string } }> = ({ user }) => {
   return (
     <>
       <div>
-        {nodes.map((node, i) => {
-          return (
-            <div key={node.id}>
-              {node.name}
-            </div>
-          );
-        })}
+        {nodes.map((node) => (
+          <div key={node.id}>{node.name}</div>
+        ))}
       </div>
       <button onClick={() => loadNext(2)} disabled={!hasNext}>
         Load more
