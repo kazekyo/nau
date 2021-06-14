@@ -149,9 +149,7 @@ const List: React.FC<{ user: { id: string } }> = ({ user }) => {
         {nodes.map((node, i) => {
           return (
             <div key={node.id}>
-              <div>
-                {node.name}
-              </div>
+              {node.name}
             </div>
           );
         })}
