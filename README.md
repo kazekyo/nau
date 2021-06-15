@@ -110,11 +110,10 @@ export const RobotListFragments = {
     @argumentDefinitions(
       count: { type: "Int", defaultValue: 2 }
       cursor: { type: "String" }
-      keyword: { type: "String" }
     )
     @refetchable(queryName: "RobotList_PaginationQuery") {
       id
-      robots(first: $count, after: $cursor, keyword: $keyword) @nauConnection {
+      robots(first: $count, after: $cursor) @nauConnection {
         edges {
           node {
             id
