@@ -43,7 +43,7 @@ const client = new ApolloClient({
   link: splitLink,
 });
 ```
-Now `User.robots` can be paginated. And `Robot`, `RobotRemovedPayload`, and `User` can also use our directives.
+Now `User.robots` can be paginated. And `Robot`, `RobotRemovedPayload`, and `User` can also use our cache directives.
 
 ### Cache directives
 If you want to add a data to the list, use `@appendNode`/`@prependNode` directives.
