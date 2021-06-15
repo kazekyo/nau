@@ -7,7 +7,7 @@ Nau is a library that makes Apollo Client more powerful. if your server follows 
 This library is inspired by Relay and we have reproduced some features of Relay.
 However, the goal is not to create a full copy of Relay on Apollo Client.
 
-Our goal is to make Apollo Client more powerful by integrating Relay Specification with Apollo Client.
+Our goal is to make Apollo Client more powerful by integrating Relay Specification.
 
 ## Getting Started
 ```
