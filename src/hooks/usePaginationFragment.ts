@@ -1,8 +1,8 @@
 import { ApolloQueryResult, gql, useApolloClient } from '@apollo/client';
 import { DocumentNode } from 'graphql/language';
 import { useCallback, useEffect, useState } from 'react';
-import { defaultCacheIdGenerator } from '../';
-import { ContextType } from '../links/utils';
+import { ContextType } from '../links';
+import { defaultCacheIdGenerator } from '../policies/cacheUpdater';
 import { getFragmentDefinitions } from '../utils';
 
 type PaginationFragmentResult<TFragmentData> = {

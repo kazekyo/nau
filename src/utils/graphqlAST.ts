@@ -1,10 +1,8 @@
 import { getMainDefinition } from '@apollo/client/utilities';
 import { DocumentNode, FragmentDefinitionNode } from 'graphql/language';
 
-export const nonNullable = <T>(value: T): value is NonNullable<T> => value != null;
-
-export const isQueryOperation = (query: DocumentNode): boolean => {
-  const mainDefinition = getMainDefinition(query);
+export const isQueryOperation = (node: DocumentNode): boolean => {
+  const mainDefinition = getMainDefinition(node);
   return mainDefinition.kind === 'OperationDefinition' && mainDefinition.operation === 'query';
 };
 

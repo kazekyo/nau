@@ -43,7 +43,7 @@ export const withCacheUpdater = ({
   return result;
 };
 
-export const cacheUpdater = (
+const cacheUpdater = (
   { cacheIdGenerator }: CacheUpdaterOptions = { cacheIdGenerator: defaultCacheIdGenerator },
 ): TypePolicy => {
   return {

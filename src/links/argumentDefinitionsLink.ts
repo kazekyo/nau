@@ -15,7 +15,7 @@ import {
 import uniqWith from 'lodash.uniqwith';
 import { customAlphabet } from 'nanoid';
 import { alphanumeric } from 'nanoid-dictionary';
-import { getFragmentDefinitions } from '../utils';
+import { getFragmentDefinitions } from '../utils/graphqlAST';
 import { ConnectionArgumentDataType, ContextType, createApolloLink } from './utils';
 
 const nanoid = customAlphabet(alphanumeric, 10);

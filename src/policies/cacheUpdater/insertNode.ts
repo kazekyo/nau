@@ -1,18 +1,11 @@
 import { ApolloCache, FieldFunctionOptions, Reference, StoreObject } from '@apollo/client';
 import { FieldNode } from 'graphql/language';
-import { decode, encode } from 'js-base64';
+import { decode } from 'js-base64';
 import isMatch from 'lodash.ismatch';
-import { nonNullable } from '../utils';
+import { nonNullable } from '../../utils';
 import { CacheIdGenerator } from './cacheIdGenerator';
-import { findDirectiveName, INSERT_NODE_DIRECTIVE_NAMES, DirectiveName } from './directiveName';
-
-type ConnectionInfo = {
-  id: string;
-  field: string;
-  keyArgs?: Record<string, unknown>;
-};
-
-export const generateConnectionId = (connectionInfo: ConnectionInfo): string => encode(JSON.stringify(connectionInfo));
+import { DirectiveName, findDirectiveName, INSERT_NODE_DIRECTIVE_NAMES } from './directiveName';
+import { ConnectionInfo } from './generateConnectionId';
 
 const validate = ({
   connectionInfo,

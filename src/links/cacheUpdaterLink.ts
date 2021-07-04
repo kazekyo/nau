@@ -1,7 +1,7 @@
 import { ApolloLink, Operation } from '@apollo/client';
 import { DocumentNode, visit } from 'graphql/language';
-import { CACHE_UPDATER_DIRECTIVE_NAMES } from '../cacheUpdater/directiveName';
-import { isQueryOperation } from '../utils';
+import { CACHE_UPDATER_DIRECTIVE_NAMES } from '../policies';
+import { isQueryOperation } from '../utils/graphqlAST';
 import { createApolloLink } from './utils';
 
 const transform = (operation: Operation): Operation => {
