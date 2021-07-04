@@ -5,5 +5,5 @@
     "emitDeclarationOnly": true
   },
   "include": ["src/**/*"],
-  "exclude": ["src/__test-utils__/**/*", "src/__tests__/**/*", "example"]
+  "exclude": ["**/__tests__/", "**/*.test.ts", "example"]
 }

@@ -263,7 +263,7 @@ const getReplacedNameNode = (node: FragmentSpreadNode): FragmentSpreadNode => {
   return { ...node, name };
 };
 
-const transform = ({ operation }: { operation: Operation }): Operation => {
+const transform = (operation: Operation): Operation => {
   const documentNode = operation.query;
 
   const operationDefinition = getOperationDefinition(documentNode);
@@ -313,5 +313,5 @@ const transform = ({ operation }: { operation: Operation }): Operation => {
 };
 
 export const createArgumentDefinitionsLink = (): ApolloLink => {
-  return createApolloLink((operation) => transform({ operation }));
+  return createApolloLink((operation) => transform(operation));
 };
