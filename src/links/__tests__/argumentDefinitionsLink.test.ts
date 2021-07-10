@@ -13,7 +13,7 @@ jest.mock('nanoid', () => {
 describe('argumentDefinitionsLink', () => {
   const subjectLink = createArgumentDefinitionsLink();
   it('changes the query', (done) => {
-    const query = gql`
+    const document = gql`
       query TestQuery($input: ID!) {
         foo {
           ...bar @arguments(arg1: 1, arg2: "str", arg3: $input)
@@ -26,7 +26,7 @@ describe('argumentDefinitionsLink', () => {
         }
       }
     `;
-    const changedQuery = gql`
+    const expectedDocument = gql`
       query TestQuery($input: ID!) {
         foo {
           ...bar_random
@@ -40,35 +40,36 @@ describe('argumentDefinitionsLink', () => {
     `;
     const successMockData = { data: { success: 'ok' } };
     const mockLink = new ApolloLink((operation) => {
-      expect(print(operation.query)).toBe(print(changedQuery));
+      expect(print(operation.query)).toBe(print(expectedDocument));
       return Observable.of(successMockData);
     });
     const link = subjectLink.concat(mockLink);
-    execute(link, { query }).subscribe((result) => {
+    execute(link, { query: document }).subscribe((result) => {
       expect(result).toBe(successMockData);
       done();
     });
   });
+
   it('fills arguments with default value', (done) => {
-    const query = gql`
+    const document = gql`
       query TestQuery {
         foo {
           ...bar
         }
       }
-      fragment bar on Bar @argumentDefinitions(arg1: { type: "Int!", defaultValue: 100 }) {
-        baz(a: $arg1) {
+      fragment bar on Bar @argumentDefinitions(arg1: { type: "Int!", defaultValue: 100 }, arg2: { type: "String" }) {
+        baz(a: $arg1, b: $arg2) {
           id
         }
       }
     `;
-
-    const changedQuery = gql`
+    const expectedDocument = gql`
       query TestQuery {
         foo {
           ...bar
         }
       }
+      # // arg2 is nullable, so it will be removed from the field arguments if there is no default value
       fragment bar on Bar {
         baz(a: 100) {
           id
@@ -77,11 +78,11 @@ describe('argumentDefinitionsLink', () => {
     `;
     const successMockData = { data: { success: 'ok' } };
     const mockLink = new ApolloLink((operation) => {
-      expect(print(operation.query)).toBe(print(changedQuery));
+      expect(print(operation.query)).toBe(print(expectedDocument));
       return Observable.of(successMockData);
     });
     const link = subjectLink.concat(mockLink);
-    execute(link, { query }).subscribe((result) => {
+    execute(link, { query: document }).subscribe((result) => {
       expect(result).toBe(successMockData);
       done();
     });

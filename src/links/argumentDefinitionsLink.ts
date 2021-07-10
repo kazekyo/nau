@@ -114,7 +114,7 @@ const transformFragmentDefinition = (params: {
               if (!newContext.nau?.connection?.argumentsData || passedArgumentValue.kind !== 'Variable') {
                 return;
               }
-              // In the case of `@arguments(child: $parent)`, if `connection(first: $child)` is used in this this fragment,
+              // In the case of `@arguments(child: $parent)`, if `connection(first: $child)` is used in this fragment,
               //   it will be replaced by `connection(first: $parent)`.
               // So the variable definition in the query also needs to replace the name from `child` to `parent`.
               const connectionArgumentsDataArray = Object.entries(newContext.nau.connection.argumentsData).map(

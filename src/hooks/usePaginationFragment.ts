@@ -108,8 +108,7 @@ export const usePaginationFragment = <TFragmentData extends { [name: string]: un
       options?: { onComplete?: OnCompleteFunction<TFragmentData> };
     }) => {
       setLoading(true);
-      // relayPaginationFieldPolicyで使うのでcursorを入れておく
-      const variables = { id: id, connectionCursor: type === 'next' ? endCursor : startCursor };
+      const variables = { id: id };
       const paginationQuery = gql`
         query TemporaryPaginationQuery($id: ID!) {
           node(id: $id) {

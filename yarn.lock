@@ -1284,13 +1284,6 @@
   dependencies:
     "@types/lodash" "*"
 
-"@types/lodash.merge@^4.6.6":
-  version "4.6.6"
-  resolved "https://registry.yarnpkg.com/@types/lodash.merge/-/lodash.merge-4.6.6.tgz#b84b403c1d31bc42d51772d1cd5557fa008cd3d6"
-  integrity sha512-IB90krzMf7YpfgP3u/EvZEdXVvm4e3gJbUvh5ieuI+o+XqiNEt6fCzqNRaiLlPVScLI59RxIGZMQ3+Ko/DJ8vQ==
-  dependencies:
-    "@types/lodash" "*"
-
 "@types/lodash.uniqwith@^4.5.6":
   version "4.5.6"
   resolved "https://registry.yarnpkg.com/@types/lodash.uniqwith/-/lodash.uniqwith-4.5.6.tgz#b03b0155c740263bf0249d3ccebd6ff006878ec5"
@@ -1360,9 +1353,9 @@
     "@types/yargs-parser" "*"
 
 "@types/zen-observable@^0.8.0":
-  version "0.8.2"
-  resolved "https://registry.yarnpkg.com/@types/zen-observable/-/zen-observable-0.8.2.tgz#808c9fa7e4517274ed555fa158f2de4b4f468e71"
-  integrity sha512-HrCIVMLjE1MOozVoD86622S7aunluLb2PJdPfb3nYiEtohm8mIB/vyv0Fd37AdeMFrTUQXEunw78YloMA3Qilg==
+  version "0.8.3"
+  resolved "https://registry.yarnpkg.com/@types/zen-observable/-/zen-observable-0.8.3.tgz#781d360c282436494b32fe7d9f7f8e64b3118aa3"
+  integrity sha512-fbF6oTd4sGGy0xjHPKAt+eS2CrxJ3+6gQ3FGcBoIJR2TLAyCkCyI8JqZNy+FeON0AhVgNJoUumVoZQjBFUqHkw==
 
 "@typescript-eslint/eslint-plugin@^4.12.0":
   version "4.22.1"
@@ -2773,9 +2766,9 @@ graceful-fs@^4.1.11, graceful-fs@^4.2.4:
   integrity sha512-nTnJ528pbqxYanhpDYsi4Rd8MAeaBA67+RZ10CM1m3bTAVFEDcd5AuA4a6W5YkGZ1iNXHzZz8T6TBKLeBuNriQ==
 
 graphql-tag@^2.12.0:
-  version "2.12.4"
-  resolved "https://registry.yarnpkg.com/graphql-tag/-/graphql-tag-2.12.4.tgz#d34066688a4f09e72d6f4663c74211e9b4b7c4bf"
-  integrity sha512-VV1U4O+9x99EkNpNmCUV5RZwq6MnK4+pGbRYWG+lA/m3uo7TSqJF81OkcOP148gFP6fzdl7JWYBrwWVTS9jXww==
+  version "2.12.5"
+  resolved "https://registry.yarnpkg.com/graphql-tag/-/graphql-tag-2.12.5.tgz#5cff974a67b417747d05c8d9f5f3cb4495d0db8f"
+  integrity sha512-5xNhP4063d16Pz3HBtKprutsPrmHZi5IdUGOWRxA2B6VF7BIRGOHZ5WQvDmJXZuPcBg7rYwaFxvQYjqkSdR3TQ==
   dependencies:
     tslib "^2.1.0"
 
@@ -5047,9 +5040,9 @@ tr46@^2.0.2:
     punycode "^2.1.1"
 
 ts-invariant@^0.7.0:
-  version "0.7.3"
-  resolved "https://registry.yarnpkg.com/ts-invariant/-/ts-invariant-0.7.3.tgz#13aae22a4a165393aaf5cecdee45ef4128d358b8"
-  integrity sha512-UWDDeovyUTIMWj+45g5nhnl+8oo+GhxL5leTaHn5c8FkQWfh8v66gccLd2/YzVmV5hoQUjCEjhrXnQqVDJdvKA==
+  version "0.7.5"
+  resolved "https://registry.yarnpkg.com/ts-invariant/-/ts-invariant-0.7.5.tgz#f9658719f9a7737b117d09820d952aacf6263f9c"
+  integrity sha512-qfVyqTYWEqADMtncLqwpUdMjMSXnsqOeqGtj1LeJNFDjz8oqZ1YxLEp29YCOq65z0LgEiERqQ8ThVjnfibJNpg==
   dependencies:
     tslib "^2.1.0"
 

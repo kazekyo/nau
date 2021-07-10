@@ -40,6 +40,10 @@ const transform = (operation: Operation): Operation => {
     },
   }) as DocumentNode;
 
+  operation.variables = Object.fromEntries(
+    Object.entries(operation.variables).filter(([key]) => !argumentNames.includes(key)),
+  );
+
   return operation;
 };
 

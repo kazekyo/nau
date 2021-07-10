@@ -1,6 +1,7 @@
 import { ApolloLink, Operation } from '@apollo/client';
 import { getOperationDefinition } from '@apollo/client/utilities';
-import { OperationDefinitionNode, VariableDefinitionNode } from 'graphql/language';
+import { OperationDefinitionNode, VariableDefinitionNode, print } from 'graphql/language';
+import uniqWith from 'lodash.uniqwith';
 import { nonNullable } from '../utils';
 import { ContextType, createApolloLink } from './utils';
 
@@ -27,7 +28,10 @@ const transform = (operation: Operation): Operation => {
     .filter(nonNullable);
   const newOperationDefinition: OperationDefinitionNode = {
     ...operationDefinition,
-    variableDefinitions: [...existingVariableDefinitions, ...connectionVariableDefinitions],
+    variableDefinitions: uniqWith(
+      [...existingVariableDefinitions, ...connectionVariableDefinitions],
+      (a, b) => a.variable.name.value === b.variable.name.value,
+    ),
   };
 
   operation.query = {
@@ -49,6 +53,7 @@ const transform = (operation: Operation): Operation => {
     })
     .filter(nonNullable);
   operation.variables = { ...operation.variables, ...Object.fromEntries(newVariableArray) };
+
   return operation;
 };
 
