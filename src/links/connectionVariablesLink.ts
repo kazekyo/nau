@@ -1,6 +1,6 @@
 import { ApolloLink, Operation } from '@apollo/client';
 import { getOperationDefinition } from '@apollo/client/utilities';
-import { OperationDefinitionNode, VariableDefinitionNode, print } from 'graphql/language';
+import { OperationDefinitionNode, VariableDefinitionNode } from 'graphql/language';
 import uniqWith from 'lodash.uniqwith';
 import { nonNullable } from '../utils';
 import { ContextType, createApolloLink } from './utils';

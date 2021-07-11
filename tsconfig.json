@@ -10,6 +10,7 @@
     "lib": ["es2019"],
     "strict": true,
     "moduleResolution": "node",
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "jsx": "react"
   }
 }
