@@ -124,11 +124,15 @@ export function relayPaginationFieldPolicy<TNode extends Reference>(keyArgs: Key
         }
       }
 
-      let prefix = existing.edges;
-      const suffix: typeof prefix = [];
-
       const argsAfter = field?.arguments?.find((argumentNode) => argumentNode.name.value === 'after');
       const argsBefore = field?.arguments?.find((argumentNode) => argumentNode.name.value === 'before');
+
+      let prefix = existing.edges;
+      let suffix: typeof prefix = [];
+      if (argsBefore) {
+        suffix = existing.edges;
+        prefix = [];
+      }
 
       if (!argsAfter && !argsBefore) {
         // If we have neither argsAfter nor argsBefore, the incoming

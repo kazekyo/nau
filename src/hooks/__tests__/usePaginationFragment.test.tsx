@@ -1,114 +1,48 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
-import { gql, InMemoryCache, useQuery } from '@apollo/client';
-import { MockedProvider } from '@apollo/client/testing';
+import { ApolloCache, InMemoryCache, useQuery } from '@apollo/client';
+import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import '@testing-library/jest-dom';
 import { act } from '@testing-library/react';
 import { renderHook } from '@testing-library/react-hooks';
-import { encode } from 'js-base64';
 import * as React from 'react';
 import { relayPaginationFieldPolicy } from '../..';
 import { usePaginationFragment } from '../usePaginationFragment';
+import {
+  backwardPaginationQueryMockData,
+  backwardQueryMockData,
+  BACKWARD_PAGINATION_FRAGMENT,
+  BACKWARD_PAGINATION_QUERY,
+  BACKWARD_QUERY,
+  BAR_1_ID,
+  BAR_2_ID,
+  FOO_ID,
+  forwardPaginationQueryMockData,
+  forwardQueryMockData,
+  FORWARD_PAGINATION_FRAGMENT,
+  FORWARD_PAGINATION_QUERY,
+  FORWARD_QUERY,
+  FragmentDataType,
+  QueryDataType,
+} from './mockData';
 
-const apiIdGenerator = ({ typename, localId }: { typename: string; localId: number }) =>
-  encode(`${typename}|${localId}`);
-
-const FOO_ID = apiIdGenerator({ typename: 'Foo', localId: 1 });
-
-const Fragments = {
-  forward: gql`
-    fragment ForwardPaginationFragment on Foo
-    @argumentDefinitions(count: { type: "Int", defaultValue: 2 }, cursor: { type: "String" })
-    @refetchable(queryName: "PaginationQuery") {
-      id
-      bars(first: $count, after: $cursor) @nauConnection {
-        edges {
-          node {
-            id
-          }
-          cursor
-        }
-        pageInfo {
-          hasNextPage
-          endCursor
-        }
-      }
-    }
-  `,
+const componentWrapper = ({
+  mocks,
+  cache,
+}: {
+  mocks: MockedResponse[];
+  cache: ApolloCache<Record<string, unknown>>;
+}) => {
+  return ({ children }: { children: React.ReactChild }) => (
+    <MockedProvider mocks={mocks} cache={cache}>
+      {children}
+    </MockedProvider>
+  );
 };
 
-const QUERY = gql`
-  query Query {
-    foo {
-      id
-      ...ForwardPaginationFragment
-    }
-  }
-  ${Fragments.forward}
-`;
-
-const PAGINATION_QUERY = gql`
-  query TemporaryPaginationQuery($id: ID!) {
-    node(id: $id) {
-      ...ForwardPaginationFragment
-    }
-  }
-  ${Fragments.forward}
-`;
-
-type FragmentDataType = {
-  id: string;
-  __typename: 'Foo';
-  bars: {
-    edges: { node: { id: string; __typename: 'Bar' }; cursor: string }[];
-    pageInfo: { hasNextPage: boolean; endCursor: string };
-  };
-};
-
-type QueryDataType = {
-  foo: FragmentDataType;
-};
-
-type PaginationQueryDataType = {
-  node: FragmentDataType;
-};
-
+let cache: InMemoryCache;
 describe('usePaginationFragment', () => {
-  it('fetches the data', async () => {
-    const bar1Id = apiIdGenerator({ typename: 'Bar', localId: 1 });
-    const firstQueryMockData: QueryDataType = {
-      foo: {
-        id: FOO_ID,
-        __typename: 'Foo',
-        bars: {
-          edges: [{ node: { id: bar1Id, __typename: 'Bar' }, cursor: 'cursor-1' }],
-          pageInfo: { hasNextPage: true, endCursor: 'cursor-1' },
-        },
-      },
-    };
-
-    const bar2Id = apiIdGenerator({ typename: 'Bar', localId: 2 });
-    const paginationQueryMockData: PaginationQueryDataType = {
-      node: {
-        id: FOO_ID,
-        __typename: 'Foo',
-        bars: {
-          edges: [{ node: { id: bar2Id, __typename: 'Bar' }, cursor: 'cursor-2' }],
-          pageInfo: { hasNextPage: false, endCursor: 'cursor-2' },
-        },
-      },
-    };
-    const mocks = [
-      {
-        request: { query: QUERY },
-        result: { data: firstQueryMockData },
-      },
-      {
-        request: { query: PAGINATION_QUERY, variables: { id: FOO_ID } },
-        result: { data: paginationQueryMockData },
-      },
-    ];
-
-    const cache = new InMemoryCache({
+  beforeEach(() => {
+    cache = new InMemoryCache({
       typePolicies: {
         Foo: {
           fields: {
@@ -117,35 +51,44 @@ describe('usePaginationFragment', () => {
         },
       },
     });
+  });
 
-    const wrapper = ({ children }: { children: React.ReactChild }) => (
-      <MockedProvider mocks={mocks} cache={cache}>
-        {children}
-      </MockedProvider>
-    );
+  it('returns page data in the forward direction', async () => {
+    const mocks = [
+      {
+        request: { query: FORWARD_QUERY },
+        result: { data: forwardQueryMockData },
+      },
+      {
+        request: { query: FORWARD_PAGINATION_QUERY, variables: { id: FOO_ID } },
+        result: { data: forwardPaginationQueryMockData },
+      },
+    ];
+
+    const wrapper = componentWrapper({ mocks, cache });
 
     // step1: First fetch
-    const useQueryHookResult = renderHook(() => useQuery<QueryDataType>(QUERY), { wrapper });
+    const useQueryHookResult = renderHook(() => useQuery<QueryDataType>(FORWARD_QUERY), { wrapper });
     await useQueryHookResult.waitForValueToChange(() => useQueryHookResult.result.current.data);
-    expect(useQueryHookResult.result.current.data).toMatchObject(firstQueryMockData);
+    expect(useQueryHookResult.result.current.data).toMatchObject(forwardQueryMockData);
     const usePaginationFragmentHookResult = renderHook(
       () =>
         usePaginationFragment<FragmentDataType>({
           id: FOO_ID,
-          fragment: Fragments.forward,
+          fragment: FORWARD_PAGINATION_FRAGMENT,
           fragmentName: 'ForwardPaginationFragment',
         }),
       { wrapper },
     );
     expect(usePaginationFragmentHookResult.result.current).toMatchObject({
-      data: firstQueryMockData.foo,
+      data: forwardQueryMockData.foo,
       hasNext: true,
       hasPrevious: false,
       isLoadingNext: false,
       isLoadingPrevious: false,
     });
 
-    // Step2: Load next page
+    // Step2: Load more
     act(() => {
       usePaginationFragmentHookResult.result.current.loadNext(1);
     });
@@ -157,8 +100,67 @@ describe('usePaginationFragment', () => {
       data: {
         bars: {
           edges: [
-            { node: { id: bar1Id, __typename: 'Bar' }, cursor: 'cursor-1' },
-            { node: { id: bar2Id, __typename: 'Bar' }, cursor: 'cursor-2' },
+            { node: { id: BAR_1_ID, __typename: 'Bar' }, cursor: 'cursor-1' },
+            { node: { id: BAR_2_ID, __typename: 'Bar' }, cursor: 'cursor-2' },
+          ],
+        },
+      },
+      hasNext: false,
+      hasPrevious: false,
+      isLoadingNext: false,
+      isLoadingPrevious: false,
+    });
+  });
+
+  it('returns page data in the backward direction', async () => {
+    const mocks = [
+      {
+        request: { query: BACKWARD_QUERY },
+        result: { data: backwardQueryMockData },
+      },
+      {
+        request: { query: BACKWARD_PAGINATION_QUERY, variables: { id: FOO_ID } },
+        result: { data: backwardPaginationQueryMockData },
+      },
+    ];
+
+    const wrapper = componentWrapper({ mocks, cache });
+
+    // step1: First fetch
+    const useQueryHookResult = renderHook(() => useQuery<QueryDataType>(BACKWARD_QUERY), { wrapper });
+    await useQueryHookResult.waitForValueToChange(() => useQueryHookResult.result.current.data);
+    expect(useQueryHookResult.result.current.data).toMatchObject(backwardQueryMockData);
+    const usePaginationFragmentHookResult = renderHook(
+      () =>
+        usePaginationFragment<FragmentDataType>({
+          id: FOO_ID,
+          fragment: BACKWARD_PAGINATION_FRAGMENT,
+          fragmentName: 'BackwardPaginationFragment',
+        }),
+      { wrapper },
+    );
+    expect(usePaginationFragmentHookResult.result.current).toMatchObject({
+      data: backwardQueryMockData.foo,
+      hasNext: false,
+      hasPrevious: true,
+      isLoadingNext: false,
+      isLoadingPrevious: false,
+    });
+
+    // Step2: Load more
+    act(() => {
+      usePaginationFragmentHookResult.result.current.loadPrevious(1);
+    });
+    expect(usePaginationFragmentHookResult.result.current).toMatchObject({ isLoadingPrevious: true });
+    await usePaginationFragmentHookResult.waitForValueToChange(
+      () => usePaginationFragmentHookResult.result.current.data,
+    );
+    expect(usePaginationFragmentHookResult.result.current).toMatchObject({
+      data: {
+        bars: {
+          edges: [
+            { node: { id: BAR_1_ID, __typename: 'Bar' }, cursor: 'cursor-1' },
+            { node: { id: BAR_2_ID, __typename: 'Bar' }, cursor: 'cursor-2' },
           ],
         },
       },
