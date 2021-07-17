@@ -23,7 +23,7 @@ export const FORWARD_PAGINATION_FRAGMENT = gql`
   @argumentDefinitions(count: { type: "Int", defaultValue: 2 }, cursor: { type: "String" })
   @refetchable(queryName: "PaginationQuery") {
     id
-    bars(first: $count, after: $cursor) @nauConnection {
+    bars(first: $count, after: $cursor) @paginatable {
       edges {
         node {
           id
@@ -43,7 +43,7 @@ export const BACKWARD_PAGINATION_FRAGMENT = gql`
   @argumentDefinitions(count: { type: "Int", defaultValue: 2 }, cursor: { type: "String" })
   @refetchable(queryName: "PaginationQuery") {
     id
-    bars(last: $count, before: $cursor) @nauConnection {
+    bars(last: $count, before: $cursor) @paginatable {
       edges {
         node {
           id

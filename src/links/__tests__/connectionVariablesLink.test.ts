@@ -22,7 +22,7 @@ describe('connectionVariablesLink', () => {
         }
       }
       fragment bar on Bar @argumentDefinitions(count: { type: "Int!" }, cursor: { type: "String" }) {
-        baz(first: $count, after: $cursor) @nauConnection {
+        baz(first: $count, after: $cursor) @paginatable {
           id
         }
       }

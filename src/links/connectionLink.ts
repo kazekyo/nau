@@ -10,7 +10,7 @@ import {
 } from 'graphql/language';
 import { ConnectionArgumentDataType, ContextType, createApolloLink } from './utils';
 
-const CONNECTION_DIRECTIVE_NAME = 'nauConnection';
+const CONNECTION_DIRECTIVE_NAME = 'paginatable';
 
 const getConnectionArguments = ({
   fieldNode,
