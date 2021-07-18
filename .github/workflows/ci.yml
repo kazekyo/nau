@@ -11,6 +11,9 @@ on:
       - main
     paths-ignore:
       - '**.md*'
+  schedule:
+    # Check peerDependency packages changes do not break this library
+    - cron: '0 0 * * 1'
 
 jobs:
   ci:
@@ -31,7 +34,6 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'yarn'
 
       - name: Install dependencies
         run: yarn && yarn add -P @apollo/client react react-dom
