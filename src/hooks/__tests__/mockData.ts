@@ -1,5 +1,5 @@
 import { gql } from '@apollo/client';
-import { encode } from 'js-base64';
+import { backendIdGenerator } from '../../utils/testing/backendIdGenerator';
 
 export type FragmentDataType = {
   id: string;
@@ -96,12 +96,9 @@ export const BACKWARD_PAGINATION_QUERY = gql`
   ${BACKWARD_PAGINATION_FRAGMENT}
 `;
 
-const apiIdGenerator = ({ typename, localId }: { typename: string; localId: number }) =>
-  encode(`${typename}|${localId}`);
-
-export const FOO_ID = apiIdGenerator({ typename: 'Foo', localId: 1 });
-export const BAR_1_ID = apiIdGenerator({ typename: 'Bar', localId: 1 });
-export const BAR_2_ID = apiIdGenerator({ typename: 'Bar', localId: 2 });
+export const FOO_ID = backendIdGenerator({ typename: 'Foo', localId: '1' });
+export const BAR_1_ID = backendIdGenerator({ typename: 'Bar', localId: '1' });
+export const BAR_2_ID = backendIdGenerator({ typename: 'Bar', localId: '2' });
 
 export const forwardQueryMockData: QueryDataType = {
   foo: {

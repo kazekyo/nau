@@ -1,11 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
-import { ApolloCache, InMemoryCache, useQuery } from '@apollo/client';
-import { MockedProvider, MockedResponse } from '@apollo/client/testing';
+import { InMemoryCache, useQuery } from '@apollo/client';
 import '@testing-library/jest-dom';
 import { act } from '@testing-library/react';
 import { renderHook } from '@testing-library/react-hooks';
-import * as React from 'react';
 import { relayPaginationFieldPolicy } from '../..';
+import { mockedWrapperComponent } from '../../utils/testing/mockedWrapperComponent';
 import { usePaginationFragment } from '../usePaginationFragment';
 import {
   backwardPaginationQueryMockData,
@@ -25,22 +24,8 @@ import {
   QueryDataType,
 } from './mockData';
 
-const componentWrapper = ({
-  mocks,
-  cache,
-}: {
-  mocks: MockedResponse[];
-  cache: ApolloCache<Record<string, unknown>>;
-}) => {
-  return ({ children }: { children: React.ReactChild }) => (
-    <MockedProvider mocks={mocks} cache={cache}>
-      {children}
-    </MockedProvider>
-  );
-};
-
-let cache: InMemoryCache;
 describe('usePaginationFragment', () => {
+  let cache: InMemoryCache;
   beforeEach(() => {
     cache = new InMemoryCache({
       typePolicies: {
@@ -65,7 +50,7 @@ describe('usePaginationFragment', () => {
       },
     ];
 
-    const wrapper = componentWrapper({ mocks, cache });
+    const wrapper = mockedWrapperComponent({ mocks, cache });
 
     // step1: First fetch
     const useQueryHookResult = renderHook(() => useQuery<QueryDataType>(FORWARD_QUERY), { wrapper });
@@ -124,7 +109,7 @@ describe('usePaginationFragment', () => {
       },
     ];
 
-    const wrapper = componentWrapper({ mocks, cache });
+    const wrapper = mockedWrapperComponent({ mocks, cache });
 
     // step1: First fetch
     const useQueryHookResult = renderHook(() => useQuery<QueryDataType>(BACKWARD_QUERY), { wrapper });
