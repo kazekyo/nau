@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '**.md*'
+  pull_request:
+    branches:
+      - main
+    paths-ignore:
+      - '**.md*'
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version:
+          - 12.x
+          - 14.x
+        command:
+          - 'lint'
+          - 'test'
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'yarn'
+
+      - name: Install dependencies
+        run: yarn && yarn add -P @apollo/client react react-dom
+
+      - name: Run ${{ matrix.command }}
+        run: yarn build && yarn ${{ matrix.command }}
