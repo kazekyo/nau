@@ -7,14 +7,12 @@
     "url": "https://github.com/kazekyo/nau/issues"
   },
   "dependencies": {
-    "@apollo/client": "link:./example/frontend-apollo/node_modules/@apollo/client",
     "graphql": "^15.5.0",
     "js-base64": "^3.6.0",
     "lodash.ismatch": "^4.4.0",
     "lodash.uniqwith": "^4.5.0",
     "nanoid": "^3.1.23",
-    "nanoid-dictionary": "^4.3.0",
-    "react": "link:./example/frontend-apollo/node_modules/react"
+    "nanoid-dictionary": "^4.3.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.12.13",
@@ -22,9 +20,11 @@
     "@babel/plugin-proposal-class-properties": "^7.12.13",
     "@babel/preset-env": "^7.12.13",
     "@babel/preset-typescript": "^7.12.13",
+    "@testing-library/jest-dom": "^5.14.1",
+    "@testing-library/react": "^12.0.0",
+    "@testing-library/react-hooks": "^7.0.1",
     "@types/jest": "^26.0.20",
     "@types/lodash.ismatch": "^4.4.6",
-    "@types/lodash.merge": "^4.6.6",
     "@types/lodash.uniqwith": "^4.5.6",
     "@types/nanoid-dictionary": "^4.2.0",
     "@types/react": "^17.0.5",
@@ -59,15 +59,15 @@
   },
   "scripts": {
     "test": "jest",
-    "type-check": "tsc --noEmit",
-    "type-check:watch": "npm run type-check -- --watch",
-    "build": "npm run build:types && npm run build:js",
+    "lint": "eslint src",
+    "build": "yarn run build:types && yarn run build:js",
     "build:types": "tsc --build tsconfig.build.json",
-    "build:js": "babel src --out-dir dist --extensions \".ts,.tsx\" --source-maps inline --ignore example"
+    "build:js": "babel src --out-dir dist --extensions \".ts,.tsx\" --source-maps inline --ignore \"**/__tests__/\",\"**/*.test.ts\",\"example\""
   },
   "types": "dist/index.d.ts",
   "peerDependencies": {
     "@apollo/client": "link:./example/frontend-apollo/node_modules/@apollo/client",
-    "react": "link:./example/frontend-apollo/node_modules/react"
+    "react": "link:./example/frontend-apollo/node_modules/react",
+    "react-dom": "link:./example/frontend-apollo/node_modules/react-dom"
   }
 }

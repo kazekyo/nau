@@ -1,8 +1,8 @@
 import { ApolloQueryResult, gql, useApolloClient } from '@apollo/client';
 import { DocumentNode } from 'graphql/language';
 import { useCallback, useEffect, useState } from 'react';
-import { defaultCacheIdGenerator } from '../';
-import { ContextType } from '../links/utils';
+import { ContextType } from '../links';
+import { defaultCacheIdGenerator } from '../policies/cacheUpdater';
 import { getFragmentDefinitions } from '../utils';
 
 type PaginationFragmentResult<TFragmentData> = {
@@ -108,8 +108,7 @@ export const usePaginationFragment = <TFragmentData extends { [name: string]: un
       options?: { onComplete?: OnCompleteFunction<TFragmentData> };
     }) => {
       setLoading(true);
-      // relayPaginationFieldPolicyで使うのでcursorを入れておく
-      const variables = { id: id, connectionCursor: type === 'next' ? endCursor : startCursor };
+      const variables = { id: id };
       const paginationQuery = gql`
         query TemporaryPaginationQuery($id: ID!) {
           node(id: $id) {

@@ -113,7 +113,7 @@ export const RobotListFragments = {
     )
     @refetchable(queryName: "RobotList_PaginationQuery") {
       id
-      robots(first: $count, after: $cursor) @nauConnection {
+      robots(first: $count, after: $cursor) @paginatable {
         edges {
           node {
             id

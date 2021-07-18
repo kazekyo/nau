@@ -15,7 +15,7 @@ import {
 import uniqWith from 'lodash.uniqwith';
 import { customAlphabet } from 'nanoid';
 import { alphanumeric } from 'nanoid-dictionary';
-import { getFragmentDefinitions } from '../utils';
+import { getFragmentDefinitions } from '../utils/graphqlAST';
 import { ConnectionArgumentDataType, ContextType, createApolloLink } from './utils';
 
 const nanoid = customAlphabet(alphanumeric, 10);
@@ -114,7 +114,7 @@ const transformFragmentDefinition = (params: {
               if (!newContext.nau?.connection?.argumentsData || passedArgumentValue.kind !== 'Variable') {
                 return;
               }
-              // In the case of `@arguments(child: $parent)`, if `connection(first: $child)` is used in this this fragment,
+              // In the case of `@arguments(child: $parent)`, if `connection(first: $child)` is used in this fragment,
               //   it will be replaced by `connection(first: $parent)`.
               // So the variable definition in the query also needs to replace the name from `child` to `parent`.
               const connectionArgumentsDataArray = Object.entries(newContext.nau.connection.argumentsData).map(
@@ -263,7 +263,7 @@ const getReplacedNameNode = (node: FragmentSpreadNode): FragmentSpreadNode => {
   return { ...node, name };
 };
 
-const transform = ({ operation }: { operation: Operation }): Operation => {
+const transform = (operation: Operation): Operation => {
   const documentNode = operation.query;
 
   const operationDefinition = getOperationDefinition(documentNode);
@@ -313,5 +313,5 @@ const transform = ({ operation }: { operation: Operation }): Operation => {
 };
 
 export const createArgumentDefinitionsLink = (): ApolloLink => {
-  return createApolloLink((operation) => transform({ operation }));
+  return createApolloLink((operation) => transform(operation));
 };

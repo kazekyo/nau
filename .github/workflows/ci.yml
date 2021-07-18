@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '**.md*'
+  pull_request:
+    branches:
+      - main
+    paths-ignore:
+      - '**.md*'
+  schedule:
+    # Check peerDependency packages changes do not break this library
+    - cron: '0 0 * * 1'
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version:
+          - 14.x
+          - 16.x
+        command:
+          - 'lint'
+          - 'test'
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install dependencies
+        run: yarn && yarn add -P @apollo/client react react-dom
+
+      - name: Run ${{ matrix.command }}
+        run: yarn build && yarn ${{ matrix.command }}
