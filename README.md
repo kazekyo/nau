@@ -159,4 +159,3 @@ const List: React.FC<{ user: { id: string } }> = ({ user }) => {
 
 ## TODO
 - [ ] Documentation
-- [ ] Testing
