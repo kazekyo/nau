@@ -59,7 +59,8 @@
   },
   "scripts": {
     "test": "jest",
-    "build": "npm run build:types && npm run build:js",
+    "lint": "eslint src",
+    "build": "yarn run build:types && yarn run build:js",
     "build:types": "tsc --build tsconfig.build.json",
     "build:js": "babel src --out-dir dist --extensions \".ts,.tsx\" --source-maps inline --ignore \"**/__tests__/\",\"**/*.test.ts\",\"example\""
   },

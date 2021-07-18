@@ -20,7 +20,7 @@ export const mockedWrapperComponent = ({
 export const clientMockedWrapperComponent = ({
   client,
 }: {
-  client: ApolloClient<any>;
+  client: ApolloClient<ApolloCache<Record<string, unknown>>>;
 }): React.FC<{ children: React.ReactChild }> => {
   return ({ children }: { children: React.ReactChild }) => <ApolloProvider client={client}>{children}</ApolloProvider>;
 };
