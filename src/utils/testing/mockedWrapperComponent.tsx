@@ -1,4 +1,4 @@
-import { ApolloCache, ApolloClient, ApolloProvider } from '@apollo/client';
+import { ApolloCache, ApolloClient, ApolloProvider, NormalizedCacheObject } from '@apollo/client';
 import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import '@testing-library/jest-dom';
 import * as React from 'react';
@@ -20,7 +20,7 @@ export const mockedWrapperComponent = ({
 export const clientMockedWrapperComponent = ({
   client,
 }: {
-  client: ApolloClient<ApolloCache<Record<string, unknown>>>;
+  client: ApolloClient<NormalizedCacheObject>;
 }): React.FC<{ children: React.ReactChild }> => {
   return ({ children }: { children: React.ReactChild }) => <ApolloProvider client={client}>{children}</ApolloProvider>;
 };
