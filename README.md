@@ -23,8 +23,8 @@ Check [example code](https://github.com/kazekyo/nau/tree/main/example/frontend-a
 ```ts
 const splitLink = split(
   ({ query }) => isSubscriptionOperation(query),
-  from([createCacheUpdaterLink(), wsLink]),
-  from([createCacheUpdaterLink(), new HttpLink({ uri: 'http://localhost:4000/graphql' })]),
+  from([nauLink, wsLink]),
+  from([nauLink, new HttpLink({ uri: 'http://localhost:4000/graphql' })]),
 );
 
 const client = new ApolloClient({
