@@ -2,7 +2,7 @@ export const getNodesFromConnection = <
   T extends {
     edges?: Array<{ node?: U | null } | undefined | null> | null;
   },
-  U extends unknown
+  U extends unknown,
 >({
   connection,
 }: {

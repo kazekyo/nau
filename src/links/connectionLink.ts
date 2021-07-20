@@ -51,36 +51,35 @@ const transform = (operation: Operation): Operation => {
           return null;
         }
 
-        const connectionVariables = Object.entries(connectionArgumentNodes).map(([key, argumentNode]): [
-          string,
-          undefined | ConnectionArgumentDataType,
-        ] => {
-          if (!argumentNode || argumentNode.value.kind !== 'Variable') return [key, undefined];
-          // Create variableDefinition with the name of the variable used in the argument.
-          const variable: VariableNode = {
-            kind: 'Variable',
-            name: { kind: 'Name', value: argumentNode.value.name.value },
-          };
-          const typeNode: TypeNode = {
-            kind: 'NonNullType',
-            type: {
-              kind: 'NamedType',
-              name: { kind: 'Name', value: ['first', 'last'].includes(key) ? 'Int' : 'String' },
-            },
-          };
-          const variableDefinition: VariableDefinitionNode = {
-            kind: 'VariableDefinition',
-            type: typeNode,
-            variable: variable,
-            defaultValue: undefined,
-            directives: [],
-          };
-          const variableData: ConnectionArgumentDataType = {
-            node: variableDefinition,
-            name: argumentNode.value.name.value,
-          };
-          return [key, variableData];
-        });
+        const connectionVariables = Object.entries(connectionArgumentNodes).map(
+          ([key, argumentNode]): [string, undefined | ConnectionArgumentDataType] => {
+            if (!argumentNode || argumentNode.value.kind !== 'Variable') return [key, undefined];
+            // Create variableDefinition with the name of the variable used in the argument.
+            const variable: VariableNode = {
+              kind: 'Variable',
+              name: { kind: 'Name', value: argumentNode.value.name.value },
+            };
+            const typeNode: TypeNode = {
+              kind: 'NonNullType',
+              type: {
+                kind: 'NamedType',
+                name: { kind: 'Name', value: ['first', 'last'].includes(key) ? 'Int' : 'String' },
+              },
+            };
+            const variableDefinition: VariableDefinitionNode = {
+              kind: 'VariableDefinition',
+              type: typeNode,
+              variable: variable,
+              defaultValue: undefined,
+              directives: [],
+            };
+            const variableData: ConnectionArgumentDataType = {
+              node: variableDefinition,
+              name: argumentNode.value.name.value,
+            };
+            return [key, variableData];
+          },
+        );
 
         const newContext: ContextType = {
           nau: {
