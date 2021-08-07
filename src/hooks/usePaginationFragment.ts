@@ -16,7 +16,7 @@ type PaginationFragmentResult<TFragmentData> = {
 };
 
 type OnCompleteFunction<T> = (result: ApolloQueryResult<T>) => void;
-type LoadPageFunction<TFragmentData> = (
+export type LoadPageFunction<TFragmentData> = (
   count: number,
   options?: { onComplete?: OnCompleteFunction<TFragmentData> },
 ) => void;

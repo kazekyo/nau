@@ -1,12 +1,12 @@
 export const getNodesFromConnection = <
-  T extends {
-    edges?: Array<{ node?: U | null } | undefined | null> | null;
+  TConnection extends {
+    edges?: Array<{ node?: TNode | null } | undefined | null> | null;
   },
-  U extends unknown,
+  TNode extends unknown,
 >({
   connection,
 }: {
-  connection: T | undefined | null;
-}): NonNullable<NonNullable<NonNullable<T['edges']>[0]>['node']>[] => {
+  connection: TConnection | undefined | null;
+}): TNode[] => {
   return connection?.edges?.map((edge) => edge?.node).filter((item): item is NonNullable<typeof item> => !!item) || [];
 };
