@@ -375,7 +375,7 @@ fragment ListComponent_foo on Foo
 You can use the `usePaginationFragment` hook to make pagination easier.
 
 #### Params
-| Name | TYPE | DESCRIPTION |
+| NAME | TYPE | DESCRIPTION |
 |---|---|---|
 | id | string |  A id of an object having Connection. |
 | fragment | DocumentNode | A fragment. |
@@ -383,7 +383,7 @@ You can use the `usePaginationFragment` hook to make pagination easier.
 
 
 #### Result
-| Name | TYPE | DESCRIPTION |
+| NAME | TYPE | DESCRIPTION |
 |---|---|---|
 | data | TFragmentData | An object containing the result of your GraphQL query. |
 | loadNext | LoadPageFunction < TFragmentData > | A function used to fetch items on the next page in a connection. |
@@ -426,7 +426,7 @@ The `withCacheUpdater` allows you to use some tools for updating the cache, such
 
 
 #### Params
-| Name | TYPE | DESCRIPTION |
+| NAME | TYPE | DESCRIPTION |
 |---|---|---|
 | directiveAvailableTypes | string[] | A type that uses directives. |
 | typePolicies | TypePolicies | A `TypePolicy` object. |
@@ -453,7 +453,7 @@ mutation Add {
 The `relayPaginationFieldPolicy` is an alternative function to `relayStylePagination` to use some cache updating directives such as `@appendNode`.
 
 #### Params
-| Name | TYPE | DESCRIPTION |
+| NAME | TYPE | DESCRIPTION |
 |---|---|---|
 | keyArgs | KeyArgs | A `keyArgs` to identify different lists. See the Apollo Client documentation for details. |
 
@@ -461,7 +461,7 @@ The `relayPaginationFieldPolicy` is an alternative function to `relayStylePagina
 The `getNodesFromConnection` gets nodes from a connection, filtering null and undefined.
 
 #### Params
-| Name | TYPE | DESCRIPTION |
+| NAME | TYPE | DESCRIPTION |
 |---|---|---|
 | connection | TConnection | A connection having edges. |
 
@@ -478,4 +478,4 @@ Our goal is to make Apollo Client more powerful by integrating Relay Specificati
 
 
 ## TODO
-- graphql-code-generatorのplugin
+- Support graphql-code-generator
