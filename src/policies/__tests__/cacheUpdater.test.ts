@@ -46,7 +46,6 @@ describe('cacheUpdater', () => {
   beforeEach(() => {
     cache = new InMemoryCache({
       typePolicies: withCacheUpdater({
-        cacheIdGenerator: myCacheIdGenerator
         directiveAvailableTypes: ['Bar'],
         typePolicies: {
           Foo: {
