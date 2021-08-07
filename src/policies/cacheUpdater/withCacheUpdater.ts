@@ -3,24 +3,23 @@ import { CacheIdGenerator, defaultCacheIdGenerator } from './cacheIdGenerator';
 import { deleteRecordFromChildrenField } from './deleteRecord';
 import { insertNodesToConnections } from './insertNode';
 
-export type CacheUpdaterOptions = {
-  cacheIdGenerator: CacheIdGenerator;
-};
-
 export const withCacheUpdater = ({
   directiveAvailableTypes,
   typePolicies: existingTypePolicies,
+  cacheIdGenerator,
 }: {
   directiveAvailableTypes: string[];
   typePolicies: TypePolicies;
+  cacheIdGenerator?: CacheIdGenerator;
 }): TypePolicies => {
   const existingTypePolicyKeys = Object.keys(existingTypePolicies);
 
   const typePolicyArray = directiveAvailableTypes.map((type): [string, TypePolicy] => {
-    let typePolicy: TypePolicy = cacheUpdater();
+    let typePolicy: TypePolicy = cacheUpdater({ cacheIdGenerator: cacheIdGenerator || defaultCacheIdGenerator });
     if (existingTypePolicyKeys.includes(type)) {
       const existingTypePolicy = existingTypePolicies[type];
-      const cacheUpdaterMergeFunction = cacheUpdater().merge as FieldMergeFunction<Reference, Reference>;
+      const cacheUpdaterMergeFunction = cacheUpdater({ cacheIdGenerator: cacheIdGenerator || defaultCacheIdGenerator })
+        .merge as FieldMergeFunction<Reference, Reference>;
       const mergeFunction: FieldMergeFunction<Reference, Reference> = (existing, incoming, options, ...rest) => {
         cacheUpdaterMergeFunction(existing, incoming, options, ...rest);
         if (existingTypePolicy.merge === false || !existing) {
@@ -43,9 +42,7 @@ export const withCacheUpdater = ({
   return result;
 };
 
-const cacheUpdater = (
-  { cacheIdGenerator }: CacheUpdaterOptions = { cacheIdGenerator: defaultCacheIdGenerator },
-): TypePolicy => {
+const cacheUpdater = ({ cacheIdGenerator }: { cacheIdGenerator: CacheIdGenerator }): TypePolicy => {
   return {
     merge(existing: Reference, incoming: Reference, options: FieldFunctionOptions) {
       const mergedObject = options.mergeObjects(existing, incoming);
