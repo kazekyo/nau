@@ -478,4 +478,4 @@ Our goal is to make Apollo Client more powerful by integrating Relay Specificati
 
 
 ## TODO
-- graphql-code-generatorのplugin
+- Support graphql-code-generator
