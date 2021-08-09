@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
 import { ApolloClient, gql, InMemoryCache, useMutation, useQuery, useSubscription } from '@apollo/client';
 import { MockSubscriptionLink } from '@apollo/client/testing';
 import '@testing-library/jest-dom';

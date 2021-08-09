@@ -129,11 +129,13 @@ Nau supports graphql-ruby format `${typename}|${localId}` and graphql-relay-js f
 If you use other formats, set the `cacheIdGenerator`.
 
 ```tsx
+import { decode } from 'js-base64';
+
 // Example for the format `${typename}/${localId}`
 const myCacheIdGenerator = (globalId: string): string => {
-  const array = globalIdStr.split('/');
-  const typename = array[0];
-  // CacheIdGenerator must return values in the format `${typename}:${globalId}`.
+  const globalIdStr = decode(globalId);
+  const [typename] = globalIdStr.split('/');
+// CacheIdGenerator must return values in the format `${typename}:${globalId}`.
   return `${typename}:${globalId}`;
 };
 

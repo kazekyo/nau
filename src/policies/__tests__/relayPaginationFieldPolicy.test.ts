@@ -1,4 +1,4 @@
-import { gql, InMemoryCache, useQuery, FieldPolicy } from '@apollo/client';
+import { FieldPolicy, gql, InMemoryCache, useQuery } from '@apollo/client';
 import '@testing-library/jest-dom';
 import { act, renderHook } from '@testing-library/react-hooks';
 import { relayPaginationFieldPolicy, withCacheUpdater } from '../..';
