@@ -135,7 +135,7 @@ import { decode } from 'js-base64';
 const myCacheIdGenerator = (globalId: string): string => {
   const globalIdStr = decode(globalId);
   const [typename] = globalIdStr.split('/');
-// CacheIdGenerator must return values in the format `${typename}:${globalId}`.
+  // CacheIdGenerator must return values in the format `${typename}:${globalId}`.
   return `${typename}:${globalId}`;
 };
 
