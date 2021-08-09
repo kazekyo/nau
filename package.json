@@ -46,10 +46,12 @@
   "homepage": "https://github.com/kazekyo/nau#readme",
   "keywords": [
     "apollo",
+    "client",
     "relay",
+    "graphql",
     "pagination",
     "cache",
-    "updater"
+    "directive"
   ],
   "license": "MIT",
   "main": "dist/index.js",
