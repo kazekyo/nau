@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
 import { InMemoryCache, useQuery } from '@apollo/client';
 import '@testing-library/jest-dom';
 import { act } from '@testing-library/react';
