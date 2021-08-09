@@ -1,5 +1,8 @@
 
-# Nau 🧶
+<h1 align="center">
+Nau 🧶
+</h1>
+
 Nau is a library that makes it easy and convenient for [Apollo Client](https://github.com/apollographql/apollo-client) users to use a backend that follows [Relay Specification](https://relay.dev/docs/guides/graphql-server-specification).
 - It makes cache operations such as adding items and pagination very easy.
 - You can use directives to write declaratively and reduce bugs.
