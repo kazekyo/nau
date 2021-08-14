@@ -4,13 +4,13 @@ Nau 🧶
 </h1>
 
 Nau is a library that makes it easy and convenient for [Apollo Client](https://github.com/apollographql/apollo-client) users to use a backend that follows [Relay GraphQL Server Specification](https://relay.dev/docs/guides/graphql-server-specification).
+
 - It makes cache operations such as adding items and pagination very easy.
 - You can use directives to write declaratively and reduce bugs.
 - Support co-location of components and fragments by allowing a query splitting into the fragments.
 - Support subscriptions.
 
 This library aims to help the Relay GraphQL Server Specification users write frontend applications more quickly, with fewer bugs, and more efficiently.
-
 
 ## What's the Relay GraphQL Server Specification?
 [Relay GraphQL Server Specification](https://relay.dev/docs/guides/graphql-server-specification) is a specification of GraphQL Server that makes GraphQL more effective.
@@ -489,7 +489,6 @@ This library is inspired by Relay and we have reproduced some features of Relay.
 However, the goal is not to create a full copy of Relay on Apollo Client.
 
 Our goal is to make Apollo Client more powerful by integrating Relay GraphQL Server Specification.
-
 
 ## TODO
 - Support graphql-code-generator
