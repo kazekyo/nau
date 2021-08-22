@@ -7,6 +7,11 @@ import { CacheIdGenerator } from './cacheIdGenerator';
 import { DirectiveName, findDirectiveName, INSERT_NODE_DIRECTIVE_NAMES } from './directiveName';
 import { ConnectionInfo } from './generateConnectionId';
 
+const ROOT_QUERY_KEY = 'ROOT_QUERY';
+const getCacheId = ({ id, cacheIdGenerator }: { id?: string; cacheIdGenerator: CacheIdGenerator }): string => {
+  return !id || id === ROOT_QUERY_KEY ? ROOT_QUERY_KEY : cacheIdGenerator(id);
+};
+
 const validate = ({
   connectionInfo,
   cacheIdGenerator,
@@ -20,15 +25,15 @@ const validate = ({
 } & Pick<FieldFunctionOptions, 'readField' | 'toReference'>):
   | { success: false; errorMessage: string }
   | { success: true } => {
-  if (!connectionInfo.id || !connectionInfo.field) {
-    const blankField = !connectionInfo.id ? 'id' : 'field';
+  if (!connectionInfo.field) {
+    const blankField = 'field';
     return {
       success: false,
       errorMessage: `\`${blankField}\` in connectionId set in @${directiveName} cannot be undefined, null and an empty string.`,
     };
   }
 
-  const parentRefKey = cacheIdGenerator(connectionInfo.id);
+  const parentRefKey = getCacheId({ id: connectionInfo.id, cacheIdGenerator });
   const parentRef = toReference(parentRefKey);
   if (!parentRef) {
     return {
@@ -37,13 +42,15 @@ const validate = ({
     };
   }
 
-  const targetFieldData = readField({ fieldName: connectionInfo.field, from: parentRef });
+  const targetFieldData = readField({ fieldName: connectionInfo.field, from: parentRef, args: connectionInfo.args });
   if (!targetFieldData) {
     const typename = readField<string | undefined>({ fieldName: '__typename', from: parentRef });
     const typenameMessage = typename ? ` in ${typename}(${parentRef.__ref})` : '';
     return {
       success: false,
-      errorMessage: `A connection named \`${connectionInfo.field}\` does not exist${typenameMessage}.`,
+      errorMessage: `A connection named \`${connectionInfo.field}\`(args: ${JSON.stringify(
+        connectionInfo.args,
+      )}) does not exist${typenameMessage}.`,
     };
   }
 
@@ -132,7 +139,7 @@ const insertNode = <T>({
   cacheIdGenerator: CacheIdGenerator;
 }) => {
   cache.modify({
-    id: cacheIdGenerator(connectionInfo.id),
+    id: getCacheId({ id: connectionInfo.id, cacheIdGenerator }),
     fields: {
       [connectionInfo.field]: (
         existingConnection: StoreObject & {
@@ -140,11 +147,7 @@ const insertNode = <T>({
           args?: Record<string, unknown>;
         },
       ) => {
-        if (
-          existingConnection.args &&
-          connectionInfo.keyArgs &&
-          !isMatch(existingConnection.args, connectionInfo.keyArgs)
-        ) {
+        if (existingConnection.args && connectionInfo.args && !isMatch(existingConnection.args, connectionInfo.args)) {
           return { ...existingConnection };
         }
         if (existingConnection.edges.find((edge) => edge.node.__ref === nodeRef.__ref)) {

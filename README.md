@@ -467,6 +467,50 @@ The `relayPaginationFieldPolicy` is an alternative function to `relayStylePagina
 |---|---|---|
 | keyArgs | KeyArgs | A `keyArgs` to identify different lists. See the Apollo Client documentation for details. |
 
+### `generateConnectionId`
+The `generateConnectionId` generates an id to be used for `@appendNode`, etc.
+
+#### Params
+| NAME | TYPE | DESCRIPTION |
+|---|---|---|
+| id | string? | An id of an object having Connection. The default value is `ROOT_QUERY`. |
+| field | string | A field name of a connection. |
+| args | Record<string, unknown>? | A connection having edges. |
+
+#### Result
+| TYPE | DESCRIPTION |
+|---|---|
+| string | The connectionId. |
+
+#### Examples
+```tsx
+const mutationDocument = gql`
+  mutation AddBarMutation($connections: [String!]!, $edgeTypeName: String!, $input: AddBarInput!) {
+    addBar(input: $input) {
+      bar @appendNode(connections: $connections, edgeTypeName: $edgeTypeName) {
+        id
+      }
+    }
+  }
+`;
+
+const Component: React.FC<{ foo: { id: string } }> = ({ foo }) => {
+  // ...
+  const [addBar] = useMutation(mutationDocument);
+  const connectionId = generateConnectionId({ id: foo.id, field: 'bars', args: { search: 'a' } });
+
+  return (
+    <button
+      onClick={() =>
+        addBar({ variables: { connections: [connectionId], edgeTypeName: 'BarEdge', input: { text: 'a' } } })
+      }
+    >
+      Add bar
+    </button>
+  );
+};
+```
+
 ### `getNodesFromConnection`
 The `getNodesFromConnection` gets nodes from a connection, filtering null and undefined.
 
@@ -478,7 +522,7 @@ The `getNodesFromConnection` gets nodes from a connection, filtering null and un
 #### Result
 | TYPE | DESCRIPTION |
 |---|---|
-| TNode[] | A array of nodes. |
+| TNode[] | The array of nodes. |
 
 ## An example
 You can find an example of a complete application using Nau [here](https://github.com/kazekyo/nau/tree/main/example/frontend-apollo).
