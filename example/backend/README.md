@@ -5,7 +5,7 @@ query AllFetchQuery {
   viewer {
     id
     name
-    robots {
+    items {
       edges {
         node {
           id
@@ -26,36 +26,36 @@ query FetchUser {
 }
 
 
-query FetchRobot {
+query FetchItem {
   node(id: "Um9ib3Q6NQ==") {
     id
-    ... on Robot {
+    ... on Item {
       name
     }
   }
 }
 
-mutation AddRobotMutation {
-  addRobot(input: {robotName: "new robot", userId: "VXNlcjox"}) {
-    robot {
+mutation AddItemMutation {
+  addItem(input: {itemName: "new item", userId: "VXNlcjox"}) {
+    item {
       id
       name
     }
   }
 }
 
-mutation UpdateRobotMutation {
-  updateRobot(input: {newRobotName: "updated robot", robotId: "Um9ib3Q6NQ=="}) {
-    robot {
+mutation UpdateItemMutation {
+  updateItem(input: {newItemName: "updated item", itemId: "Um9ib3Q6NQ=="}) {
+    item {
       id
       name
     }
   }
 }
 
-mutation RemoveRobotMutation {
-  removeRobot(input: {robotId: "Um9ib3Q6NQ==", userId: "VXNlcjox"}) {
-    robot {
+mutation RemoveItemMutation {
+  removeItem(input: {itemId: "Um9ib3Q6NQ==", userId: "VXNlcjox"}) {
+    item {
       id
       name
     }

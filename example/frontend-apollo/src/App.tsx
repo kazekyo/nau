@@ -1,17 +1,18 @@
 import { gql, useQuery } from '@apollo/client';
+import { Box, Divider } from '@chakra-ui/react';
 import React from 'react';
 import './App.css';
-import RobotList, { RobotListFragments } from './RobotList';
+import List, { ListFragments } from './List';
 
 const APP_QUERY = gql`
   query AppQuery {
     viewer {
       id
       name
-      ...RobotList_user
+      ...List_user
     }
   }
-  ${RobotListFragments.user}
+  ${ListFragments.user}
 `;
 
 function App() {
@@ -22,13 +23,18 @@ function App() {
 
   return (
     <div className="App">
-      <div>
-        Viewer ID: {data.viewer?.id}, Name: {data.viewer?.name}
-      </div>
-      <div>
-        Robots
-        {data.viewer && <RobotList user={data.viewer} />}
-      </div>
+      <Box p="6">
+        <Box pt="3" pb="2" d="flex" alignItems="baseline">
+          <Box fontWeight="semibold" fontSize="xl" lineHeight="tight">
+            {data.viewer?.name}'s items
+          </Box>
+          <Box ml="3" color="gray.500" fontWeight="semibold" fontSize="sm">
+            User ID: {data.viewer?.id}
+          </Box>
+        </Box>
+        <Divider />
+        <Box mt="4">{data.viewer && <List user={data.viewer} />}</Box>
+      </Box>
     </div>
   );
 }

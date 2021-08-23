@@ -27,14 +27,14 @@ const pubsub = new PubSub();
 
 const user1 = {
   id: '1',
-  name: 'User #1',
-  robots: ['1', '2', '3', '4', '5'],
+  name: 'Alice',
+  items: ['1', '2', '3', '4', '5'],
 };
 
 const user2 = {
   id: '2',
-  name: 'User #2',
-  robots: ['6', '7', '8'],
+  name: 'Bob',
+  items: ['6', '7', '8'],
 };
 
 const data = {
@@ -42,83 +42,83 @@ const data = {
     1: user1,
     2: user2,
   },
-  robot: {
-    1: { id: 1, name: 'robot #1' },
-    2: { id: 2, name: 'robot #2' },
-    3: { id: 3, name: 'robot #3' },
-    4: { id: 4, name: 'robot #4' },
-    5: { id: 5, name: 'robot #5' },
-    6: { id: 6, name: 'robot #6' },
-    7: { id: 7, name: 'robot #7' },
-    8: { id: 8, name: 'robot #8' },
+  item: {
+    1: { id: 1, name: 'item #1' },
+    2: { id: 2, name: 'item #2' },
+    3: { id: 3, name: 'item #3' },
+    4: { id: 4, name: 'item #4' },
+    5: { id: 5, name: 'item #5' },
+    6: { id: 6, name: 'item #6' },
+    7: { id: 7, name: 'item #7' },
+    8: { id: 8, name: 'item #8' },
   },
 };
 
-function getRobot(id) {
-  return data.robot[id];
+function getItem(id) {
+  return data.item[id];
 }
 
 function getUser(id) {
   return data.user[id];
 }
 
-let nextRobot = 9;
-function createRobot(robotName, userGlobalId) {
-  const newRobot = {
-    id: String(nextRobot++),
-    name: robotName,
+let nextItem = 9;
+function createItem(itemName, userGlobalId) {
+  const newItem = {
+    id: String(nextItem++),
+    name: itemName,
   };
   const { _type, id: userId } = fromGlobalId(userGlobalId);
-  data.robot[newRobot.id] = newRobot;
-  data.user[userId].robots.push(newRobot.id);
-  pubsub.publish(ROBOT_ADDED_TOPIC, newRobot);
-  return newRobot;
+  data.item[newItem.id] = newItem;
+  data.user[userId].items.push(newItem.id);
+  pubsub.publish(ROBOT_ADDED_TOPIC, newItem);
+  return newItem;
 }
 
-function updateRobot(newRobotName, robotGlobalId) {
-  const { _type, id: robotId } = fromGlobalId(robotGlobalId);
-  const robot = data.robot[robotId];
-  data.robot[robotId] = { ...robot, name: newRobotName };
-  return data.robot[robotId];
+function updateItem(newItemName, itemGlobalId) {
+  const { _type, id: itemId } = fromGlobalId(itemGlobalId);
+  const item = data.item[itemId];
+  data.item[itemId] = { ...item, name: newItemName };
+  return data.item[itemId];
 }
 
-function deleteRobot(robotGlobalId, userGlobalId) {
-  const { _typeRobot, id: robotId } = fromGlobalId(robotGlobalId);
+function deleteItem(itemGlobalId, userGlobalId) {
+  const { _typeItem, id: itemId } = fromGlobalId(itemGlobalId);
   const { _typeUser, id: userId } = fromGlobalId(userGlobalId);
-  const deletedRobot = data.robot[robotId];
-  delete data.robot[robotId];
-  data.user[userId].robots = data.user[userId].robots.filter((id) => id !== robotId);
-  pubsub.publish(ROBOT_REMOVED_TOPIC, robotGlobalId);
-  return deletedRobot;
+  const deletedItem = data.item[itemId];
+  delete data.item[itemId];
+  data.user[userId].items = data.user[userId].items.filter((id) => id !== itemId);
+  pubsub.publish(ROBOT_REMOVED_TOPIC, itemGlobalId);
+  return deletedItem;
 }
 
 const { nodeInterface, nodeField } = nodeDefinitions(
   (globalId) => {
     const { type, id } = fromGlobalId(globalId);
     switch (type) {
-      case 'Robot':
-        return getRobot(id);
+      case 'Item':
+        return getItem(id);
       case 'User':
         return getUser(id);
     }
   },
-  (obj) => (obj.robots ? userType : robotType),
+  (obj) => (obj.items ? userType : itemType),
 );
 
-const robotType = new GraphQLObjectType({
-  name: 'Robot',
+const itemType = new GraphQLObjectType({
+  name: 'Item',
   interfaces: [nodeInterface],
   fields: () => ({
     id: globalIdField(),
     name: {
       type: new GraphQLNonNull(GraphQLString),
-      description: 'The name of the robot.',
+      description: 'The name of the item.',
     },
   }),
 });
 
-const { connectionType: robotConnection } = connectionDefinitions({
-  nodeType: robotType,
+const { connectionType: itemConnection } = connectionDefinitions({
+  nodeType: itemType,
 });
 
 const userType = new GraphQLObjectType({
@@ -130,12 +130,12 @@ const userType = new GraphQLObjectType({
       type: GraphQLString,
       description: 'The name of the user.',
     },
-    robots: {
-      type: robotConnection,
+    items: {
+      type: itemConnection,
       args: { ...connectionArgs, keyword: { type: GraphQLString } },
       resolve: (user, args) => {
-        const robots = user.robots.map(getRobot);
-        const array = args.keyword ? robots.filter((robot) => robot.name.match(args.keyword)) : robots;
+        const items = user.items.map(getItem);
+        const array = args.keyword ? items.filter((item) => item.name.match(args.keyword)) : items;
         return connectionFromArray(array, args);
       },
     },
@@ -153,10 +153,10 @@ const queryType = new GraphQLObjectType({
   }),
 });
 
-const addRobotMutation = mutationWithClientMutationId({
-  name: 'AddRobot',
+const addItemMutation = mutationWithClientMutationId({
+  name: 'AddItem',
   inputFields: {
-    robotName: {
+    itemName: {
       type: new GraphQLNonNull(GraphQLString),
     },
     userId: {
@@ -164,47 +164,47 @@ const addRobotMutation = mutationWithClientMutationId({
     },
   },
   outputFields: {
-    robot: {
-      type: new GraphQLNonNull(robotType),
-      resolve: (payload) => getRobot(payload.robotId),
+    item: {
+      type: new GraphQLNonNull(itemType),
+      resolve: (payload) => getItem(payload.itemId),
     },
   },
-  mutateAndGetPayload: ({ robotName, userId }) => {
-    const newRobot = createRobot(robotName, userId);
+  mutateAndGetPayload: ({ itemName, userId }) => {
+    const newItem = createItem(itemName, userId);
     return {
-      robotId: newRobot.id,
+      itemId: newItem.id,
     };
   },
 });
 
-const updateRobotMutation = mutationWithClientMutationId({
-  name: 'UpdateRobot',
+const updateItemMutation = mutationWithClientMutationId({
+  name: 'UpdateItem',
   inputFields: {
-    newRobotName: {
+    newItemName: {
       type: new GraphQLNonNull(GraphQLString),
     },
-    robotId: {
+    itemId: {
       type: new GraphQLNonNull(GraphQLID),
     },
   },
   outputFields: {
-    robot: {
-      type: new GraphQLNonNull(robotType),
-      resolve: (payload) => getRobot(payload.robotId),
+    item: {
+      type: new GraphQLNonNull(itemType),
+      resolve: (payload) => getItem(payload.itemId),
     },
   },
-  mutateAndGetPayload: ({ newRobotName, robotId }) => {
-    const robot = updateRobot(newRobotName, robotId);
+  mutateAndGetPayload: ({ newItemName, itemId }) => {
+    const item = updateItem(newItemName, itemId);
     return {
-      robotId: robot.id,
+      itemId: item.id,
     };
   },
 });
 
-const removeRobotMutation = mutationWithClientMutationId({
-  name: 'RemoveRobot',
+const removeItemMutation = mutationWithClientMutationId({
+  name: 'RemoveItem',
   inputFields: {
-    robotId: {
+    itemId: {
       type: new GraphQLNonNull(GraphQLString),
     },
     userId: {
@@ -212,15 +212,15 @@ const removeRobotMutation = mutationWithClientMutationId({
     },
   },
   outputFields: {
-    robot: {
-      type: new GraphQLNonNull(robotType),
-      resolve: (payload) => payload.robot,
+    item: {
+      type: new GraphQLNonNull(itemType),
+      resolve: (payload) => payload.item,
     },
   },
-  mutateAndGetPayload: ({ robotId, userId }) => {
-    const deletedRobot = deleteRobot(robotId, userId);
+  mutateAndGetPayload: ({ itemId, userId }) => {
+    const deletedItem = deleteItem(itemId, userId);
     return {
-      robot: deletedRobot,
+      item: deletedItem,
     };
   },
 });
@@ -228,27 +228,27 @@ const removeRobotMutation = mutationWithClientMutationId({
 const mutationType = new GraphQLObjectType({
   name: 'Mutation',
   fields: () => ({
-    addRobot: addRobotMutation,
-    updateRobot: updateRobotMutation,
-    removeRobot: removeRobotMutation,
+    addItem: addItemMutation,
+    updateItem: updateItemMutation,
+    removeItem: removeItemMutation,
   }),
 });
 
-const ROBOT_ADDED_TOPIC = 'robot_added_topic';
-const ROBOT_REMOVED_TOPIC = 'robot_removed_topic';
+const ROBOT_ADDED_TOPIC = 'item_added_topic';
+const ROBOT_REMOVED_TOPIC = 'item_removed_topic';
 
-const robotAddedPayloadType = new GraphQLObjectType({
-  name: 'RobotAddedPayload',
+const itemAddedPayloadType = new GraphQLObjectType({
+  name: 'ItemAddedPayload',
   fields: {
-    robot: {
-      type: new GraphQLNonNull(robotType),
+    item: {
+      type: new GraphQLNonNull(itemType),
       resolve: (source) => source,
     },
   },
 });
 
-const robotRemovedPayloadType = new GraphQLObjectType({
-  name: 'RobotRemovedPayload',
+const itemRemovedPayloadType = new GraphQLObjectType({
+  name: 'ItemRemovedPayload',
   fields: {
     id: {
       type: new GraphQLNonNull(GraphQLID),
@@ -260,13 +260,13 @@ const robotRemovedPayloadType = new GraphQLObjectType({
 const subscriptionType = new GraphQLObjectType({
   name: 'Subscription',
   fields: {
-    robotAdded: {
-      type: new GraphQLNonNull(robotAddedPayloadType),
+    itemAdded: {
+      type: new GraphQLNonNull(itemAddedPayloadType),
       subscribe: () => pubsub.asyncIterator(ROBOT_ADDED_TOPIC),
       resolve: (source) => source,
     },
-    robotRemoved: {
-      type: new GraphQLNonNull(robotRemovedPayloadType),
+    itemRemoved: {
+      type: new GraphQLNonNull(itemRemovedPayloadType),
       subscribe: () => pubsub.asyncIterator(ROBOT_REMOVED_TOPIC),
       resolve: (source) => source,
     },

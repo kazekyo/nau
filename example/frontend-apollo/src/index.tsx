@@ -6,6 +6,7 @@ import ReactDOM from 'react-dom';
 import App from './App';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
+import { ChakraProvider } from '@chakra-ui/react';
 
 const wsLink = new WebSocketLink({
   uri: 'ws://localhost:4000/subscriptions',
@@ -23,11 +24,11 @@ const splitLink = split(
 const client = new ApolloClient({
   cache: new InMemoryCache({
     typePolicies: withCacheUpdater({
-      directiveAvailableTypes: ['Robot', 'RobotRemovedPayload', 'User'],
+      directiveAvailableTypes: ['Item', 'ItemRemovedPayload', 'User'],
       typePolicies: {
         User: {
           fields: {
-            robots: relayPaginationFieldPolicy(),
+            items: relayPaginationFieldPolicy(),
           },
         },
       },
@@ -38,9 +39,11 @@ const client = new ApolloClient({
 
 ReactDOM.render(
   <React.StrictMode>
-    <ApolloProvider client={client}>
-      <App />
-    </ApolloProvider>
+    <ChakraProvider>
+      <ApolloProvider client={client}>
+        <App />
+      </ApolloProvider>
+    </ChakraProvider>
   </React.StrictMode>,
   document.getElementById('root'),
 );
