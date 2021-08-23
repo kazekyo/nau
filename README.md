@@ -517,7 +517,7 @@ The `getNodesFromConnection` gets nodes from a connection, filtering null and un
 #### Params
 | NAME | TYPE | DESCRIPTION |
 |---|---|---|
-| connection | TConnection | A connection having edges. |
+| connection | Connection | A connection having edges. |
 
 #### Result
 | TYPE | DESCRIPTION |
