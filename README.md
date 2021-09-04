@@ -22,6 +22,12 @@ Large parts of the specification are recognized as best practices in GraphQL.
 
 Nau does not implement the specification on your server. Nau helps you develop frontend applications efficiently when you use a server that is compliant with the specification.
 
+## Example
+You can find the example [here](https://github.com/kazekyo/nau/tree/main/example).
+
+![example](https://user-images.githubusercontent.com/456381/132086308-532ac54d-253a-47c3-948f-3c1bdaafee10.gif)
+
+
 ## Install
 ```
 npm install @kazekyo/nau
@@ -523,10 +529,6 @@ The `getNodesFromConnection` gets nodes from a connection, filtering null and un
 | TYPE | DESCRIPTION |
 |---|---|
 | TNode[] | The array of nodes. |
-
-## An example
-You can find an example of a complete application using Nau [here](https://github.com/kazekyo/nau/tree/main/example/frontend-apollo).
-
 
 ## Goal
 This library is inspired by Relay and we have reproduced some features of Relay.

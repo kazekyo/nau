@@ -1,0 +1,3 @@
+# https://www.itemstxt.org/itemstxt.html
+User-agent: *
+Disallow:
