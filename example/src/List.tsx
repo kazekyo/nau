@@ -1,6 +1,6 @@
 import { gql, useMutation, useSubscription } from '@apollo/client';
-import { AddIcon, TriangleDownIcon } from '@chakra-ui/icons';
-import { Box, Center, Button } from '@chakra-ui/react';
+import { AddIcon } from '@chakra-ui/icons';
+import { Box, Button } from '@chakra-ui/react';
 import { generateConnectionId, getNodesFromConnection, usePaginationFragment } from '@kazekyo/nau';
 import * as React from 'react';
 import ListItem, { ListItemFragments } from './ListItem';
