@@ -121,8 +121,8 @@ const List: React.FC<{
       <div>
         {nodes.map((node, i) => {
           return (
-            <Box mt="3">
-              <ListItem user={user} item={node} key={node.id} />
+            <Box mt="3" key={node.id}>
+              <ListItem user={user} item={node} />
             </Box>
           );
         })}
