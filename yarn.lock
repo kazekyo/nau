@@ -3,9 +3,9 @@
 
 
 "@apollo/client@^3.4.10":
-  version "3.4.10"
-  resolved "https://registry.yarnpkg.com/@apollo/client/-/client-3.4.10.tgz#cee9ed75b1bb7f391c55d79300ecf87096e59792"
-  integrity sha512-b+8TT3jBM2BtEJi+V2FuLpvoYDZCY3baNYrgAgEyw4fjnuBCSRPY7qVjqriZAwMaGiTLtyVifGhmdeICQs4Eow==
+  version "3.4.13"
+  resolved "https://registry.yarnpkg.com/@apollo/client/-/client-3.4.13.tgz#81670c27b376e80e3845ecf6468e534d908fa5b5"
+  integrity sha512-/nH8z/0X6WJ+wtUREHTlKQGX4lo6u3XkF1hy+k4eCxLZzT5+VRw1rm92iIkj1H85vep/eE/KV3DdRq1x3t9NnQ==
   dependencies:
     "@graphql-typed-document-node/core" "^3.0.0"
     "@wry/context" "^0.6.0"
@@ -18,7 +18,7 @@
     symbol-observable "^4.0.0"
     ts-invariant "^0.9.0"
     tslib "^2.3.0"
-    zen-observable-ts "^1.1.0"
+    zen-observable-ts "~1.1.0"
 
 "@babel/cli@^7.12.13":
   version "7.15.4"
@@ -1549,9 +1549,9 @@
     "@types/react" "*"
 
 "@types/react@*", "@types/react@>=16.9.0", "@types/react@^17.0.19":
-  version "17.0.20"
-  resolved "https://registry.yarnpkg.com/@types/react/-/react-17.0.20.tgz#a4284b184d47975c71658cd69e759b6bd37c3b8c"
-  integrity sha512-wWZrPlihslrPpcKyCSlmIlruakxr57/buQN1RjlIeaaTWDLtJkTtRW429MoQJergvVKc4IWBpRhWw7YNh/7GVA==
+  version "17.0.22"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-17.0.22.tgz#c80d1d0e87fe953bae3ab273bef451dea1a6291b"
+  integrity sha512-kq/BMeaAVLJM6Pynh8C2rnr/drCK+/5ksH0ch9asz+8FW3DscYCIEFtCeYTFeIx/ubvOsMXmRfy7qEJ76gM96A==
   dependencies:
     "@types/prop-types" "*"
     "@types/scheduler" "*"
@@ -2922,9 +2922,9 @@ graphql-tag@^2.12.3:
     tslib "^2.1.0"
 
 graphql@^15.5.0:
-  version "15.5.3"
-  resolved "https://registry.yarnpkg.com/graphql/-/graphql-15.5.3.tgz#c72349017d5c9f5446a897fe6908b3186db1da00"
-  integrity sha512-sM+jXaO5KinTui6lbK/7b7H/Knj9BpjGxZ+Ki35v7YbUJxxdBCUqNM0h3CRVU1ZF9t5lNiBzvBCSYPvIwxPOQA==
+  version "15.6.0"
+  resolved "https://registry.yarnpkg.com/graphql/-/graphql-15.6.0.tgz#e69323c6a9780a1a4b9ddf7e35ca8904bb04df02"
+  integrity sha512-WJR872Zlc9hckiEPhXgyUftXH48jp2EjO5tgBBOyNMRJZ9fviL2mJBD6CAysk6N5S0r9BTs09Qk39nnJBkvOXQ==
 
 has-flag@^3.0.0:
   version "3.0.0"
@@ -5332,7 +5332,7 @@ yargs@^16.0.3:
     y18n "^5.0.5"
     yargs-parser "^20.2.2"
 
-zen-observable-ts@^1.1.0:
+zen-observable-ts@~1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/zen-observable-ts/-/zen-observable-ts-1.1.0.tgz#2d1aa9d79b87058e9b75698b92791c1838551f83"
   integrity sha512-1h4zlLSqI2cRLPJUHJFL8bCWHhkpuXkF+dbGkRaWjgDIG26DmzyshUMrdV/rL3UnR+mhaX4fRq8LPouq0MYYIA==
