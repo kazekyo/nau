@@ -1,0 +1,52 @@
+{
+  "name": "@nau/graphql-codegen-preset",
+  "version": "0.3.0",
+  "description": "TODO",
+  "author": "kazekyo",
+  "bugs": {
+    "url": "https://github.com/kazekyo/nau/issues"
+  },
+  "dependencies": {
+    "@graphql-codegen/plugin-helpers": "^2.1.1",
+    "@graphql-codegen/visitor-plugin-common": "^2.2.1",
+    "@graphql-tools/utils": "^8.2.4",
+    "@relay-graphql-js/validation-rules": "^0.0.1",
+    "js-base64": "^3.6.0",
+    "lodash.merge": "^4.6.2",
+    "lodash.uniqwith": "^4.5.0"
+  },
+  "devDependencies": {
+    "@types/lodash.merge": "^4.6.6",
+    "@types/lodash.uniqwith": "^4.5.6"
+  },
+  "files": [
+    "dist"
+  ],
+  "homepage": "https://github.com/kazekyo/nau#readme",
+  "keywords": [
+    "apollo",
+    "client",
+    "relay",
+    "graphql",
+    "pagination",
+    "cache",
+    "directive"
+  ],
+  "license": "MIT",
+  "main": "dist/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kazekyo/nau.git"
+  },
+  "scripts": {
+    "test": "jest",
+    "lint": "eslint src",
+    "build": "yarn run build:types && yarn run build:js",
+    "build:types": "tsc --build tsconfig.build.json",
+    "build:js": "babel src --out-dir dist --root-mode upward --extensions \".ts,.tsx\" --source-maps inline --ignore \"**/__tests__/\",\"**/*.test.ts\",\"example\",\"**/testing/\""
+  },
+  "types": "dist/index.d.ts",
+  "peerDependencies": {
+    "graphql": "^15.6.1"
+  }
+}
