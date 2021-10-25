@@ -16,7 +16,6 @@
     "@types/node": "^16.7.10",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
-    "add": "^2.0.6",
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "express-graphql": "^0.12.0",
