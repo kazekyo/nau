@@ -5,35 +5,15 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 import { FieldPolicy, Reference } from '@apollo/client/cache';
 import { mergeDeep } from '@apollo/client/utilities';
+import {
+  RelayFieldPolicy,
+  TExistingRelay,
+  TRelayEdge,
+  TRelayPageInfo,
+} from '@apollo/client/utilities/policies/pagination';
 import { __rest } from 'tslib';
 
 type KeyArgs = FieldPolicy<any>['keyArgs'];
-
-export type TRelayEdge<TNode> =
-  | {
-      cursor?: string;
-      node: TNode;
-    }
-  | (Reference & { cursor?: string });
-
-export type TRelayPageInfo = {
-  hasPreviousPage: boolean;
-  hasNextPage: boolean;
-  startCursor: string;
-  endCursor: string;
-};
-
-export type TExistingRelay<TNode> = Readonly<{
-  edges: TRelayEdge<TNode>[];
-  pageInfo: TRelayPageInfo;
-}>;
-
-export type TIncomingRelay<TNode> = {
-  edges?: TRelayEdge<TNode>[];
-  pageInfo?: TRelayPageInfo;
-};
-
-export type RelayFieldPolicy<TNode> = FieldPolicy<TExistingRelay<TNode>, TIncomingRelay<TNode>, TIncomingRelay<TNode>>;
 
 // This function is a bit different from relayStylePagination provided by Apollo.
 // 1. it removes duplicate edges.
@@ -42,7 +22,7 @@ export type RelayFieldPolicy<TNode> = FieldPolicy<TExistingRelay<TNode>, TIncomi
 //  it will remove duplicate edges from a list.
 // 2. it sets a args to a connection.
 //  The args is needed to identify the connection to be updated.
-export function relayPaginationFieldPolicy<TNode extends Reference>(keyArgs: KeyArgs = false): RelayFieldPolicy<TNode> {
+export function relayPaginationFieldPolicy<TNode = Reference>(keyArgs?: KeyArgs): RelayFieldPolicy<TNode> {
   return {
     keyArgs,
 
@@ -79,7 +59,15 @@ export function relayPaginationFieldPolicy<TNode extends Reference>(keyArgs: Key
       };
     },
 
-    merge(existing = makeEmptyData(), incoming, { args, isReference, readField, field }) {
+    merge(existing, incoming, { args, isReference, readField, field }) {
+      if (!existing) {
+        existing = makeEmptyData();
+      }
+
+      if (!incoming) {
+        return existing;
+      }
+
       const incomingEdges = incoming.edges
         ? incoming.edges.map((edge) => {
             if (isReference((edge = { ...edge }))) {
@@ -145,7 +133,10 @@ export function relayPaginationFieldPolicy<TNode extends Reference>(keyArgs: Key
       // We will remove duplidate edges if we have.
       const edges = [
         ...prefix,
-        ...removeDuplidateEdgeFromIncoming({ existingEdges: [...prefix, ...suffix], incomingEdges }),
+        ...removeDuplidateEdgeFromIncoming({
+          existingEdges: [...prefix, ...suffix] as TRelayEdge<Reference>[],
+          incomingEdges: incomingEdges as TRelayEdge<Reference>[],
+        }),
         ...suffix,
       ];
 
@@ -208,6 +199,8 @@ const removeDuplidateEdgeFromIncoming = <TNode extends Reference>({
     if (!('node' in incomingEdge)) return false;
     const duplicateEdge = existingEdges.find((existingEdge) => {
       if (!('node' in existingEdge)) return false;
+      const existingNode = existingEdge.node;
+      if (!('__ref' in existingNode)) return false;
       return existingEdge.node.__ref === incomingEdge.node.__ref;
     });
     return !duplicateEdge;
