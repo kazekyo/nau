@@ -1,9 +1,9 @@
 import { Types } from '@graphql-codegen/plugin-helpers';
 import { FragmentDefinitionNode, parse } from 'graphql';
 import { printDocuments } from '../../utils/testing/utils';
-import applyArgumentDefinitions, { exportedForTesting } from '../applyArgumentDefinitions';
+import { exportedForTesting, transform } from '../passArgumentValueToFragment';
 
-describe('applyArgumentDefinitions', () => {
+describe('transform', () => {
   it('changes the documents', () => {
     const document = parse(/* GraphQL */ `
       query TestQuery($testNumber: Int!) {
@@ -35,7 +35,7 @@ describe('applyArgumentDefinitions', () => {
         }
       }
     `);
-    const result = applyArgumentDefinitions({ documentFiles: [{ document }] });
+    const result = transform({ documentFiles: [{ document }] });
 
     expect(printDocuments(result.documentFiles)).toBe(printDocuments([{ document: expectedDocument }]));
   });
@@ -121,7 +121,7 @@ describe('applyArgumentDefinitions', () => {
       },
     ];
 
-    const result = applyArgumentDefinitions({ documentFiles: documentFiles });
+    const result = transform({ documentFiles: documentFiles });
 
     expect(printDocuments(result.documentFiles)).toBe(printDocuments(expectedDocumentFiles));
   });

@@ -14,14 +14,12 @@ import {
 } from 'graphql';
 import { encode } from 'js-base64';
 import merge from 'lodash.merge';
+import { ARGUMENTS_DIRECTIVE_NAME, ARGUMENT_DEFINITIONS_DIRECTIVE_NAME } from '../utils/directiveName';
 import { getFragmentDefinitionsByDocumentFiles, getOperationDefinition } from '../utils/graphqlAST';
 
 type ChangedFragments = { [key: string]: FragmentDefinitionNode[] };
 
-export const ARGUMENT_DEFINITIONS_DIRECTIVE_NAME = 'argumentDefinitions';
-export const ARGUMENTS_DIRECTIVE_NAME = 'arguments';
-
-const transform = ({
+export const transform = ({
   documentFiles,
 }: {
   documentFiles: Types.DocumentFile[];
@@ -352,7 +350,6 @@ export const encodedArgumentsStr = (argumentNodes: readonly ArgumentNode[]): str
   return encode(argumentsStr, true);
 };
 
-export default transform;
 export const exportedForTesting = {
   replaceChangedFragments,
 };

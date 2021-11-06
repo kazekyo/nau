@@ -10,13 +10,11 @@ import {
   visit,
 } from 'graphql';
 import { uniqWith } from 'lodash';
+import { ARGUMENT_DEFINITIONS_DIRECTIVE_NAME, REFETCHABLE_DIRECTIVE_NAME } from '../utils/directiveName';
 import { getFragmentDefinitionsByDocumentFiles } from '../utils/graphqlAST';
 import { nonNullable } from '../utils/nonNullable';
-import { ARGUMENT_DEFINITIONS_DIRECTIVE_NAME } from './applyArgumentDefinitions';
 
-export const REFETCHABLE_DIRECTIVE_NAME = 'refetchable';
-
-const transform = ({
+export const transform = ({
   documentFiles,
 }: {
   documentFiles: Types.DocumentFile[];
@@ -178,5 +176,3 @@ const collectVariableDefinitions = ({
 
   return { variableDefinitions, collectedFragmentNames: fragmentNames };
 };
-
-export default transform;

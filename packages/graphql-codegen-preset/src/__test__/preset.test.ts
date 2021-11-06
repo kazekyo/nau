@@ -3,6 +3,7 @@ import { readFileSync } from 'fs';
 import { parse } from 'graphql';
 import { preset } from '../preset';
 import { printDocuments } from '../utils/testing/utils';
+import path from 'path';
 
 describe('buildGeneratesSection', () => {
   it('transforms documents', async () => {
@@ -49,7 +50,8 @@ describe('buildGeneratesSection', () => {
       }
     `);
 
-    const schemaString = readFileSync('src/utils/testing/example.graphql', { encoding: 'utf-8' });
+    const filePath = path.join(__dirname, '../utils/testing/example.graphql');
+    const schemaString = readFileSync(filePath, { encoding: 'utf-8' });
     const schemaDocumentNode = parse(schemaString);
 
     const result = await preset.buildGeneratesSection({

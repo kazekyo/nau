@@ -1,8 +1,8 @@
 import { parse } from 'graphql';
 import { printDocuments } from '../../utils/testing/utils';
-import removeCustomDirective from '../removeCustomDirective';
+import { transform } from '../removeCustomDirective';
 
-describe('removeCustomDirective', () => {
+describe('transform', () => {
   it('removes custom directives', () => {
     const document = parse(/* GraphQL */ `
       query TestQuery {
@@ -26,7 +26,7 @@ describe('removeCustomDirective', () => {
         id
       }
     `);
-    const result = removeCustomDirective({ documentFiles: [{ document }] });
+    const result = transform({ documentFiles: [{ document }] });
 
     expect(printDocuments(result.documentFiles)).toBe(printDocuments([{ document: expectedDocument }]));
   });

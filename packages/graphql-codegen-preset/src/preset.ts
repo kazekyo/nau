@@ -16,9 +16,9 @@ import {
   ValidationContext,
   ValidationRule,
 } from 'graphql';
-import applyArgumentDefinitions from './transforms/applyArgumentDefinitions';
-import removeCustomDirective from './transforms/removeCustomDirective';
-import generateRefetchQuery from './transforms/generateRefetchQuery';
+import { transform as generateRefetchQuery } from './transforms/generateRefetchQuery';
+import { transform as passArgumentValueToFragment } from './transforms/passArgumentValueToFragment';
+import { transform as removeCustomDirective } from './transforms/removeCustomDirective';
 
 const transform = ({
   documentFiles,
@@ -26,7 +26,7 @@ const transform = ({
   documentFiles: Types.DocumentFile[];
 }): { documentFiles: Types.DocumentFile[] } => {
   let result = { documentFiles };
-  [applyArgumentDefinitions, generateRefetchQuery, removeCustomDirective].forEach((transformFunc) => {
+  [passArgumentValueToFragment, generateRefetchQuery, removeCustomDirective].forEach((transformFunc) => {
     result = transformFunc(result);
   });
   return result;

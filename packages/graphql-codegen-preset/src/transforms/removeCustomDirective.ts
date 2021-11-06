@@ -1,11 +1,14 @@
 import { Types } from '@graphql-codegen/plugin-helpers';
 import { DocumentNode, visit } from 'graphql';
-import { ARGUMENTS_DIRECTIVE_NAME, ARGUMENT_DEFINITIONS_DIRECTIVE_NAME } from './applyArgumentDefinitions';
-import { REFETCHABLE_DIRECTIVE_NAME } from './generateRefetchQuery';
+import {
+  ARGUMENTS_DIRECTIVE_NAME,
+  ARGUMENT_DEFINITIONS_DIRECTIVE_NAME,
+  REFETCHABLE_DIRECTIVE_NAME,
+} from '../utils/directiveName';
 
 const DIRECTIVES = [ARGUMENT_DEFINITIONS_DIRECTIVE_NAME, ARGUMENTS_DIRECTIVE_NAME, REFETCHABLE_DIRECTIVE_NAME];
 
-const transform = ({
+export const transform = ({
   documentFiles,
 }: {
   documentFiles: Types.DocumentFile[];
@@ -27,5 +30,3 @@ const transform = ({
 
   return { documentFiles: files };
 };
-
-export default transform;

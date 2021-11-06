@@ -1,8 +1,8 @@
 import { parse } from 'graphql';
 import { printDocuments } from '../../utils/testing/utils';
-import generateRefetchQuery from '../generateRefetchQuery';
+import { transform } from '../generateRefetchQuery';
 
-describe('generateRefetchQuery', () => {
+describe('transform', () => {
   it('generates the refetch query', () => {
     const document = parse(/* GraphQL */ `
       query TestQuery {
@@ -49,7 +49,7 @@ describe('generateRefetchQuery', () => {
         }
       }
     `);
-    const result = generateRefetchQuery({ documentFiles: [{ document }] });
+    const result = transform({ documentFiles: [{ document }] });
 
     expect(printDocuments(result.documentFiles)).toBe(printDocuments([{ document: expectedDocument }]));
   });
@@ -123,7 +123,7 @@ describe('generateRefetchQuery', () => {
         }
       }
     `);
-    const result = generateRefetchQuery({ documentFiles: [{ document }] });
+    const result = transform({ documentFiles: [{ document }] });
 
     expect(printDocuments(result.documentFiles)).toBe(printDocuments([{ document: expectedDocument }]));
   });
