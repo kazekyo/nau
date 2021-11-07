@@ -1,6 +1,6 @@
 import { Types } from '@graphql-codegen/plugin-helpers';
 import { ASTNode, DocumentNode, FragmentDefinitionNode, parseType, visit } from 'graphql';
-import { ARGUMENT_DEFINITIONS_DIRECTIVE_NAME } from '../utils/directiveName';
+import { ARGUMENT_DEFINITIONS_DIRECTIVE_NAME } from '../utils/directive';
 import {
   getFragmentDefinitionByName,
   getFragmentDefinitionsByDocumentFiles,

@@ -10,7 +10,7 @@ import {
   visit,
 } from 'graphql';
 import { uniqWith } from 'lodash';
-import { ARGUMENT_DEFINITIONS_DIRECTIVE_NAME, REFETCHABLE_DIRECTIVE_NAME } from '../utils/directiveName';
+import { ARGUMENT_DEFINITIONS_DIRECTIVE_NAME, REFETCHABLE_DIRECTIVE_NAME } from '../utils/directive';
 import { getFragmentDefinitionsByDocumentFiles } from '../utils/graphqlAST';
 import { nonNullable } from '../utils/nonNullable';
 

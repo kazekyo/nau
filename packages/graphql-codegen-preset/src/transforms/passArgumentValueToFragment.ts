@@ -14,7 +14,7 @@ import {
 } from 'graphql';
 import { encode } from 'js-base64';
 import merge from 'lodash.merge';
-import { ARGUMENTS_DIRECTIVE_NAME, ARGUMENT_DEFINITIONS_DIRECTIVE_NAME } from '../utils/directiveName';
+import { ARGUMENTS_DIRECTIVE_NAME, ARGUMENT_DEFINITIONS_DIRECTIVE_NAME } from '../utils/directive';
 import {
   getFragmentDefinitionByName,
   getFragmentDefinitionsByDocumentFiles,

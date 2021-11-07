@@ -16,10 +16,11 @@ import {
   ValidationContext,
   ValidationRule,
 } from 'graphql';
+import { transform as fixVariablenotDefinedInRoot } from './transforms/fixVariablenotDefinedInRoot';
 import { transform as generateRefetchQuery } from './transforms/generateRefetchQuery';
 import { transform as passArgumentValueToFragment } from './transforms/passArgumentValueToFragment';
 import { transform as removeCustomDirective } from './transforms/removeCustomDirective';
-import { transform as fixVariablenotDefinedInRoot } from './transforms/fixVariablenotDefinedInRoot';
+import { customDirectives } from './utils/directive';
 
 const transform = ({
   documentFiles,
@@ -58,11 +59,6 @@ const validationRules = (): ValidationRule[] => {
 
 const addCustomClientDirective = (graphGLSchema: GraphQLSchema): GraphQLSchema => {
   const currentDirectives = graphGLSchema.getDirectives();
-  const customDirectives = {
-    arguments: 'directive @arguments on FRAGMENT_SPREAD',
-    argumentDefinitions: 'directive @argumentDefinitions on FRAGMENT_DEFINITION',
-    refetchable: 'directive @refetchable(queryName: String) on FRAGMENT_DEFINITION',
-  };
   const additionalDirectives = Object.entries(customDirectives)
     .filter(([key, _]) => !currentDirectives.find((d) => d.name === key))
     .map(([_, value]) => value);
