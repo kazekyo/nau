@@ -19,6 +19,7 @@ import {
 import { transform as generateRefetchQuery } from './transforms/generateRefetchQuery';
 import { transform as passArgumentValueToFragment } from './transforms/passArgumentValueToFragment';
 import { transform as removeCustomDirective } from './transforms/removeCustomDirective';
+import { transform as fixVariablenotDefinedInRoot } from './transforms/fixVariablenotDefinedInRoot';
 
 const transform = ({
   documentFiles,
@@ -26,9 +27,11 @@ const transform = ({
   documentFiles: Types.DocumentFile[];
 }): { documentFiles: Types.DocumentFile[] } => {
   let result = { documentFiles };
-  [passArgumentValueToFragment, generateRefetchQuery, removeCustomDirective].forEach((transformFunc) => {
-    result = transformFunc(result);
-  });
+  [passArgumentValueToFragment, generateRefetchQuery, fixVariablenotDefinedInRoot, removeCustomDirective].forEach(
+    (transformFunc) => {
+      result = transformFunc(result);
+    },
+  );
   return result;
 };
 

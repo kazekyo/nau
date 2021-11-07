@@ -174,6 +174,7 @@ export type MyFragment2_UserFragment = { __typename?: 'User', name?: string | nu
 
 export type App_PaginationQueryQueryVariables = Exact<{
   count?: Maybe<Scalars['Int']>;
+  cursor?: Maybe<Scalars['String']>;
   id: Scalars['ID'];
 }>;
 
@@ -242,7 +243,7 @@ export type MyAppQueryQueryHookResult = ReturnType<typeof useMyAppQueryQuery>;
 export type MyAppQueryLazyQueryHookResult = ReturnType<typeof useMyAppQueryLazyQuery>;
 export type MyAppQueryQueryResult = Apollo.QueryResult<MyAppQueryQuery, MyAppQueryQueryVariables>;
 export const App_PaginationQueryDocument = gql`
-    query App_PaginationQuery($count: Int = 1, $id: ID!) {
+    query App_PaginationQuery($count: Int = 5, $cursor: String, $id: ID!) {
   node(id: $id) {
     id
     __typename
@@ -264,6 +265,7 @@ export const App_PaginationQueryDocument = gql`
  * const { data, loading, error } = useApp_PaginationQueryQuery({
  *   variables: {
  *      count: // value for 'count'
+ *      cursor: // value for 'cursor'
  *      id: // value for 'id'
  *   },
  * });

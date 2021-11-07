@@ -15,7 +15,11 @@ import {
 import { encode } from 'js-base64';
 import merge from 'lodash.merge';
 import { ARGUMENTS_DIRECTIVE_NAME, ARGUMENT_DEFINITIONS_DIRECTIVE_NAME } from '../utils/directiveName';
-import { getFragmentDefinitionsByDocumentFiles, getOperationDefinition } from '../utils/graphqlAST';
+import {
+  getFragmentDefinitionByName,
+  getFragmentDefinitionsByDocumentFiles,
+  getOperationDefinition,
+} from '../utils/graphqlAST';
 
 type ChangedFragments = { [key: string]: FragmentDefinitionNode[] };
 
@@ -279,7 +283,7 @@ const transformFragmentSpread = <TDefinitionNode extends ASTNode>(params: {
   const newDefinition = visit(targetDefinition, {
     FragmentSpread: {
       enter(node) {
-        const next = getFragmentDefinition(fragmentDefinitions, node.name.value);
+        const next = getFragmentDefinitionByName({ fragmentDefinitions, fragmentName: node.name.value });
         if (!next) return;
 
         const argumentsDirective = getArgumentsDirective(node);
@@ -321,13 +325,6 @@ const transformFragmentSpread = <TDefinitionNode extends ASTNode>(params: {
     },
   }) as TDefinitionNode;
   return { changedFragments, newDefinition };
-};
-
-const getFragmentDefinition = (
-  fragmentDefinitions: FragmentDefinitionNode[],
-  fragmentName: string,
-): FragmentDefinitionNode | undefined => {
-  return fragmentDefinitions.find((definition) => definition.name.value === fragmentName);
 };
 
 const generateNameReplacedNode = ({

@@ -23,3 +23,13 @@ export const getFragmentDefinitionsByDocumentFiles = (
     .flat()
     .filter((definition): definition is FragmentDefinitionNode => definition.kind === Kind.FRAGMENT_DEFINITION);
 };
+
+export const getFragmentDefinitionByName = ({
+  fragmentDefinitions,
+  fragmentName,
+}: {
+  fragmentDefinitions: FragmentDefinitionNode[];
+  fragmentName: string;
+}): FragmentDefinitionNode | undefined => {
+  return fragmentDefinitions.find((definition) => definition.name.value === fragmentName);
+};

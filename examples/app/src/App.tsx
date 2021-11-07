@@ -8,9 +8,9 @@ import { useMyAppQueryQuery } from './generated/graphql';
 const myFragment = gql`
   fragment MyFragment1_user on User
   @refetchable(queryName: "App_PaginationQuery")
-  @argumentDefinitions(count: { type: "Int", defaultValue: 1 }) {
+  @argumentDefinitions(count: { type: "Int", defaultValue: 5 }, cursor: { type: "String" }) {
     name
-    items5: items(first: $count) {
+    items5: items(first: $count, after: $cursor) {
       edges {
         node {
           id
@@ -25,10 +25,10 @@ gql`
     viewer {
       id
       ...MyFragment1_user @arguments(count: 5)
-      ...MyFragment2_user @arguments(count: 3)
+      ...MyFragment2_user
     }
   }
-  fragment MyFragment2_user on User @argumentDefinitions(count: { type: "Int", defaultValue: 1 }) {
+  fragment MyFragment2_user on User @argumentDefinitions(count: { type: "Int", defaultValue: 3 }) {
     name
     items3: items(first: $count) {
       edges {
