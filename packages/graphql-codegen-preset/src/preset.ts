@@ -16,11 +16,13 @@ import {
   ValidationContext,
   ValidationRule,
 } from 'graphql';
-import { transform as fixVariablenotDefinedInRoot } from './transforms/fixVariablenotDefinedInRoot';
+import { transform as fixVariableNotDefinedInRoot } from './transforms/fixVariableNotDefinedInRoot';
 import { transform as generateRefetchQuery } from './transforms/generateRefetchQuery';
 import { transform as passArgumentValueToFragment } from './transforms/passArgumentValueToFragment';
+import { transform as addPaginationFields } from './transforms/addPaginationFields';
 import { transform as removeCustomDirective } from './transforms/removeCustomDirective';
 import { customDirectives } from './utils/directive';
+import { paginationDirectiveValidationRule } from './validationRules/PaginationDirective';
 
 const transform = ({
   documentFiles,
@@ -28,11 +30,15 @@ const transform = ({
   documentFiles: Types.DocumentFile[];
 }): { documentFiles: Types.DocumentFile[] } => {
   let result = { documentFiles };
-  [passArgumentValueToFragment, generateRefetchQuery, fixVariablenotDefinedInRoot, removeCustomDirective].forEach(
-    (transformFunc) => {
-      result = transformFunc(result);
-    },
-  );
+  [
+    passArgumentValueToFragment,
+    generateRefetchQuery,
+    fixVariableNotDefinedInRoot,
+    addPaginationFields,
+    removeCustomDirective,
+  ].forEach((transformFunc) => {
+    result = transformFunc(result);
+  });
   return result;
 };
 
@@ -54,6 +60,7 @@ const validationRules = (): ValidationRule[] => {
     RelayDefaultValueOfCorrectType,
     RelayNoUnusedArguments,
     RelayKnownArgumentNames,
+    paginationDirectiveValidationRule,
   ];
 };
 
@@ -79,6 +86,7 @@ export const preset: Types.OutputPreset = {
 
     return validateGraphQlDocuments(schemaObject, options.documents, validationRules()).then((errors) => {
       checkValidationErrors(errors);
+
       const { documentFiles } = transform({ documentFiles: options.documents });
       const result = [
         {

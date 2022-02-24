@@ -163,12 +163,12 @@ export type UserItemsArgs = {
   last?: Maybe<Scalars['Int']>;
 };
 
-export type MyFragment1_UserFragment = { __typename?: 'User', name?: string | null | undefined, items5?: { __typename?: 'ItemConnection', edges?: Array<{ __typename?: 'ItemEdge', node?: { __typename?: 'Item', id: string } | null | undefined } | null | undefined> | null | undefined } | null | undefined };
+export type MyFragment1_UserFragment = { __typename?: 'User', name?: string | null | undefined, items5?: { __typename?: 'ItemConnection', edges?: Array<{ __typename?: 'ItemEdge', cursor: string, node?: { __typename: 'Item', id: string } | null | undefined } | null | undefined> | null | undefined, pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, endCursor?: string | null | undefined, hasPreviousPage: boolean, startCursor?: string | null | undefined } } | null | undefined };
 
 export type MyAppQueryQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type MyAppQueryQuery = { __typename?: 'Query', viewer?: { __typename?: 'User', id: string, name?: string | null | undefined, items5?: { __typename?: 'ItemConnection', edges?: Array<{ __typename?: 'ItemEdge', node?: { __typename?: 'Item', id: string } | null | undefined } | null | undefined> | null | undefined } | null | undefined, items3?: { __typename?: 'ItemConnection', edges?: Array<{ __typename?: 'ItemEdge', node?: { __typename?: 'Item', id: string } | null | undefined } | null | undefined> | null | undefined } | null | undefined } | null | undefined };
+export type MyAppQueryQuery = { __typename?: 'Query', viewer?: { __typename?: 'User', id: string, name?: string | null | undefined, items5?: { __typename?: 'ItemConnection', edges?: Array<{ __typename?: 'ItemEdge', cursor: string, node?: { __typename: 'Item', id: string } | null | undefined } | null | undefined> | null | undefined, pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, endCursor?: string | null | undefined, hasPreviousPage: boolean, startCursor?: string | null | undefined } } | null | undefined, items3?: { __typename?: 'ItemConnection', edges?: Array<{ __typename?: 'ItemEdge', node?: { __typename?: 'Item', id: string } | null | undefined } | null | undefined> | null | undefined } | null | undefined } | null | undefined };
 
 export type MyFragment2_UserFragment = { __typename?: 'User', name?: string | null | undefined, items3?: { __typename?: 'ItemConnection', edges?: Array<{ __typename?: 'ItemEdge', node?: { __typename?: 'Item', id: string } | null | undefined } | null | undefined> | null | undefined } | null | undefined };
 
@@ -179,7 +179,7 @@ export type App_PaginationQueryQueryVariables = Exact<{
 }>;
 
 
-export type App_PaginationQueryQuery = { __typename?: 'Query', node?: { __typename: 'Item', id: string } | { __typename: 'User', id: string, name?: string | null | undefined, items5?: { __typename?: 'ItemConnection', edges?: Array<{ __typename?: 'ItemEdge', node?: { __typename?: 'Item', id: string } | null | undefined } | null | undefined> | null | undefined } | null | undefined } | null | undefined };
+export type App_PaginationQueryQuery = { __typename?: 'Query', node?: { __typename: 'Item', id: string } | { __typename: 'User', id: string, name?: string | null | undefined, items5?: { __typename?: 'ItemConnection', edges?: Array<{ __typename?: 'ItemEdge', cursor: string, node?: { __typename: 'Item', id: string } | null | undefined } | null | undefined> | null | undefined, pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, endCursor?: string | null | undefined, hasPreviousPage: boolean, startCursor?: string | null | undefined } } | null | undefined } | null | undefined };
 
 export const MyFragment1_UserFragmentDoc = gql`
     fragment MyFragment1_user on User {
@@ -188,7 +188,15 @@ export const MyFragment1_UserFragmentDoc = gql`
     edges {
       node {
         id
+        __typename
       }
+      cursor
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+      hasPreviousPage
+      startCursor
     }
   }
 }

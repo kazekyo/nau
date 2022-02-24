@@ -10,7 +10,7 @@ describe('buildGeneratesSection', () => {
     const documents: Source[] = [
       {
         document: parse(/* GraphQL */ `
-          query TestQuery {
+          query TestQuery($cursor: String) {
             viewer {
               id
               ...Fragment_user @arguments(count: 5)
@@ -21,7 +21,7 @@ describe('buildGeneratesSection', () => {
       {
         document: parse(/* GraphQL */ `
           fragment Fragment_user on User @argumentDefinitions(count: { type: "Int", defaultValue: 1 }) {
-            items(first: $count) {
+            items(first: $count, after: $cursor) @pagination {
               edges {
                 node {
                   id
@@ -33,18 +33,26 @@ describe('buildGeneratesSection', () => {
       },
     ];
     const expectedDocument = parse(/* GraphQL */ `
-      query TestQuery {
+      query TestQuery($cursor: String) {
         viewer {
           id
           ...Fragment_user
         }
       }
       fragment Fragment_user on User {
-        items(first: 5) {
+        items(first: 5, after: $cursor) {
           edges {
             node {
               id
+              __typename
             }
+            cursor
+          }
+          pageInfo {
+            hasNextPage
+            endCursor
+            hasPreviousPage
+            startCursor
           }
         }
       }

@@ -10,7 +10,7 @@ const myFragment = gql`
   @refetchable(queryName: "App_PaginationQuery")
   @argumentDefinitions(count: { type: "Int", defaultValue: 5 }, cursor: { type: "String" }) {
     name
-    items5: items(first: $count, after: $cursor) {
+    items5: items(first: $count, after: $cursor) @pagination {
       edges {
         node {
           id

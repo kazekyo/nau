@@ -2,6 +2,8 @@ directive @argumentDefinitions on FRAGMENT_DEFINITION
 
 directive @arguments on FRAGMENT_SPREAD
 
+directive @pagination on FIELD
+
 directive @refetchable(queryName: String) on FRAGMENT_DEFINITION
 
 input AddItemInput {

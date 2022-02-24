@@ -1914,6 +1914,15 @@
         ]
       },
       {
+        "name": "pagination",
+        "description": null,
+        "isRepeatable": false,
+        "locations": [
+          "FIELD"
+        ],
+        "args": []
+      },
+      {
         "name": "refetchable",
         "description": null,
         "isRepeatable": false,
