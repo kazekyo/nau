@@ -1,19 +1,43 @@
-import { FieldFunctionOptions, Reference } from '@apollo/client';
-import { FieldNode } from 'graphql/language';
-import { CacheIdGenerator } from './cacheIdGenerator';
-import { findDirectiveName } from './directiveName';
+import { FieldFunctionOptions, Reference, TypePolicies, TypePolicy } from '@apollo/client';
+import { FieldNode } from 'graphql';
+import { findDirectiveName } from '../../utils/directiveName';
+import { generateTypePolicyPairWithTypeMergeFunction, TypePolicyPair } from './util';
 
-export const deleteRecordFromChildrenField = ({
+export type DeleteRecordMeta = {
+  parent: {
+    typename: string;
+  };
+  fields: { fieldName: string; typename: string }[];
+};
+
+export const generateDeleteRecordTypePolicyPairs = ({
+  deleteRecordMetaList,
+  typePolicies,
+}: {
+  deleteRecordMetaList: DeleteRecordMeta[];
+  typePolicies: TypePolicies;
+}): [string, TypePolicy][] => {
+  return deleteRecordMetaList.map((metadata): TypePolicyPair => {
+    return generateTypePolicyPairWithTypeMergeFunction({
+      innerFunction: ({ mergedObject, options }) => deleteRecord({ object: mergedObject, options, metadata }),
+      typename: metadata.parent.typename,
+      typePolicies,
+    });
+  });
+};
+
+const deleteRecord = ({
   object,
-  cacheIdGenerator,
-  cache,
-  field,
-  readField,
+  options,
+  metadata,
 }: {
   object: Reference;
-  cacheIdGenerator: CacheIdGenerator;
-} & Pick<FieldFunctionOptions, 'cache' | 'field' | 'readField'>): void => {
-  const fieldNames =
+  options: FieldFunctionOptions;
+  metadata: DeleteRecordMeta;
+}): void => {
+  const { cache, field, readField } = options;
+
+  const fieldsWithDeleteRecord =
     field?.selectionSet?.selections
       .filter(
         (selection): selection is FieldNode =>
@@ -21,13 +45,16 @@ export const deleteRecordFromChildrenField = ({
           selection.kind === 'Field',
       )
       .map((selection) => selection.name.value) || [];
-  fieldNames.forEach((fieldName) => {
-    const globalId = readField({ fieldName, from: object });
-    if (typeof globalId != 'string') return;
-    const cacheId = cacheIdGenerator(globalId);
+
+  if (fieldsWithDeleteRecord.length === 0) return;
+
+  metadata.fields.forEach((fieldMeta) => {
+    if (!fieldsWithDeleteRecord.includes(fieldMeta.fieldName)) return;
+    const id = readField({ fieldName: fieldMeta.fieldName, from: object });
+    if (typeof id != 'string') return;
+    const cacheId = cache.identify({ id, __typename: fieldMeta.typename });
     cache.evict({ id: cacheId });
   });
-  if (fieldNames.length > 0) {
-    cache.gc();
-  }
+
+  cache.gc();
 };

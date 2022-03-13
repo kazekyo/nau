@@ -1,65 +1,62 @@
-import { FieldFunctionOptions, FieldMergeFunction, Reference, TypePolicies, TypePolicy } from '@apollo/client';
-import { CacheIdGenerator, defaultCacheIdGenerator } from './cacheIdGenerator';
-import { deleteRecordFromChildrenField } from './deleteRecord';
-import { insertNodesToConnections } from './insertNode';
+import { TypePolicies } from '@apollo/client';
+import { uniqWith } from 'lodash';
+import { DeleteRecordMeta, generateDeleteRecordTypePolicyPairs } from './deleteRecord';
+import {
+  generatePaginationNodeTypePolicyPairs,
+  generatePaginationParentTypePolicyPairs,
+  PaginationMeta,
+} from './pagination';
+import { TypePolicyPair } from './util';
 
-export const withCacheUpdater = ({
-  directiveAvailableTypes,
-  typePolicies: existingTypePolicies,
-  cacheIdGenerator,
-}: {
-  directiveAvailableTypes: string[];
-  typePolicies: TypePolicies;
-  cacheIdGenerator?: CacheIdGenerator;
-}): TypePolicies => {
-  const existingTypePolicyKeys = Object.keys(existingTypePolicies);
-
-  const typePolicyArray = directiveAvailableTypes.map((type): [string, TypePolicy] => {
-    let typePolicy: TypePolicy = cacheUpdater({ cacheIdGenerator: cacheIdGenerator || defaultCacheIdGenerator });
-    if (existingTypePolicyKeys.includes(type)) {
-      const existingTypePolicy = existingTypePolicies[type];
-      const cacheUpdaterMergeFunction = cacheUpdater({ cacheIdGenerator: cacheIdGenerator || defaultCacheIdGenerator })
-        .merge as FieldMergeFunction<Reference, Reference>;
-      const mergeFunction: FieldMergeFunction<Reference, Reference> = (existing, incoming, options, ...rest) => {
-        cacheUpdaterMergeFunction(existing, incoming, options, ...rest);
-        if (existingTypePolicy.merge === false || !existing) {
-          return incoming;
-        } else if (existingTypePolicy.merge === true || !existingTypePolicy.merge) {
-          return options.mergeObjects(existing, incoming);
-        } else {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-          return existingTypePolicy.merge(existing, incoming, options, ...rest);
-        }
-      };
-      typePolicy = {
-        ...existingTypePolicy,
-        merge: mergeFunction,
-      };
-    }
-    return [type, typePolicy];
+const mergeTypePolicyPairs = (pairsList: Array<TypePolicyPair[]>): TypePolicyPair[] => {
+  const allTypename = uniqWith(
+    pairsList.flat().map(([key, _]) => key),
+    (a, b) => a === b,
+  );
+  return allTypename.map((typename) => {
+    const pairs = pairsList.flat().filter((pair) => pair[0] === typename);
+    let newTypePolicy = {};
+    pairs.forEach((pair) => {
+      newTypePolicy = { ...newTypePolicy, ...pair[1] };
+    });
+    return [typename, newTypePolicy];
   });
-  const result = { ...existingTypePolicies, ...Object.fromEntries(typePolicyArray) };
-  return result;
 };
 
-const cacheUpdater = ({ cacheIdGenerator }: { cacheIdGenerator: CacheIdGenerator }): TypePolicy => {
-  return {
-    merge(existing: Reference, incoming: Reference, options: FieldFunctionOptions) {
-      const mergedObject = options.mergeObjects(existing, incoming);
+const typePoliciesFromTypePolicyPairs = (typePolicyPairs: TypePolicyPair[]): TypePolicies => {
+  return Object.fromEntries(typePolicyPairs);
+};
 
-      deleteRecordFromChildrenField({
-        object: mergedObject,
-        cacheIdGenerator: cacheIdGenerator,
-        ...options,
-      });
+// NOTE: If you want to remove an edge from an edges of a connection when using @deleteRecord,
+//   you must set the information of that connection to `paginationMetaList`.
+//   This means that the connection requires the @pagination directive.
+export const withCacheUpdater = ({
+  paginationMetaList,
+  deleteRecordMetaList,
+  typePolicies,
+}: {
+  paginationMetaList: PaginationMeta[];
+  deleteRecordMetaList: DeleteRecordMeta[];
+  typePolicies: TypePolicies;
+}): TypePolicies => {
+  const paginationParentTypePolicyPairs = generatePaginationParentTypePolicyPairs({ paginationMetaList, typePolicies });
+  const paginationNodeTypePolicyPairs = generatePaginationNodeTypePolicyPairs({ paginationMetaList, typePolicies });
+  const paginationTypePolicyPairs = mergeTypePolicyPairs([
+    paginationParentTypePolicyPairs,
+    paginationNodeTypePolicyPairs,
+  ]);
 
-      insertNodesToConnections({
-        object: mergedObject,
-        cacheIdGenerator,
-        ...options,
-      });
-
-      return mergedObject;
-    },
+  let newTypePolicies = {
+    ...typePolicies,
+    ...typePoliciesFromTypePolicyPairs(paginationTypePolicyPairs),
   };
+
+  const deleteRecordTypePolicyPairs = generateDeleteRecordTypePolicyPairs({
+    deleteRecordMetaList,
+    typePolicies: newTypePolicies,
+  });
+
+  newTypePolicies = { ...newTypePolicies, ...typePoliciesFromTypePolicyPairs(deleteRecordTypePolicyPairs) };
+
+  return newTypePolicies;
 };

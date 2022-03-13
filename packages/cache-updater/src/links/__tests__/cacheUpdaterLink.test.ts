@@ -6,14 +6,14 @@ describe('cacheUpdaterLink', () => {
   const subjectLink = createCacheUpdaterLink();
   it('removes directives and related variables from the mutation operation', (done) => {
     const document = gql`
-      mutation Mutation($connections: [String!]!, $edgeTypeName: String!) {
-        foo @prependNode(connections: $connections, edgeTypeName: $edgeTypeName) {
+      mutation Mutation($connections: [String!]!) {
+        foo @prependNode(connections: $connections) {
           id
         }
-        bar @appendNode(connections: $connections, edgeTypeName: $edgeTypeName) {
+        bar @appendNode(connections: $connections) {
           id
         }
-        id @deleteRecord
+        id @deleteRecord(typename: "Foo")
       }
     `;
     const expectedDocument = gql`
@@ -27,7 +27,7 @@ describe('cacheUpdaterLink', () => {
         id
       }
     `;
-    const variables = { connections: ['dummyId'], edgeTypeName: 'DummyEdgeTypeName', other: 'ok' };
+    const variables = { connections: ['dummyId'], other: 'ok' };
     const expectedVariables = { other: 'ok' };
 
     const successMockData = { data: { success: 'ok' } };

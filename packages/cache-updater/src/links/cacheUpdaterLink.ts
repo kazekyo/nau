@@ -1,6 +1,7 @@
 import { ApolloLink, Operation } from '@apollo/client';
 import { DocumentNode, visit } from 'graphql/language';
-import { CACHE_UPDATER_DIRECTIVE_NAMES } from '../policies';
+import { uniq } from 'lodash';
+import { CACHE_UPDATER_DIRECTIVE_NAMES, DELETE_VARIABLES_DIRECTIVE_NAMES } from '../policies';
 import { isQueryOperation } from '../utils/graphqlAST';
 import { createApolloLink } from './utils';
 
@@ -13,15 +14,17 @@ const transform = (operation: Operation): Operation => {
     Directive: {
       enter(node) {
         if (
-          CACHE_UPDATER_DIRECTIVE_NAMES.find((name) => name === node.name.value) &&
+          DELETE_VARIABLES_DIRECTIVE_NAMES.find((name) => name === node.name.value) &&
           node.arguments &&
           node.arguments.length > 0
         ) {
-          argumentNames = node.arguments.map((m) => m.name.value);
+          argumentNames = [...argumentNames, ...node.arguments.map((m) => m.name.value)];
         }
       },
     },
   });
+
+  argumentNames = uniq(argumentNames);
 
   operation.query = visit(input, {
     VariableDefinition: {
