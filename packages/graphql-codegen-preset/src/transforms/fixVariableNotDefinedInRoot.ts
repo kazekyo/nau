@@ -71,7 +71,7 @@ export const transform = ({
                 }
               },
             },
-          });
+          }) as DocumentNode;
         },
       },
     }) as DocumentNode;
@@ -83,7 +83,7 @@ export const transform = ({
 
 const getQueryNamesPairs = ({ documentFiles }: { documentFiles: Types.DocumentFile[] }): QueryNamesPair[] => {
   const fragmentDefinitions = getFragmentDefinitionsByDocumentFiles(documentFiles);
-  let namesPairs: QueryNamesPair[] = [];
+  const namesPairs: QueryNamesPair[] = [];
   documentFiles.map((file) => {
     if (!file.document) return file;
     const operationDefinition = getOperationDefinition(file.document);

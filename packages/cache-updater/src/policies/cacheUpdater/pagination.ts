@@ -73,7 +73,12 @@ export const generatePaginationParentTypePolicyPairs = ({
           throw notFoundOriginalFieldTypePolicyError;
         }
 
-        const mergeFieldTypePolicy: FieldMergeFunction = (existing, incoming, options, ...rest) => {
+        const mergeFieldTypePolicy: FieldMergeFunction = (
+          existing: Reference,
+          incoming: Reference,
+          options,
+          ...rest
+        ) => {
           const originalFieldMerge = originalConnectionFieldTypePolicy.merge;
           if (originalFieldMerge === false || originalFieldMerge === true || !originalFieldMerge) {
             throw notFoundOriginalFieldTypePolicyError;
@@ -81,7 +86,9 @@ export const generatePaginationParentTypePolicyPairs = ({
 
           if (!existing) return { ...incoming, args: options.args };
 
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           const result = originalFieldMerge(existing, incoming, options, ...rest);
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-return
           return { ...result, args: options.args };
         };
 
@@ -106,7 +113,9 @@ export const generatePaginationParentTypePolicyPairs = ({
           const connectionId = generateConnectionId(connectionInfo);
 
           // Works even if user omits `edges` field
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           const originalResult = originalFieldRead({ edges: [], ...existing }, options, ...rest);
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-return
           return {
             ...originalResult,
             __connectionId: connectionId,
@@ -209,6 +218,6 @@ const getConnectionInfos = (storeFieldName: FieldFunctionOptions['storeFieldName
   return connections.map((connection) => JSON.parse(decode(connection)) as ConnectionInfo);
 };
 
-export const generateConnectionId = (params: ConnectionInfo) => {
+export const generateConnectionId = (params: ConnectionInfo): string => {
   return encode(JSON.stringify(params));
 };

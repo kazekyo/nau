@@ -4,18 +4,18 @@ import '@testing-library/jest-dom';
 import { act } from '@testing-library/react';
 import { renderHook } from '@testing-library/react-hooks';
 import { clientMockedWrapperComponent, mockedWrapperComponent } from '../../../utils/testing/mockedWrapperComponent';
-import { testTypePoliciesWithSpecificReturnType, mutationMockDataWithSpecificReturnType } from './deleteRecord.mock';
 import {
-  item1Id,
   item2Id,
   mutationDocument,
   mutationMockData,
+  mutationMockDataWithSpecificReturnType,
   QueryDataType,
   queryDocument,
   queryMockData,
   subscriptionDocument,
   subscriptionMockData,
   testTypePolicies,
+  testTypePoliciesWithSpecificReturnType,
 } from './deleteRecord.mock';
 
 describe('@deleteRecord', () => {

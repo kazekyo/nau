@@ -1,7 +1,6 @@
 import { Types } from '@graphql-codegen/plugin-helpers';
 import { DocumentNode, FieldNode, visit } from 'graphql';
 import { SelectionNode } from 'graphql/language';
-import merge from 'lodash.merge';
 import { PAGINATION_DIRECTIVE_NAME } from '../utils/directive';
 
 const pageInfoField: FieldNode = {
@@ -142,7 +141,7 @@ const addEdgesRelatedFields = ({ connectionFieldNode }: { connectionFieldNode: F
 
   const selections = connectionFieldNode.selectionSet.selections;
 
-  let edgesIndex = selections.findIndex((selection) => isFieldNode({ selection, name: 'edges' }));
+  const edgesIndex = selections.findIndex((selection) => isFieldNode({ selection, name: 'edges' }));
 
   // If there is no edges field, do nothing. Because it does not contain any nodes to paginate.
   if (edgesIndex === -1) return connectionFieldNode;

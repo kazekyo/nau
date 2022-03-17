@@ -32,8 +32,11 @@ export const generateTypePolicyPairWithTypeMergeFunction = ({
       typename,
       {
         merge: (existing, incoming, options) => {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           const object = options.mergeObjects(existing, incoming);
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           innerFunction({ mergedObject: object, incoming, options });
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-return
           return object;
         },
       },
@@ -42,7 +45,7 @@ export const generateTypePolicyPairWithTypeMergeFunction = ({
 
   const typePolicy: TypePolicy = {
     ...originalTypePolicy,
-    merge: (existing, incoming, options) => {
+    merge: (existing: Reference, incoming: Reference, options) => {
       const object = options.mergeObjects(existing, incoming);
       if (object) innerFunction({ mergedObject: object, incoming, options });
       return callMerge({ merge: originalTypePolicy.merge, mergedObject: object, incoming, options });
@@ -67,6 +70,7 @@ const callMerge = ({
   } else if (merge === true || !merge) {
     return mergedObject;
   } else {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return merge(mergedObject, incoming, options);
   }
 };

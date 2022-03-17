@@ -1,4 +1,3 @@
-import { Types } from '@graphql-codegen/plugin-helpers';
 import { parse } from 'graphql';
 import { printDocuments } from '../../utils/testing/utils';
 import { transform } from '../addPaginationFields';
