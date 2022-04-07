@@ -12,10 +12,14 @@
     "@graphql-tools/utils": "^8.2.4",
     "@relay-graphql-js/validation-rules": "^0.0.1",
     "js-base64": "^3.6.0",
+    "lodash.clonedeep": "^4.5.0",
     "lodash.merge": "^4.6.2",
     "lodash.uniqwith": "^4.5.0"
   },
   "devDependencies": {
+    "@graphql-codegen/testing": "^1.17.7",
+    "@nau/cache-updater": "^0.3.0",
+    "@types/lodash.clonedeep": "^4.5.6",
     "@types/lodash.merge": "^4.6.6",
     "@types/lodash.uniqwith": "^4.5.6"
   },

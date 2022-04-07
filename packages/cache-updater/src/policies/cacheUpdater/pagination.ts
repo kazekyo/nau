@@ -33,7 +33,7 @@ export type PaginationMeta = {
   parents: {
     typename: string;
     connection: {
-      fidleName: string;
+      fieldName: string;
     };
     edge: {
       typename: string;
@@ -56,14 +56,14 @@ export const generatePaginationParentTypePolicyPairs = ({
         const originalTypePolicy = findTypePolicy({ key: parent.typename, typePolicies });
 
         const notFoundOriginalFieldTypePolicyError = Error(
-          `${parent.typename}.${parent.connection.fidleName} require \`relayStylePagination\`. Please check your TypePolicy configuration.`,
+          `${parent.typename}.${parent.connection.fieldName} require \`relayStylePagination\`. Please check your TypePolicy configuration.`,
         );
 
         if (!originalTypePolicy || !originalTypePolicy.fields) {
           throw notFoundOriginalFieldTypePolicyError;
         }
 
-        const connectionFieldName = parent.connection.fidleName;
+        const connectionFieldName = parent.connection.fieldName;
         const originalConnectionFieldTypePolicy = originalTypePolicy.fields[connectionFieldName];
         if (
           !originalConnectionFieldTypePolicy ||

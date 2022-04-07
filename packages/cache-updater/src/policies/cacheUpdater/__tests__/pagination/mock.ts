@@ -36,23 +36,16 @@ const paginationMetaList = [
       {
         typename: 'Query',
         connection: {
-          fidleName: 'items',
+          fieldName: 'items',
         },
         edge: {
           typename: 'ItemEdge',
         },
       },
-    ],
-  },
-  {
-    node: {
-      typename: 'Item',
-    },
-    parents: [
       {
         typename: 'User',
         connection: {
-          fidleName: 'items',
+          fieldName: 'items',
         },
         edge: {
           typename: 'ItemEdge',

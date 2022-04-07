@@ -1,11 +1,11 @@
+import { executeCodegen } from '@graphql-codegen/cli';
 import { Source } from '@graphql-tools/utils';
-import { readFileSync } from 'fs';
 import { parse } from 'graphql';
-import { preset } from '../preset';
-import { printDocuments } from '../utils/testing/utils';
 import path from 'path';
+import { preset } from '../preset';
+import { printDocuments, testSchemaDocumentNode } from '../utils/testing/utils';
 
-describe('buildGeneratesSection', () => {
+describe('preset', () => {
   it('transforms documents', async () => {
     const documents: Source[] = [
       {
@@ -58,20 +58,55 @@ describe('buildGeneratesSection', () => {
       }
     `);
 
-    const filePath = path.join(__dirname, '../utils/testing/example.graphql');
-    const schemaString = readFileSync(filePath, { encoding: 'utf-8' });
-    const schemaDocumentNode = parse(schemaString);
-
     const result = await preset.buildGeneratesSection({
       baseOutputDir: 'src/generated/graphql.ts',
       config: {},
       presetConfig: {},
-      schema: schemaDocumentNode,
+      schema: testSchemaDocumentNode,
       documents: documents,
       plugins: [],
       pluginMap: {},
     });
 
     expect(printDocuments(result[0].documents)).toBe(printDocuments([{ document: expectedDocument }]));
+  });
+
+  describe('generateTypeScriptCode', () => {
+    it('outputs nothing code to the content when the flag is not set to true', async () => {
+      const input = {
+        schema: path.join(__dirname, '../utils/testing/example.graphql'),
+        documents: path.join(__dirname, './fixtures/exampleFile.ts'),
+        generates: {
+          ['./generated.ts']: {
+            preset,
+            plugins: [],
+          },
+        },
+      };
+
+      const result = await executeCodegen(input);
+      expect(result[0].content).toBe('');
+    });
+
+    it('outputs TypeScript code when the flag is true', async () => {
+      const input = {
+        schema: path.join(__dirname, '../utils/testing/example.graphql'),
+        documents: path.join(__dirname, './fixtures/exampleFile.ts'),
+        generates: {
+          ['./generated.ts']: {
+            preset,
+            plugins: [],
+            presetConfig: {
+              generateTypeScriptCode: true,
+            },
+          },
+        },
+      };
+
+      const result = await executeCodegen(input);
+      expect(result[0].content).toBe(
+        `export const paginationMetaList = [{ node: { typename: 'Item' }, parents: [{ typename: 'User', connection: { fieldName: 'items' }, edge: { typename: 'ItemEdge' } }] }]`,
+      );
+    });
   });
 });
