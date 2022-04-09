@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client';
 import { relayStylePagination } from '@apollo/client/utilities';
 import { backendNodeIdGenerator } from '../../../utils/testing/backendNodeIdGenerator';
-import { withCacheUpdater } from '../withCacheUpdater';
+import { withCacheUpdaterInternal } from '../withCacheUpdater';
 
 type ItemsConnectionType = {
   __connectionId: string;
@@ -47,7 +47,7 @@ const paginationMetaList = [
 ];
 
 const deleteRecordMetaList = [{ parent: { typename: 'Item' }, fields: [{ fieldName: 'id', typename: 'Item' }] }];
-export const testTypePolicies = withCacheUpdater({
+export const testTypePolicies = withCacheUpdaterInternal({
   paginationMetaList,
   deleteRecordMetaList,
   typePolicies: {
@@ -147,7 +147,7 @@ export const subscriptionDocument = gql`
 `;
 export const subscriptionMockData = { itemDeleted: { item: { id: item1Id, __typename: 'Item' } } };
 
-export const testTypePoliciesWithSpecificReturnType = withCacheUpdater({
+export const testTypePoliciesWithSpecificReturnType = withCacheUpdaterInternal({
   paginationMetaList,
   deleteRecordMetaList: [{ parent: { typename: 'DeletedItem' }, fields: [{ fieldName: 'id', typename: 'Item' }] }],
   typePolicies: {

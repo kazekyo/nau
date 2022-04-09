@@ -30,7 +30,7 @@ const typePoliciesFromTypePolicyPairs = (typePolicyPairs: TypePolicyPair[]): Typ
 // NOTE: If you want to remove an edge from an edges of a connection when using @deleteRecord,
 //   you must set the information of that connection to `paginationMetaList`.
 //   This means that the connection requires the @pagination directive.
-export const withCacheUpdater = ({
+export const withCacheUpdaterInternal = ({
   paginationMetaList,
   deleteRecordMetaList,
   typePolicies,

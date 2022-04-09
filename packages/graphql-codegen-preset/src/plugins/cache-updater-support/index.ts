@@ -39,7 +39,8 @@ export const plugin: PluginFunction<
   visit(allAst, visitWithTypeInfo(typeInfo, { leave: visitor })) as DocumentNode;
 
   return {
-    content: [visitor.getPaginationMetaListContent()].join('\n'),
+    prepend: visitor.getImports(),
+    content: visitor.getContent(),
   };
 };
 

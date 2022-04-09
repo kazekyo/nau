@@ -1,5 +1,6 @@
 import { Types } from '@graphql-codegen/plugin-helpers';
 import { ClientSideBaseVisitor, LoadedFragment } from '@graphql-codegen/visitor-plugin-common';
+import { PaginationMeta } from '@nau/cache-updater';
 import autoBind from 'auto-bind';
 import {
   FieldNode,
@@ -12,7 +13,6 @@ import {
   TypeInfo,
 } from 'graphql';
 import { getFieldDef } from 'graphql/execution/execute';
-import { PaginationMeta } from '@nau/cache-updater';
 import { PAGINATION_DIRECTIVE_NAME } from '../../utils/directive';
 import { PaginationPluginConfig, PaginationRawPluginConfig } from './config';
 
@@ -37,16 +37,41 @@ export class PaginationVisitor extends ClientSideBaseVisitor<PaginationRawPlugin
   }
 
   public getImports(): string[] {
-    const hasOperations = this._collectedOperations.length > 0;
-
-    if (!hasOperations) {
-      return [];
-    }
-
-    return [`import { DocumentNode, GraphQLSchema, TypeInfo } from 'graphql'`];
+    return [
+      `import { TypePolicy } from '@apollo/client';`,
+      `import { withCacheUpdaterInternal } from '@nau/cache-updater';`,
+    ];
   }
-  public getPaginationMetaListContent(): string {
-    return `export const paginationMetaList = ${this.printPaginationMetaListTypeScriptCode(this._paginationMetaList)}`;
+
+  public getContent(): string {
+    return [this.getPaginationMetaListContent(), this.getWithCacheUpdaterContent()].join('\n');
+  }
+
+  public getWithCacheUpdaterContent(): string {
+    const parentTypenames = this._paginationMetaList
+      .map((meta) => meta.parents)
+      .flat()
+      .map((parent) => parent.typename);
+
+    const str = `
+export type CacheUpdaterTypePolicies = {
+  ${parentTypenames.map((typename) => `${typename}: TypePolicy;`).join('\n  ')}
+  [__typename: string]: TypePolicy;
+};
+
+export const withCacheUpdater = (typePolicies: CacheUpdaterTypePolicies) =>
+  withCacheUpdaterInternal({
+    paginationMetaList,
+    deleteRecordMetaList: [],
+    typePolicies,
+  });`;
+    return str;
+  }
+
+  private getPaginationMetaListContent(): string {
+    return (
+      '\n' + `export const paginationMetaList = ${this.printPaginationMetaListTypeScriptCode(this._paginationMetaList)}`
+    );
   }
 
   private printPaginationMetaListTypeScriptCode(object: unknown): string {
@@ -61,11 +86,18 @@ export class PaginationVisitor extends ClientSideBaseVisitor<PaginationRawPlugin
     }
   }
 
+  public Field(fieldNode: FieldNode): void {
+    const paginationMeta = this.findPaginationMeta(fieldNode);
+    if (paginationMeta) {
+      this.addPaginationMetaToList(paginationMeta);
+    }
+  }
+
   private isFieldNode(selection: SelectionNode, name: string): boolean {
     return selection.kind === 'Field' && selection.name.value === name;
   }
 
-  public Field(fieldNode: FieldNode): void {
+  private findPaginationMeta(fieldNode: FieldNode): PaginationMeta | undefined {
     if (!fieldNode.directives) return;
     const paginationDirective = fieldNode.directives.find(
       (directive) => directive.name.value === PAGINATION_DIRECTIVE_NAME,
@@ -73,11 +105,9 @@ export class PaginationVisitor extends ClientSideBaseVisitor<PaginationRawPlugin
     if (!paginationDirective) return;
 
     if (!fieldNode.selectionSet) return;
-
     const edgesFieldNode = fieldNode.selectionSet.selections.find((selection): selection is FieldNode =>
       this.isFieldNode(selection, 'edges'),
     );
-
     if (!edgesFieldNode || !edgesFieldNode.selectionSet) return;
 
     const nodeFieldNode = edgesFieldNode.selectionSet.selections.find((selection): selection is FieldNode =>
@@ -105,31 +135,35 @@ export class PaginationVisitor extends ClientSideBaseVisitor<PaginationRawPlugin
       edge: { typename: edgeType.toString() },
     };
 
-    const newMetaObject: PaginationMeta = {
+    return {
       node: { typename: nodeType.toString() },
       parents: [newParentMeta],
     };
+  }
 
+  private addPaginationMetaToList(paginationMeta: PaginationMeta): void {
     const nodeIndexInMetaList = this._paginationMetaList.findIndex(
-      (meta) => meta.node.typename === newMetaObject.node.typename,
+      (meta) => meta.node.typename === paginationMeta.node.typename,
     );
     if (nodeIndexInMetaList === -1) {
-      this._paginationMetaList.push(newMetaObject);
+      this._paginationMetaList.push(paginationMeta);
       return;
     }
+
+    const newParent = paginationMeta.parents[0];
 
     const existingMetaObject = this._paginationMetaList[nodeIndexInMetaList];
     const existingParentMeta = existingMetaObject.parents.find(
       (parent) =>
-        parent.typename === newParentMeta.typename &&
-        parent.connection.fieldName === newParentMeta.connection.fieldName &&
-        parent.edge.typename === newParentMeta.edge.typename,
+        parent.typename === newParent.typename &&
+        parent.connection.fieldName === newParent.connection.fieldName &&
+        parent.edge.typename === newParent.edge.typename,
     );
     if (existingParentMeta) return;
 
     this._paginationMetaList[nodeIndexInMetaList] = {
       ...existingMetaObject,
-      parents: [...existingMetaObject.parents, newParentMeta],
+      parents: [...existingMetaObject.parents, newParent],
     };
   }
 }

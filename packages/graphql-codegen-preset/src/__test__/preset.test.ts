@@ -104,9 +104,7 @@ describe('preset', () => {
       };
 
       const result = await executeCodegen(input);
-      expect(result[0].content).toBe(
-        `export const paginationMetaList = [{ node: { typename: 'Item' }, parents: [{ typename: 'User', connection: { fieldName: 'items' }, edge: { typename: 'ItemEdge' } }] }]`,
-      );
+      expect(result[0].content).toMatchSnapshot();
     });
   });
 });

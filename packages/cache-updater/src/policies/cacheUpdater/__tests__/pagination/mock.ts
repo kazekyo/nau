@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client';
 import { relayStylePagination } from '@apollo/client/utilities';
 import { backendNodeIdGenerator } from '../../../../utils/testing/backendNodeIdGenerator';
-import { withCacheUpdater } from '../../withCacheUpdater';
+import { withCacheUpdaterInternal } from '../../withCacheUpdater';
 
 type ItemsConnectionType = {
   __connectionId: string;
@@ -55,7 +55,7 @@ const paginationMetaList = [
   },
 ];
 
-export const testTypePolicies = withCacheUpdater({
+export const testTypePolicies = withCacheUpdaterInternal({
   paginationMetaList,
   deleteRecordMetaList: [],
   typePolicies: {
