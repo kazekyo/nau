@@ -60,6 +60,28 @@ describe('cache-updater-support', () => {
         }
       `),
     },
+    {
+      document: parse(/* GraphQL */ `
+        mutation DeleteItemMutation($input: RemoveItemInput!) {
+          removeItem(input: $input) {
+            removedItem {
+              id @deleteRecord(typename: "Item")
+              __typename
+            }
+          }
+        }
+      `),
+    },
+    {
+      document: parse(/* GraphQL */ `
+        subscription ItemDeletedSubscription($connections: [String!]!) {
+          itemRemoved {
+            id @deleteRecord(typename: "Item")
+            __typename
+          }
+        }
+      `),
+    },
   ];
 
   it('generates paginationMetaList code', async () => {
@@ -67,7 +89,16 @@ describe('cache-updater-support', () => {
     const merged = mergeOutputs([result]);
     validateTs(merged, undefined, false, true);
     expect(result.content).toContain(
-      `export const paginationMetaList = [{ node: { typename: 'Item' }, parents: [{ typename: 'Query', connection: { fieldName: 'items' }, edge: { typename: 'ItemEdge' } }, { typename: 'User', connection: { fieldName: 'items' }, edge: { typename: 'ItemEdge' } }] }]`,
+      `export const paginationMetaList = [{ node: { typename: 'Item' }, parents: [{ typename: 'Query', connection: { fieldName: 'items' }, edge: { typename: 'ItemEdge' } }, { typename: 'User', connection: { fieldName: 'items' }, edge: { typename: 'ItemEdge' } }] }];`,
+    );
+  });
+
+  it('generates deleteRecordMetaList code', async () => {
+    const result = await plugin(testGraphqlSchema, documentsForPagination, { documentFiles: documentsForPagination });
+    const merged = mergeOutputs([result]);
+    validateTs(merged, undefined, false, true);
+    expect(result.content).toContain(
+      `const deleteRecordMetaList = [{ parent: { typename: 'RemovedItem' }, fields: [{ fieldName: 'id', typename: 'Item' }] }, { parent: { typename: 'ItemRemovedPayload' }, fields: [{ fieldName: 'id', typename: 'Item' }] }];`,
     );
   });
 
@@ -86,7 +117,7 @@ export type CacheUpdaterTypePolicies = {
 export const withCacheUpdater = (typePolicies: CacheUpdaterTypePolicies) =>
   withCacheUpdaterInternal({
     paginationMetaList,
-    deleteRecordMetaList: [],
+    deleteRecordMetaList,
     typePolicies,
   });`,
     );

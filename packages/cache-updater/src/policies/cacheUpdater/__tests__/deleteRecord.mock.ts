@@ -127,8 +127,8 @@ export const queryMockData = {
 };
 
 export const mutationDocument = gql`
-  mutation DeleteItemMutation {
-    removeItem {
+  mutation DeleteItemMutation($input: RemoveItemInput!) {
+    removeItem(input: $input) {
       removedItem {
         id @deleteRecord(typename: "Item")
         __typename
@@ -136,6 +136,12 @@ export const mutationDocument = gql`
     }
   }
 `;
+export const mutationVariables = {
+  input: {
+    itemId: item1Id,
+    userId: userId,
+  },
+};
 export const mutationMockData = { removeItem: { removedItem: { id: item1Id, __typename: 'RemovedItem' } } };
 
 export const subscriptionDocument = gql`

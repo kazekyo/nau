@@ -8,6 +8,7 @@ import {
   item2Id,
   mutationDocument,
   mutationMockData,
+  mutationVariables,
   QueryDataType,
   queryDocument,
   queryMockData,
@@ -23,10 +24,11 @@ describe('@deleteRecord', () => {
       typePolicies: testTypePolicies,
     });
   });
+
   it('deletes the mutation result from the cache', async () => {
     const mocks = [
       { request: { query: queryDocument }, result: { data: queryMockData } },
-      { request: { query: mutationDocument }, result: { data: mutationMockData } },
+      { request: { query: mutationDocument, variables: mutationVariables }, result: { data: mutationMockData } },
     ];
 
     const wrapper = mockedWrapperComponent({ mocks, cache });
@@ -40,7 +42,7 @@ describe('@deleteRecord', () => {
     const useMutationHookResult = renderHook(() => useMutation(mutationDocument), { wrapper });
     act(() => {
       const [deleteFunc] = useMutationHookResult.result.current;
-      void deleteFunc();
+      void deleteFunc({ variables: mutationVariables });
     });
 
     await useQueryHookResult.waitForValueToChange(() => useQueryHookResult.result.current.data);

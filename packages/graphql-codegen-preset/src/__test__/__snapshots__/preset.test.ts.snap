@@ -4,7 +4,9 @@ exports[`preset generateTypeScriptCode outputs TypeScript code when the flag is 
 "import { TypePolicy } from '@apollo/client';
 import { withCacheUpdaterInternal } from '@nau/cache-updater';
 
-export const paginationMetaList = [{ node: { typename: 'Item' }, parents: [{ typename: 'User', connection: { fieldName: 'items' }, edge: { typename: 'ItemEdge' } }] }]
+export const paginationMetaList = [{ node: { typename: 'Item' }, parents: [{ typename: 'User', connection: { fieldName: 'items' }, edge: { typename: 'ItemEdge' } }] }];
+
+export const deleteRecordMetaList = [{ parent: { typename: 'RemovedItem' }, fields: [{ fieldName: 'id', typename: 'Item' }] }, { parent: { typename: 'ItemRemovedPayload' }, fields: [{ fieldName: 'id', typename: 'Item' }] }];
 
 export type CacheUpdaterTypePolicies = {
   User: TypePolicy;
@@ -14,7 +16,7 @@ export type CacheUpdaterTypePolicies = {
 export const withCacheUpdater = (typePolicies: CacheUpdaterTypePolicies) =>
   withCacheUpdaterInternal({
     paginationMetaList,
-    deleteRecordMetaList: [],
+    deleteRecordMetaList,
     typePolicies,
   });"
 `;

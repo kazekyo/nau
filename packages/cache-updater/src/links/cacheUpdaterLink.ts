@@ -1,7 +1,7 @@
 import { ApolloLink, Operation } from '@apollo/client';
 import { DocumentNode, visit } from 'graphql/language';
 import { uniq } from 'lodash';
-import { CACHE_UPDATER_DIRECTIVE_NAMES, DELETE_VARIABLES_DIRECTIVE_NAMES } from '../policies';
+import { CACHE_UPDATER_DIRECTIVE_NAMES, DELETE_VARIABLES_DIRECTIVE_NAMES } from '../utils';
 import { isQueryOperation } from '../utils/graphqlAST';
 import { createApolloLink } from './utils';
 

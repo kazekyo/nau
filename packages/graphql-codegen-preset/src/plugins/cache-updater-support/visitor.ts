@@ -1,14 +1,16 @@
 import { Types } from '@graphql-codegen/plugin-helpers';
 import { ClientSideBaseVisitor, LoadedFragment } from '@graphql-codegen/visitor-plugin-common';
-import { PaginationMeta } from '@nau/cache-updater';
+import { DeleteRecordMeta, DELETE_RECORD_DIRECTIVE_NAME, PaginationMeta } from '@nau/cache-updater';
 import autoBind from 'auto-bind';
 import {
+  DirectiveNode,
   FieldNode,
   GraphQLList,
   GraphQLObjectType,
   GraphQLSchema,
   isListType,
   isObjectType,
+  Kind,
   SelectionNode,
   TypeInfo,
 } from 'graphql';
@@ -19,6 +21,7 @@ import { PaginationPluginConfig, PaginationRawPluginConfig } from './config';
 export class PaginationVisitor extends ClientSideBaseVisitor<PaginationRawPluginConfig, PaginationPluginConfig> {
   private _typeInfo: TypeInfo;
   private _paginationMetaList: PaginationMeta[];
+  private _deleteRecordMetaList: DeleteRecordMeta[];
 
   constructor(
     schema: GraphQLSchema,
@@ -32,6 +35,7 @@ export class PaginationVisitor extends ClientSideBaseVisitor<PaginationRawPlugin
     this._typeInfo = typeInfo;
     this._documents = documents;
     this._paginationMetaList = [];
+    this._deleteRecordMetaList = [];
 
     autoBind(this);
   }
@@ -44,7 +48,11 @@ export class PaginationVisitor extends ClientSideBaseVisitor<PaginationRawPlugin
   }
 
   public getContent(): string {
-    return [this.getPaginationMetaListContent(), this.getWithCacheUpdaterContent()].join('\n');
+    return [
+      this.getPaginationMetaListContent(),
+      this.getDeleteRecordMetaListContent(),
+      this.getWithCacheUpdaterContent(),
+    ].join('\n');
   }
 
   public getWithCacheUpdaterContent(): string {
@@ -62,28 +70,36 @@ export type CacheUpdaterTypePolicies = {
 export const withCacheUpdater = (typePolicies: CacheUpdaterTypePolicies) =>
   withCacheUpdaterInternal({
     paginationMetaList,
-    deleteRecordMetaList: [],
+    deleteRecordMetaList,
     typePolicies,
   });`;
     return str;
   }
 
   private getPaginationMetaListContent(): string {
+    return '\n' + `export const paginationMetaList = ${this.printMetaListTypeScriptCode(this._paginationMetaList)};`;
+  }
+
+  private getDeleteRecordMetaListContent(): string {
     return (
-      '\n' + `export const paginationMetaList = ${this.printPaginationMetaListTypeScriptCode(this._paginationMetaList)}`
+      '\n' + `export const deleteRecordMetaList = ${this.printMetaListTypeScriptCode(this._deleteRecordMetaList)};`
     );
   }
 
-  private printPaginationMetaListTypeScriptCode(object: unknown): string {
+  private printMetaListTypeScriptCode(object: unknown): string {
     if (typeof object === 'string') {
       return `'${object}'`;
     } else if (Array.isArray(object)) {
-      return `[${object.map((v) => this.printPaginationMetaListTypeScriptCode(v)).join(', ')}]`;
+      return `[${object.map((v) => this.printMetaListTypeScriptCode(v)).join(', ')}]`;
     } else {
-      const metaObject = object as PaginationMeta;
-      const list = Object.entries(metaObject).map(([k, v]) => `${k}: ${this.printPaginationMetaListTypeScriptCode(v)}`);
+      const metaObject = object as { [key: string]: unknown };
+      const list = Object.entries(metaObject).map(([k, v]) => `${k}: ${this.printMetaListTypeScriptCode(v)}`);
       return `{ ${list.join(', ')} }`;
     }
+  }
+
+  public Directive(directiveNode: DirectiveNode): void {
+    if (directiveNode.name.value !== DELETE_RECORD_DIRECTIVE_NAME) return;
   }
 
   public Field(fieldNode: FieldNode): void {
@@ -91,10 +107,55 @@ export const withCacheUpdater = (typePolicies: CacheUpdaterTypePolicies) =>
     if (paginationMeta) {
       this.addPaginationMetaToList(paginationMeta);
     }
+
+    const deleteRecordMeta = this.findDeleteRecordMeta(fieldNode);
+    if (deleteRecordMeta) {
+      this.addDeleateRecordMetaToList(deleteRecordMeta);
+    }
   }
 
   private isFieldNode(selection: SelectionNode, name: string): boolean {
     return selection.kind === 'Field' && selection.name.value === name;
+  }
+
+  private findDeleteRecordMeta(fieldNode: FieldNode): DeleteRecordMeta | undefined {
+    if (!fieldNode.directives) return;
+    const deleteRecordDirective = fieldNode.directives.find(
+      (directive) => directive.name.value === DELETE_RECORD_DIRECTIVE_NAME,
+    );
+    if (!deleteRecordDirective || !deleteRecordDirective.arguments) return;
+
+    const parentType = this._typeInfo.getParentType();
+    if (!parentType) return;
+
+    const argument = deleteRecordDirective.arguments[0];
+    if (argument.value.kind !== Kind.STRING) return;
+    const typename = argument.value.value;
+
+    return { parent: { typename: parentType.toString() }, fields: [{ fieldName: fieldNode.name.value, typename }] };
+  }
+
+  private addDeleateRecordMetaToList(deleteRecordMeta: DeleteRecordMeta): void {
+    const indexInMetaList = this._deleteRecordMetaList.findIndex(
+      (meta) => meta.parent.typename === deleteRecordMeta.parent.typename,
+    );
+    if (indexInMetaList === -1) {
+      this._deleteRecordMetaList.push(deleteRecordMeta);
+      return;
+    }
+
+    const newField = deleteRecordMeta.fields[0];
+
+    const existingMetaObject = this._deleteRecordMetaList[indexInMetaList];
+    const existingField = existingMetaObject.fields.find(
+      (field) => field.fieldName === newField.fieldName && field.typename === newField.typename,
+    );
+    if (existingField) return;
+
+    this._deleteRecordMetaList[indexInMetaList] = {
+      ...existingMetaObject,
+      fields: [...existingMetaObject.fields, newField],
+    };
   }
 
   private findPaginationMeta(fieldNode: FieldNode): PaginationMeta | undefined {
@@ -153,13 +214,13 @@ export const withCacheUpdater = (typePolicies: CacheUpdaterTypePolicies) =>
     const newParent = paginationMeta.parents[0];
 
     const existingMetaObject = this._paginationMetaList[nodeIndexInMetaList];
-    const existingParentMeta = existingMetaObject.parents.find(
+    const existingParent = existingMetaObject.parents.find(
       (parent) =>
         parent.typename === newParent.typename &&
         parent.connection.fieldName === newParent.connection.fieldName &&
         parent.edge.typename === newParent.edge.typename,
     );
-    if (existingParentMeta) return;
+    if (existingParent) return;
 
     this._paginationMetaList[nodeIndexInMetaList] = {
       ...existingMetaObject,

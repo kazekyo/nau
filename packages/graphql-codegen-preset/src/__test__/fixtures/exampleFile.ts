@@ -25,3 +25,23 @@ gql`
   }
   ${myFragment}
 `;
+
+gql`
+  mutation DeleteItemMutation($input: RemoveItemInput!) {
+    removeItem(input: $input) {
+      removedItem {
+        id @deleteRecord(typename: "Item")
+        __typename
+      }
+    }
+  }
+`;
+
+gql`
+  subscription ItemDeletedSubscription($connections: [String!]!) {
+    itemRemoved {
+      id @deleteRecord(typename: "Item")
+      __typename
+    }
+  }
+`;

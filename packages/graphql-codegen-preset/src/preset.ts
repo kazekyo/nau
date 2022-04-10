@@ -100,7 +100,6 @@ export const preset: Types.OutputPreset<PresetConfig> = {
         ];
       }
 
-      // const documentFiles = transformedObject.documentFiles;
       const { documentFiles } = removeCustomDirective({ documentFiles: transformedObject.documentFiles });
 
       const result = [
