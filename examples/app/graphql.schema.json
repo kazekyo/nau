@@ -528,6 +528,79 @@
         "description": null,
         "fields": [
           {
+            "name": "items",
+            "description": null,
+            "args": [
+              {
+                "name": "after",
+                "description": "Returns the items in the list that come after the specified cursor.",
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              },
+              {
+                "name": "before",
+                "description": "Returns the items in the list that come before the specified cursor.",
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              },
+              {
+                "name": "first",
+                "description": "Returns the first n items from the list.",
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              },
+              {
+                "name": "keyword",
+                "description": null,
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              },
+              {
+                "name": "last",
+                "description": "Returns the last n items from the list.",
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              }
+            ],
+            "type": {
+              "kind": "OBJECT",
+              "name": "ItemConnection",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "node",
             "description": "Fetches an object given its ID",
             "args": [
@@ -647,7 +720,7 @@
             "deprecationReason": null
           },
           {
-            "name": "item",
+            "name": "removedItem",
             "description": null,
             "args": [],
             "type": {
@@ -655,7 +728,34 @@
               "name": null,
               "ofType": {
                 "kind": "OBJECT",
-                "name": "Item",
+                "name": "RemovedItem",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
+        "name": "RemovedItem",
+        "description": null,
+        "fields": [
+          {
+            "name": "id",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "ID",
                 "ofType": null
               }
             },
@@ -1843,24 +1943,6 @@
     ],
     "directives": [
       {
-        "name": "argumentDefinitions",
-        "description": null,
-        "isRepeatable": false,
-        "locations": [
-          "FRAGMENT_DEFINITION"
-        ],
-        "args": []
-      },
-      {
-        "name": "arguments",
-        "description": null,
-        "isRepeatable": false,
-        "locations": [
-          "FRAGMENT_SPREAD"
-        ],
-        "args": []
-      },
-      {
         "name": "deprecated",
         "description": "Marks an element of a GraphQL schema as no longer supported.",
         "isRepeatable": false,
@@ -1906,37 +1988,6 @@
                 "name": "Boolean",
                 "ofType": null
               }
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          }
-        ]
-      },
-      {
-        "name": "pagination",
-        "description": null,
-        "isRepeatable": false,
-        "locations": [
-          "FIELD"
-        ],
-        "args": []
-      },
-      {
-        "name": "refetchable",
-        "description": null,
-        "isRepeatable": false,
-        "locations": [
-          "FRAGMENT_DEFINITION"
-        ],
-        "args": [
-          {
-            "name": "queryName",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
             },
             "defaultValue": null,
             "isDeprecated": false,
@@ -1997,6 +2048,55 @@
             "deprecationReason": null
           }
         ]
+      },
+      {
+        "name": "arguments",
+        "description": null,
+        "isRepeatable": false,
+        "locations": [
+          "FRAGMENT_SPREAD"
+        ],
+        "args": []
+      },
+      {
+        "name": "argumentDefinitions",
+        "description": null,
+        "isRepeatable": false,
+        "locations": [
+          "FRAGMENT_DEFINITION"
+        ],
+        "args": []
+      },
+      {
+        "name": "refetchable",
+        "description": null,
+        "isRepeatable": false,
+        "locations": [
+          "FRAGMENT_DEFINITION"
+        ],
+        "args": [
+          {
+            "name": "queryName",
+            "description": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ]
+      },
+      {
+        "name": "pagination",
+        "description": null,
+        "isRepeatable": false,
+        "locations": [
+          "FIELD"
+        ],
+        "args": []
       }
     ]
   }

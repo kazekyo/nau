@@ -36,6 +36,7 @@ const user2 = {
   name: 'Bob',
   items: ['6', '7', '8'],
 };
+const itemIdsAccessibleByAll = ['9', '10'];
 
 const data = {
   user: {
@@ -51,6 +52,8 @@ const data = {
     6: { id: 6, name: 'item #6' },
     7: { id: 7, name: 'item #7' },
     8: { id: 8, name: 'item #8' },
+    9: { id: 9, name: 'item #9' },
+    10: { id: 10, name: 'item #10' },
   },
 };
 
@@ -68,7 +71,7 @@ function createItem(itemName, userGlobalId) {
     id: String(nextItem++),
     name: itemName,
   };
-  const { _type, id: userId } = fromGlobalId(userGlobalId);
+  const { id: userId } = fromGlobalId(userGlobalId);
   data.item[newItem.id] = newItem;
   data.user[userId].items.push(newItem.id);
   pubsub.publish(ROBOT_ADDED_TOPIC, newItem);
@@ -76,15 +79,15 @@ function createItem(itemName, userGlobalId) {
 }
 
 function updateItem(newItemName, itemGlobalId) {
-  const { _type, id: itemId } = fromGlobalId(itemGlobalId);
+  const { id: itemId } = fromGlobalId(itemGlobalId);
   const item = data.item[itemId];
   data.item[itemId] = { ...item, name: newItemName };
   return data.item[itemId];
 }
 
-function deleteItem(itemGlobalId, userGlobalId) {
-  const { _typeItem, id: itemId } = fromGlobalId(itemGlobalId);
-  const { _typeUser, id: userId } = fromGlobalId(userGlobalId);
+function removeItem(itemGlobalId, userGlobalId) {
+  const { id: itemId } = fromGlobalId(itemGlobalId);
+  const { id: userId } = fromGlobalId(userGlobalId);
   const deletedItem = data.item[itemId];
   delete data.item[itemId];
   data.user[userId].items = data.user[userId].items.filter((id) => id !== itemId);
@@ -100,6 +103,8 @@ const { nodeInterface, nodeField } = nodeDefinitions(
         return getItem(id);
       case 'User':
         return getUser(id);
+      default:
+        return null;
     }
   },
   (obj) => (obj.items ? userType : itemType),
@@ -150,6 +155,15 @@ const queryType = new GraphQLObjectType({
       resolve: () => user1,
     },
     node: nodeField,
+    items: {
+      type: itemConnection,
+      args: { ...connectionArgs, keyword: { type: GraphQLString } },
+      resolve: (_, args) => {
+        const items = itemIdsAccessibleByAll.map(getItem);
+        const array = args.keyword ? items.filter((item) => item.name.match(args.keyword)) : items;
+        return connectionFromArray(array, args);
+      },
+    },
   }),
 });
 
@@ -201,6 +215,16 @@ const updateItemMutation = mutationWithClientMutationId({
   },
 });
 
+const removedItemType = new GraphQLObjectType({
+  name: 'RemovedItem',
+  fields: {
+    id: {
+      type: new GraphQLNonNull(GraphQLID),
+      resolve: (source) => source,
+    },
+  },
+});
+
 const removeItemMutation = mutationWithClientMutationId({
   name: 'RemoveItem',
   inputFields: {
@@ -212,15 +236,15 @@ const removeItemMutation = mutationWithClientMutationId({
     },
   },
   outputFields: {
-    item: {
-      type: new GraphQLNonNull(itemType),
+    removedItem: {
+      type: new GraphQLNonNull(removedItemType),
       resolve: (payload) => payload.item,
     },
   },
   mutateAndGetPayload: ({ itemId, userId }) => {
-    const deletedItem = deleteItem(itemId, userId);
+    const removedItem = removeItem(itemId, userId);
     return {
-      item: deletedItem,
+      removedItem,
     };
   },
 });

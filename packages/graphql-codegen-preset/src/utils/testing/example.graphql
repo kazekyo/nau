@@ -1,10 +1,10 @@
-directive @argumentDefinitions on FRAGMENT_DEFINITION
-
 directive @arguments on FRAGMENT_SPREAD
 
-directive @pagination on FIELD
+directive @argumentDefinitions on FRAGMENT_DEFINITION
 
 directive @refetchable(queryName: String) on FRAGMENT_DEFINITION
+
+directive @pagination on FIELD
 
 input AddItemInput {
   clientMutationId: String
@@ -109,16 +109,6 @@ type PageInfo {
 }
 
 type Query {
-  """
-  Fetches an object given its ID
-  """
-  node(
-    """
-    The ID of an object
-    """
-    id: ID!
-  ): Node
-  viewer: User
   items(
     """
     Returns the items in the list that come after the specified cursor.
@@ -141,6 +131,17 @@ type Query {
     """
     last: Int
   ): ItemConnection
+
+  """
+  Fetches an object given its ID
+  """
+  node(
+    """
+    The ID of an object
+    """
+    id: ID!
+  ): Node
+  viewer: User
 }
 
 input RemoveItemInput {
@@ -151,7 +152,11 @@ input RemoveItemInput {
 
 type RemoveItemPayload {
   clientMutationId: String
-  item: Item!
+  removedItem: RemovedItem!
+}
+
+type RemovedItem {
+  id: ID!
 }
 
 type Subscription {

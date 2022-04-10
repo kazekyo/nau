@@ -8,14 +8,12 @@ import {
   item2Id,
   mutationDocument,
   mutationMockData,
-  mutationMockDataWithSpecificReturnType,
   QueryDataType,
   queryDocument,
   queryMockData,
   subscriptionDocument,
   subscriptionMockData,
   testTypePolicies,
-  testTypePoliciesWithSpecificReturnType,
 } from './deleteRecord.mock';
 
 describe('@deleteRecord', () => {
@@ -81,40 +79,6 @@ describe('@deleteRecord', () => {
     await useSubscriptionHookResult.waitForValueToChange(() => useQueryHookResult.result.current.data);
     expect(useQueryHookResult.result.current.data?.items1.edges.length).toBe(0);
     expect(useQueryHookResult.result.current.data?.viewer.items2.edges.length).toBe(1);
-    expect(useQueryHookResult.result.current.data).toMatchObject({
-      items1: {
-        edges: [],
-      },
-      viewer: {
-        items2: {
-          edges: [{ node: { id: item2Id, __typename: 'Item' }, cursor: 'cursor-2' }],
-        },
-      },
-    });
-  });
-
-  it('deletes the mutation result with specific return type', async () => {
-    cache = new InMemoryCache({
-      typePolicies: testTypePoliciesWithSpecificReturnType,
-    });
-    const mocks = [
-      { request: { query: queryDocument }, result: { data: queryMockData } },
-      { request: { query: mutationDocument }, result: { data: mutationMockDataWithSpecificReturnType } },
-    ];
-
-    const wrapper = mockedWrapperComponent({ mocks, cache });
-
-    const useQueryHookResult = renderHook(() => useQuery<QueryDataType>(queryDocument), { wrapper });
-    await useQueryHookResult.waitForValueToChange(() => useQueryHookResult.result.current.data);
-    expect(useQueryHookResult.result.current.data).toMatchObject(queryMockData);
-
-    const useMutationHookResult = renderHook(() => useMutation(mutationDocument), { wrapper });
-    act(() => {
-      const [deleteFunc] = useMutationHookResult.result.current;
-      void deleteFunc();
-    });
-
-    await useQueryHookResult.waitForValueToChange(() => useQueryHookResult.result.current.data);
     expect(useQueryHookResult.result.current.data).toMatchObject({
       items1: {
         edges: [],

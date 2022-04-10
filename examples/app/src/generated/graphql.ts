@@ -105,9 +105,19 @@ export type PageInfo = {
 
 export type Query = {
   __typename?: 'Query';
+  items?: Maybe<ItemConnection>;
   /** Fetches an object given its ID */
   node?: Maybe<Node>;
   viewer?: Maybe<User>;
+};
+
+
+export type QueryItemsArgs = {
+  after?: Maybe<Scalars['String']>;
+  before?: Maybe<Scalars['String']>;
+  first?: Maybe<Scalars['Int']>;
+  keyword?: Maybe<Scalars['String']>;
+  last?: Maybe<Scalars['Int']>;
 };
 
 
@@ -124,7 +134,12 @@ export type RemoveItemInput = {
 export type RemoveItemPayload = {
   __typename?: 'RemoveItemPayload';
   clientMutationId?: Maybe<Scalars['String']>;
-  item: Item;
+  removedItem: RemovedItem;
+};
+
+export type RemovedItem = {
+  __typename?: 'RemovedItem';
+  id: Scalars['ID'];
 };
 
 export type Subscription = {

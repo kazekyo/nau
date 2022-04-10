@@ -46,7 +46,10 @@ const paginationMetaList = [
   },
 ];
 
-const deleteRecordMetaList = [{ parent: { typename: 'Item' }, fields: [{ fieldName: 'id', typename: 'Item' }] }];
+const deleteRecordMetaList = [
+  { parent: { typename: 'RemovedItem' }, fields: [{ fieldName: 'id', typename: 'Item' }] },
+  { parent: { typename: 'ItemRemovedPayload' }, fields: [{ fieldName: 'id', typename: 'Item' }] },
+];
 export const testTypePolicies = withCacheUpdaterInternal({
   paginationMetaList,
   deleteRecordMetaList,
@@ -125,44 +128,22 @@ export const queryMockData = {
 
 export const mutationDocument = gql`
   mutation DeleteItemMutation {
-    deleteItem {
-      item {
+    removeItem {
+      removedItem {
         id @deleteRecord(typename: "Item")
         __typename
       }
     }
   }
 `;
-export const mutationMockData = { deleteItem: { item: { id: item1Id, __typename: 'Item' } } };
+export const mutationMockData = { removeItem: { removedItem: { id: item1Id, __typename: 'RemovedItem' } } };
 
 export const subscriptionDocument = gql`
   subscription ItemDeletedSubscription($connections: [String!]!) {
-    itemDeleted {
-      item {
-        id @deleteRecord(typename: "Item")
-        __typename
-      }
+    itemRemoved {
+      id @deleteRecord(typename: "Item")
+      __typename
     }
   }
 `;
-export const subscriptionMockData = { itemDeleted: { item: { id: item1Id, __typename: 'Item' } } };
-
-export const testTypePoliciesWithSpecificReturnType = withCacheUpdaterInternal({
-  paginationMetaList,
-  deleteRecordMetaList: [{ parent: { typename: 'DeletedItem' }, fields: [{ fieldName: 'id', typename: 'Item' }] }],
-  typePolicies: {
-    Query: {
-      fields: {
-        items: relayStylePagination(),
-      },
-    },
-    User: {
-      fields: {
-        items: relayStylePagination(),
-      },
-    },
-  },
-});
-export const mutationMockDataWithSpecificReturnType = {
-  deleteItem: { item: { id: item1Id, __typename: 'DeletedItem' } },
-};
+export const subscriptionMockData = { itemRemoved: { id: item1Id, __typename: 'ItemRemovedPayload' } };
