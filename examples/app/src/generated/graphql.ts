@@ -1,3 +1,5 @@
+import { TypePolicy } from '@apollo/client';
+import { withCacheUpdaterInternal } from '@nau/cache-updater';
 import { gql } from '@apollo/client';
 import * as Apollo from '@apollo/client';
 export type Maybe<T> = T | null;
@@ -5,6 +7,22 @@ export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K]
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
 const defaultOptions =  {}
+
+export const paginationMetaList = [{ node: { typename: 'Item' }, parents: [{ typename: 'User', connection: { fieldName: 'items' }, edge: { typename: 'ItemEdge' } }] }];
+
+export const deleteRecordMetaList = [{ parent: { typename: 'ItemRemovedPayload' }, fields: [{ fieldName: 'id', typename: 'Item' }] }, { parent: { typename: 'RemovedItem' }, fields: [{ fieldName: 'id', typename: 'Item' }] }];
+
+export type CacheUpdaterTypePolicies = {
+  User: TypePolicy;
+  [__typename: string]: TypePolicy;
+};
+
+export const withCacheUpdater = (typePolicies: CacheUpdaterTypePolicies) =>
+  withCacheUpdaterInternal({
+    paginationMetaList,
+    deleteRecordMetaList,
+    typePolicies,
+  });
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -59,6 +77,7 @@ export type ItemEdge = {
 
 export type ItemRemovedPayload = {
   __typename?: 'ItemRemovedPayload';
+  /** The ID of an object */
   id: Scalars['ID'];
 };
 
@@ -139,6 +158,7 @@ export type RemoveItemPayload = {
 
 export type RemovedItem = {
   __typename?: 'RemovedItem';
+  /** The ID of an object */
   id: Scalars['ID'];
 };
 
@@ -178,31 +198,75 @@ export type UserItemsArgs = {
   last?: Maybe<Scalars['Int']>;
 };
 
-export type MyFragment1_UserFragment = { __typename?: 'User', name?: string | null | undefined, items5?: { __typename?: 'ItemConnection', edges?: Array<{ __typename?: 'ItemEdge', cursor: string, node?: { __typename: 'Item', id: string } | null | undefined } | null | undefined> | null | undefined, pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, endCursor?: string | null | undefined, hasPreviousPage: boolean, startCursor?: string | null | undefined } } | null | undefined };
-
-export type MyAppQueryQueryVariables = Exact<{ [key: string]: never; }>;
+export type AppQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type MyAppQueryQuery = { __typename?: 'Query', viewer?: { __typename?: 'User', id: string, name?: string | null | undefined, items5?: { __typename?: 'ItemConnection', edges?: Array<{ __typename?: 'ItemEdge', cursor: string, node?: { __typename: 'Item', id: string } | null | undefined } | null | undefined> | null | undefined, pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, endCursor?: string | null | undefined, hasPreviousPage: boolean, startCursor?: string | null | undefined } } | null | undefined, items3?: { __typename?: 'ItemConnection', edges?: Array<{ __typename?: 'ItemEdge', node?: { __typename?: 'Item', id: string } | null | undefined } | null | undefined> | null | undefined } | null | undefined } | null | undefined };
+export type AppQuery = { __typename?: 'Query', viewer?: { __typename?: 'User', id: string, name?: string | null | undefined, items?: { __typename?: 'ItemConnection', edges?: Array<{ __typename?: 'ItemEdge', cursor: string, node?: { __typename: 'Item', id: string, name: string } | null | undefined } | null | undefined> | null | undefined, pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, endCursor?: string | null | undefined, hasPreviousPage: boolean, startCursor?: string | null | undefined } } | null | undefined } | null | undefined };
 
-export type MyFragment2_UserFragment = { __typename?: 'User', name?: string | null | undefined, items3?: { __typename?: 'ItemConnection', edges?: Array<{ __typename?: 'ItemEdge', node?: { __typename?: 'Item', id: string } | null | undefined } | null | undefined> | null | undefined } | null | undefined };
+export type ListItem_ItemFragment = { __typename?: 'Item', id: string, name: string };
 
-export type App_PaginationQueryQueryVariables = Exact<{
+export type ListItem_UserFragment = { __typename?: 'User', id: string };
+
+export type List_UserFragment = { __typename?: 'User', id: string, items?: { __typename?: 'ItemConnection', edges?: Array<{ __typename?: 'ItemEdge', cursor: string, node?: { __typename: 'Item', id: string, name: string } | null | undefined } | null | undefined> | null | undefined, pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, endCursor?: string | null | undefined, hasPreviousPage: boolean, startCursor?: string | null | undefined } } | null | undefined };
+
+export type AddItemMutationVariables = Exact<{
+  input: AddItemInput;
+  connections: Array<Scalars['String']> | Scalars['String'];
+}>;
+
+
+export type AddItemMutation = { __typename?: 'Mutation', addItem?: { __typename?: 'AddItemPayload', item: { __typename?: 'Item', id: string, name: string } } | null | undefined };
+
+export type ItemAddedSubscriptionVariables = Exact<{
+  connections: Array<Scalars['String']> | Scalars['String'];
+}>;
+
+
+export type ItemAddedSubscription = { __typename?: 'Subscription', itemAdded: { __typename?: 'ItemAddedPayload', item: { __typename?: 'Item', id: string, name: string } } };
+
+export type ItemRemovedSubscriptionVariables = Exact<{ [key: string]: never; }>;
+
+
+export type ItemRemovedSubscription = { __typename?: 'Subscription', itemRemoved: { __typename?: 'ItemRemovedPayload', id: string } };
+
+export type RemoveItemMutationVariables = Exact<{
+  input: RemoveItemInput;
+}>;
+
+
+export type RemoveItemMutation = { __typename?: 'Mutation', removeItem?: { __typename?: 'RemoveItemPayload', removedItem: { __typename?: 'RemovedItem', id: string } } | null | undefined };
+
+export type List_PaginationQueryVariables = Exact<{
   count?: Maybe<Scalars['Int']>;
   cursor?: Maybe<Scalars['String']>;
+  keyword?: Maybe<Scalars['String']>;
   id: Scalars['ID'];
 }>;
 
 
-export type App_PaginationQueryQuery = { __typename?: 'Query', node?: { __typename: 'Item', id: string } | { __typename: 'User', id: string, name?: string | null | undefined, items5?: { __typename?: 'ItemConnection', edges?: Array<{ __typename?: 'ItemEdge', cursor: string, node?: { __typename: 'Item', id: string } | null | undefined } | null | undefined> | null | undefined, pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, endCursor?: string | null | undefined, hasPreviousPage: boolean, startCursor?: string | null | undefined } } | null | undefined } | null | undefined };
+export type List_PaginationQuery = { __typename?: 'Query', node?: { __typename: 'Item', id: string } | { __typename: 'User', id: string, items?: { __typename?: 'ItemConnection', edges?: Array<{ __typename?: 'ItemEdge', cursor: string, node?: { __typename: 'Item', id: string, name: string } | null | undefined } | null | undefined> | null | undefined, pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, endCursor?: string | null | undefined, hasPreviousPage: boolean, startCursor?: string | null | undefined } } | null | undefined } | null | undefined };
 
-export const MyFragment1_UserFragmentDoc = gql`
-    fragment MyFragment1_user on User {
+export type List_User_Bi8zLgNvdW50Lgn1cnNvcixrZXl3b3JkFragment = { __typename?: 'User', id: string, items?: { __typename?: 'ItemConnection', edges?: Array<{ __typename?: 'ItemEdge', cursor: string, node?: { __typename: 'Item', id: string, name: string } | null | undefined } | null | undefined> | null | undefined, pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, endCursor?: string | null | undefined, hasPreviousPage: boolean, startCursor?: string | null | undefined } } | null | undefined };
+
+export const ListItem_ItemFragmentDoc = gql`
+    fragment ListItem_item on Item {
+  id
   name
-  items5: items(first: 5) {
+}
+    `;
+export const ListItem_UserFragmentDoc = gql`
+    fragment ListItem_user on User {
+  id
+}
+    `;
+export const List_UserFragmentDoc = gql`
+    fragment List_user on User {
+  id
+  items(first: 2, after: null, keyword: null) {
     edges {
       node {
         id
+        ...ListItem_item
         __typename
       }
       cursor
@@ -214,93 +278,240 @@ export const MyFragment1_UserFragmentDoc = gql`
       startCursor
     }
   }
+  ...ListItem_user
 }
-    `;
-export const MyFragment2_UserFragmentDoc = gql`
-    fragment MyFragment2_user on User {
-  name
-  items3: items(first: 3) {
+    ${ListItem_ItemFragmentDoc}
+${ListItem_UserFragmentDoc}`;
+export const List_User_Bi8zLgNvdW50Lgn1cnNvcixrZXl3b3JkFragmentDoc = gql`
+    fragment List_user_bi8zLGNvdW50LGN1cnNvcixrZXl3b3Jk on User {
+  id
+  items(first: $count, after: $cursor, keyword: $keyword) {
     edges {
       node {
         id
+        ...ListItem_item
+        __typename
       }
+      cursor
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+      hasPreviousPage
+      startCursor
+    }
+  }
+  ...ListItem_user
+}
+    ${ListItem_ItemFragmentDoc}
+${ListItem_UserFragmentDoc}`;
+export const AppQueryDocument = gql`
+    query AppQuery {
+  viewer {
+    id
+    name
+    ...List_user
+  }
+}
+    ${List_UserFragmentDoc}`;
+
+/**
+ * __useAppQuery__
+ *
+ * To run a query within a React component, call `useAppQuery` and pass it any options that fit your needs.
+ * When your component renders, `useAppQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useAppQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useAppQuery(baseOptions?: Apollo.QueryHookOptions<AppQuery, AppQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<AppQuery, AppQueryVariables>(AppQueryDocument, options);
+      }
+export function useAppQueryLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<AppQuery, AppQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<AppQuery, AppQueryVariables>(AppQueryDocument, options);
+        }
+export type AppQueryHookResult = ReturnType<typeof useAppQuery>;
+export type AppQueryLazyQueryHookResult = ReturnType<typeof useAppQueryLazyQuery>;
+export type AppQueryQueryResult = Apollo.QueryResult<AppQuery, AppQueryVariables>;
+export const AddItemMutationDocument = gql`
+    mutation AddItemMutation($input: AddItemInput!, $connections: [String!]!) {
+  addItem(input: $input) {
+    item @prependNode(connections: $connections) {
+      id
+      ...ListItem_item
+    }
+  }
+}
+    ${ListItem_ItemFragmentDoc}`;
+export type AddItemMutationMutationFn = Apollo.MutationFunction<AddItemMutation, AddItemMutationVariables>;
+
+/**
+ * __useAddItemMutation__
+ *
+ * To run a mutation, you first call `useAddItemMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useAddItemMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [addItemMutation, { data, loading, error }] = useAddItemMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *      connections: // value for 'connections'
+ *   },
+ * });
+ */
+export function useAddItemMutation(baseOptions?: Apollo.MutationHookOptions<AddItemMutation, AddItemMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<AddItemMutation, AddItemMutationVariables>(AddItemMutationDocument, options);
+      }
+export type AddItemMutationHookResult = ReturnType<typeof useAddItemMutation>;
+export type AddItemMutationMutationResult = Apollo.MutationResult<AddItemMutation>;
+export type AddItemMutationMutationOptions = Apollo.BaseMutationOptions<AddItemMutation, AddItemMutationVariables>;
+export const ItemAddedSubscriptionDocument = gql`
+    subscription ItemAddedSubscription($connections: [String!]!) {
+  itemAdded {
+    item @prependNode(connections: $connections) {
+      id
+      name
     }
   }
 }
     `;
-export const MyAppQueryDocument = gql`
-    query MyAppQuery {
-  viewer {
-    id
-    ...MyFragment1_user
-    ...MyFragment2_user
-  }
-}
-    ${MyFragment1_UserFragmentDoc}
-${MyFragment2_UserFragmentDoc}`;
 
 /**
- * __useMyAppQueryQuery__
+ * __useItemAddedSubscription__
  *
- * To run a query within a React component, call `useMyAppQueryQuery` and pass it any options that fit your needs.
- * When your component renders, `useMyAppQueryQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useItemAddedSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useItemAddedSubscription` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useMyAppQueryQuery({
+ * const { data, loading, error } = useItemAddedSubscription({
+ *   variables: {
+ *      connections: // value for 'connections'
+ *   },
+ * });
+ */
+export function useItemAddedSubscription(baseOptions: Apollo.SubscriptionHookOptions<ItemAddedSubscription, ItemAddedSubscriptionVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<ItemAddedSubscription, ItemAddedSubscriptionVariables>(ItemAddedSubscriptionDocument, options);
+      }
+export type ItemAddedSubscriptionHookResult = ReturnType<typeof useItemAddedSubscription>;
+export type ItemAddedSubscriptionSubscriptionResult = Apollo.SubscriptionResult<ItemAddedSubscription>;
+export const ItemRemovedSubscriptionDocument = gql`
+    subscription ItemRemovedSubscription {
+  itemRemoved {
+    id @deleteRecord(typename: "Item")
+  }
+}
+    `;
+
+/**
+ * __useItemRemovedSubscription__
+ *
+ * To run a query within a React component, call `useItemRemovedSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useItemRemovedSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useItemRemovedSubscription({
  *   variables: {
  *   },
  * });
  */
-export function useMyAppQueryQuery(baseOptions?: Apollo.QueryHookOptions<MyAppQueryQuery, MyAppQueryQueryVariables>) {
+export function useItemRemovedSubscription(baseOptions?: Apollo.SubscriptionHookOptions<ItemRemovedSubscription, ItemRemovedSubscriptionVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<MyAppQueryQuery, MyAppQueryQueryVariables>(MyAppQueryDocument, options);
+        return Apollo.useSubscription<ItemRemovedSubscription, ItemRemovedSubscriptionVariables>(ItemRemovedSubscriptionDocument, options);
       }
-export function useMyAppQueryLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<MyAppQueryQuery, MyAppQueryQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<MyAppQueryQuery, MyAppQueryQueryVariables>(MyAppQueryDocument, options);
-        }
-export type MyAppQueryQueryHookResult = ReturnType<typeof useMyAppQueryQuery>;
-export type MyAppQueryLazyQueryHookResult = ReturnType<typeof useMyAppQueryLazyQuery>;
-export type MyAppQueryQueryResult = Apollo.QueryResult<MyAppQueryQuery, MyAppQueryQueryVariables>;
-export const App_PaginationQueryDocument = gql`
-    query App_PaginationQuery($count: Int = 5, $cursor: String, $id: ID!) {
+export type ItemRemovedSubscriptionHookResult = ReturnType<typeof useItemRemovedSubscription>;
+export type ItemRemovedSubscriptionSubscriptionResult = Apollo.SubscriptionResult<ItemRemovedSubscription>;
+export const RemoveItemMutationDocument = gql`
+    mutation RemoveItemMutation($input: RemoveItemInput!) {
+  removeItem(input: $input) {
+    removedItem {
+      id @deleteRecord(typename: "Item")
+    }
+  }
+}
+    `;
+export type RemoveItemMutationMutationFn = Apollo.MutationFunction<RemoveItemMutation, RemoveItemMutationVariables>;
+
+/**
+ * __useRemoveItemMutation__
+ *
+ * To run a mutation, you first call `useRemoveItemMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useRemoveItemMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [removeItemMutation, { data, loading, error }] = useRemoveItemMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useRemoveItemMutation(baseOptions?: Apollo.MutationHookOptions<RemoveItemMutation, RemoveItemMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<RemoveItemMutation, RemoveItemMutationVariables>(RemoveItemMutationDocument, options);
+      }
+export type RemoveItemMutationHookResult = ReturnType<typeof useRemoveItemMutation>;
+export type RemoveItemMutationMutationResult = Apollo.MutationResult<RemoveItemMutation>;
+export type RemoveItemMutationMutationOptions = Apollo.BaseMutationOptions<RemoveItemMutation, RemoveItemMutationVariables>;
+export const List_PaginationQueryDocument = gql`
+    query List_PaginationQuery($count: Int = 2, $cursor: String, $keyword: String, $id: ID!) {
   node(id: $id) {
     id
     __typename
-    ...MyFragment1_user
+    ...List_user_bi8zLGNvdW50LGN1cnNvcixrZXl3b3Jk
   }
 }
-    ${MyFragment1_UserFragmentDoc}`;
+    ${List_User_Bi8zLgNvdW50Lgn1cnNvcixrZXl3b3JkFragmentDoc}`;
 
 /**
- * __useApp_PaginationQueryQuery__
+ * __useList_PaginationQuery__
  *
- * To run a query within a React component, call `useApp_PaginationQueryQuery` and pass it any options that fit your needs.
- * When your component renders, `useApp_PaginationQueryQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useList_PaginationQuery` and pass it any options that fit your needs.
+ * When your component renders, `useList_PaginationQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useApp_PaginationQueryQuery({
+ * const { data, loading, error } = useList_PaginationQuery({
  *   variables: {
  *      count: // value for 'count'
  *      cursor: // value for 'cursor'
+ *      keyword: // value for 'keyword'
  *      id: // value for 'id'
  *   },
  * });
  */
-export function useApp_PaginationQueryQuery(baseOptions: Apollo.QueryHookOptions<App_PaginationQueryQuery, App_PaginationQueryQueryVariables>) {
+export function useList_PaginationQuery(baseOptions: Apollo.QueryHookOptions<List_PaginationQuery, List_PaginationQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<App_PaginationQueryQuery, App_PaginationQueryQueryVariables>(App_PaginationQueryDocument, options);
+        return Apollo.useQuery<List_PaginationQuery, List_PaginationQueryVariables>(List_PaginationQueryDocument, options);
       }
-export function useApp_PaginationQueryLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<App_PaginationQueryQuery, App_PaginationQueryQueryVariables>) {
+export function useList_PaginationQueryLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<List_PaginationQuery, List_PaginationQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<App_PaginationQueryQuery, App_PaginationQueryQueryVariables>(App_PaginationQueryDocument, options);
+          return Apollo.useLazyQuery<List_PaginationQuery, List_PaginationQueryVariables>(List_PaginationQueryDocument, options);
         }
-export type App_PaginationQueryQueryHookResult = ReturnType<typeof useApp_PaginationQueryQuery>;
-export type App_PaginationQueryLazyQueryHookResult = ReturnType<typeof useApp_PaginationQueryLazyQuery>;
-export type App_PaginationQueryQueryResult = Apollo.QueryResult<App_PaginationQueryQuery, App_PaginationQueryQueryVariables>;
+export type List_PaginationQueryHookResult = ReturnType<typeof useList_PaginationQuery>;
+export type List_PaginationQueryLazyQueryHookResult = ReturnType<typeof useList_PaginationQueryLazyQuery>;
+export type List_PaginationQueryQueryResult = Apollo.QueryResult<List_PaginationQuery, List_PaginationQueryVariables>;

@@ -1,15 +1,18 @@
 overwrite: true
 schema: 'http://localhost:4000/graphql'
-# schema: './graphql.schema.json'
 documents:
   - 'src/**/*.tsx'
 generates:
   src/generated/graphql.ts:
     preset: '@nau/graphql-codegen-preset'
+    presetConfig:
+      generateTypeScriptCode: true
     plugins:
-      - 'typescript' # GraphQLのtypeをTypeScriptのtypeに変換する
-      - 'typescript-operations' # QueryやQueryで使用するvariablesのtypeを作ってくれる
-      - 'typescript-react-apollo' # gqlでのgraphqlとuseXXXQueryなどのhooksを作ってくれる
+      - 'typescript'
+      - 'typescript-operations'
+      - 'typescript-react-apollo'
+    config:
+      dedupeOperationSuffix: true
   ./graphql.schema.json:
     preset: '@nau/graphql-codegen-preset'
     plugins:

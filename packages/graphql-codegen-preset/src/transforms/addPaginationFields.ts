@@ -16,7 +16,7 @@ const pageInfoField: FieldNode = {
     ],
   },
 };
-// TODO : idにaliasしてる時とかは動くのか？
+
 const cursorField: FieldNode = { kind: 'Field', name: { kind: 'Name', value: 'cursor' } };
 const idField: FieldNode = { kind: 'Field', name: { kind: 'Name', value: 'id' } };
 const typenameField: FieldNode = { kind: 'Field', name: { kind: 'Name', value: '__typename' } };

@@ -218,10 +218,7 @@ const updateItemMutation = mutationWithClientMutationId({
 const removedItemType = new GraphQLObjectType({
   name: 'RemovedItem',
   fields: {
-    id: {
-      type: new GraphQLNonNull(GraphQLID),
-      resolve: (source) => source,
-    },
+    id: globalIdField('Item'),
   },
 });
 
@@ -238,7 +235,7 @@ const removeItemMutation = mutationWithClientMutationId({
   outputFields: {
     removedItem: {
       type: new GraphQLNonNull(removedItemType),
-      resolve: (payload) => payload.item,
+      resolve: (payload) => payload.removedItem,
     },
   },
   mutateAndGetPayload: ({ itemId, userId }) => {
@@ -274,10 +271,7 @@ const itemAddedPayloadType = new GraphQLObjectType({
 const itemRemovedPayloadType = new GraphQLObjectType({
   name: 'ItemRemovedPayload',
   fields: {
-    id: {
-      type: new GraphQLNonNull(GraphQLID),
-      resolve: (source) => source,
-    },
+    id: globalIdField('Item'),
   },
 });
 

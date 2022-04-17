@@ -81,6 +81,7 @@ export const preset: Types.OutputPreset<PresetConfig> = {
     const originalGraphQLSchema: GraphQLSchema = options.schemaAst
       ? options.schemaAst
       : buildASTSchema(options.schema, options.config);
+
     const schemaObject = addCustomClientDirective(originalGraphQLSchema);
 
     return validateGraphQlDocuments(schemaObject, options.documents, validationRules()).then((errors) => {

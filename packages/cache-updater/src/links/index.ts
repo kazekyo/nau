@@ -1,2 +1,2 @@
-export * from './cacheUpdaterLink';
+export { createCacheUpdaterLink } from './cacheUpdaterLink';
 export * from './utils';

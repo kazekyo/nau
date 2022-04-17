@@ -1,45 +1,39 @@
-import {
-  ApolloClient,
-  ApolloProvider,
-  from,
-  HttpLink,
-  InMemoryCache,
-  split,
-} from "@apollo/client";
-import { WebSocketLink } from "@apollo/client/link/ws";
-import { ChakraProvider } from "@chakra-ui/react";
-import {
-  isSubscriptionOperation,
-  relayPaginationFieldPolicy,
-} from "@kazekyo/nau";
-import React from "react";
-import ReactDOM from "react-dom";
-import App from "./App";
-import "./index.css";
-import reportWebVitals from "./reportWebVitals";
+import { ApolloClient, ApolloProvider, from, HttpLink, InMemoryCache, split } from '@apollo/client';
+import { WebSocketLink } from '@apollo/client/link/ws';
+import { relayStylePagination } from '@apollo/client/utilities';
+import { ChakraProvider } from '@chakra-ui/react';
+import { isSubscriptionOperation, createCacheUpdaterLink } from '@nau/cache-updater';
+import React from 'react';
+import ReactDOM from 'react-dom';
+import App from './App';
+import { withCacheUpdater } from './generated/graphql';
+import './index.css';
+import reportWebVitals from './reportWebVitals';
 
 const wsLink = new WebSocketLink({
-  uri: "ws://localhost:4000/subscriptions",
+  uri: 'ws://localhost:4000/subscriptions',
   options: {
     reconnect: true,
   },
 });
+const httpLink = new HttpLink({ uri: 'http://localhost:4000/graphql' });
+const cacheUpdaterLink = createCacheUpdaterLink();
 
 const splitLink = split(
   ({ query }) => isSubscriptionOperation(query),
-  from([wsLink]),
-  from([new HttpLink({ uri: "http://localhost:4000/graphql" })])
+  from([cacheUpdaterLink, wsLink]),
+  from([cacheUpdaterLink, httpLink]),
 );
 
 const client = new ApolloClient({
   cache: new InMemoryCache({
-    typePolicies: {
+    typePolicies: withCacheUpdater({
       User: {
         fields: {
-          items: relayPaginationFieldPolicy(),
+          items: relayStylePagination(),
         },
       },
-    },
+    }),
   }),
   link: splitLink,
 });
@@ -52,7 +46,7 @@ ReactDOM.render(
       </ApolloProvider>
     </ChakraProvider>
   </React.StrictMode>,
-  document.getElementById("root")
+  document.getElementById('root'),
 );
 
 // If you want to start measuring performance in your app, pass a function

@@ -8,6 +8,10 @@ export function getOperationDefinition(doc: DocumentNode): OperationDefinitionNo
   )[0] as OperationDefinitionNode;
 }
 
+export function getOperationDefinitions(doc: DocumentNode): OperationDefinitionNode[] {
+  return doc.definitions.filter((definition) => definition.kind === 'OperationDefinition') as OperationDefinitionNode[];
+}
+
 export const getFragmentDefinitions = (documentNode: DocumentNode): FragmentDefinitionNode[] => {
   return documentNode.definitions.filter(
     (definition): definition is FragmentDefinitionNode => definition.kind === 'FragmentDefinition',

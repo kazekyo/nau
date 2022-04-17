@@ -14,7 +14,7 @@ describe('transform', () => {
       fragment Fragment_user on User
       @argumentDefinitions(
         arg1: { type: "Int", defaultValue: 10 } # It will put 10.
-        arg2: { type: "String" } # It will remove the argument because it is nullable and has no default value.
+        arg2: { type: "String" } # It will put null because it is nullable and has no default value.
         arg3: { type: "Int!" } # It will not do anything because it has no default value and it is not nullable.
         arg4: { type: "String" } # It will not do anything because it's in root variables.
       ) {
@@ -39,7 +39,7 @@ describe('transform', () => {
         arg4: { type: "String" }
       ) {
         id
-        item(itemArg1: 10, itemArg3: $arg3, itemArg4: $arg4) {
+        item(itemArg1: 10, itemArg2: null, itemArg3: $arg3, itemArg4: $arg4) {
           id
           name
         }
@@ -49,14 +49,239 @@ describe('transform', () => {
 
     expect(printDocuments(result.documentFiles)).toBe(printDocuments([{ document: expectedDocument }]));
   });
+
+  it('copies the fragment definition if both operations are with and without the argument in operation variables', () => {
+    const document1 = parse(/* GraphQL */ `
+      query TestQuery1_1 {
+        viewer {
+          ...Fragment_user
+        }
+      }
+      query RefetchQuery1_1($cursor: String!) {
+        viewer {
+          ...Fragment_user
+        }
+      }
+      query RefetchQuery1_2($first: Int!, $cursor: String!) {
+        viewer {
+          ...Fragment_user
+        }
+      }
+      query RefetchQuery1_3 {
+        viewer {
+          ...Fragment_user_wrapped
+        }
+      }
+      query RefetchQuery1_4($first: Int!) {
+        viewer {
+          ...Fragment_user_wrapped
+        }
+      }
+      fragment Fragment_user on User
+      @argumentDefinitions(first: { type: "Int", defaultValue: 10 }, cursor: { type: "String" }) {
+        id
+        items(first: $first, after: $cursor) {
+          edges {
+            nod {
+              id
+            }
+          }
+          pageInfo {
+            endCursor
+          }
+        }
+      }
+      fragment Fragment_user_wrapped on User {
+        id
+        ...Fragment_user
+      }
+    `);
+
+    const document2 = parse(/* GraphQL */ `
+      query TestQuery2_1 {
+        viewer {
+          ...Fragment_user
+        }
+      }
+      query RefetchQuery2_1($cursor: String!) {
+        viewer {
+          ...Fragment_user
+        }
+      }
+      fragment Fragment_user on User
+      @argumentDefinitions(first: { type: "Int", defaultValue: 10 }, cursor: { type: "String" }) {
+        id
+        items(first: $first, after: $cursor) {
+          edges {
+            nod {
+              id
+            }
+          }
+          pageInfo {
+            endCursor
+          }
+        }
+      }
+    `);
+
+    const expectedDocument1 = parse(/* GraphQL */ `
+      query TestQuery1_1 {
+        viewer {
+          ...Fragment_user
+        }
+      }
+
+      query RefetchQuery1_1($cursor: String!) {
+        viewer {
+          ...Fragment_user_bi8zLGN1cnNvcg
+        }
+      }
+
+      query RefetchQuery1_2($first: Int!, $cursor: String!) {
+        viewer {
+          ...Fragment_user_bi8zLGZpcnN0LGN1cnNvcg
+        }
+      }
+
+      query RefetchQuery1_3 {
+        viewer {
+          ...Fragment_user_wrapped
+        }
+      }
+
+      query RefetchQuery1_4($first: Int!) {
+        viewer {
+          ...Fragment_user_wrapped_bi9jaGlsZDpiaTh6TEdacGNuTjA
+        }
+      }
+
+      fragment Fragment_user on User
+      @argumentDefinitions(first: { type: "Int", defaultValue: 10 }, cursor: { type: "String" }) {
+        id
+        items(first: 10, after: null) {
+          edges {
+            nod {
+              id
+            }
+          }
+          pageInfo {
+            endCursor
+          }
+        }
+      }
+
+      fragment Fragment_user_wrapped on User {
+        id
+        ...Fragment_user
+      }
+
+      fragment Fragment_user_bi8zLGN1cnNvcg on User
+      @argumentDefinitions(first: { type: "Int", defaultValue: 10 }, cursor: { type: "String" }) {
+        id
+        items(first: 10, after: $cursor) {
+          edges {
+            nod {
+              id
+            }
+          }
+          pageInfo {
+            endCursor
+          }
+        }
+      }
+
+      fragment Fragment_user_bi8zLGZpcnN0LGN1cnNvcg on User
+      @argumentDefinitions(first: { type: "Int", defaultValue: 10 }, cursor: { type: "String" }) {
+        id
+        items(first: $first, after: $cursor) {
+          edges {
+            nod {
+              id
+            }
+          }
+          pageInfo {
+            endCursor
+          }
+        }
+      }
+
+      fragment Fragment_user_bi8zLGZpcnN0 on User
+      @argumentDefinitions(first: { type: "Int", defaultValue: 10 }, cursor: { type: "String" }) {
+        id
+        items(first: $first, after: null) {
+          edges {
+            nod {
+              id
+            }
+          }
+          pageInfo {
+            endCursor
+          }
+        }
+      }
+
+      fragment Fragment_user_wrapped_bi9jaGlsZDpiaTh6TEdacGNuTjA on User {
+        id
+        ...Fragment_user_bi8zLGZpcnN0
+      }
+    `);
+
+    const expectedDocument2 = parse(/* GraphQL */ `
+      query TestQuery2_1 {
+        viewer {
+          ...Fragment_user
+        }
+      }
+
+      query RefetchQuery2_1($cursor: String!) {
+        viewer {
+          ...Fragment_user_bi8zLGN1cnNvcg
+        }
+      }
+
+      fragment Fragment_user on User
+      @argumentDefinitions(first: { type: "Int", defaultValue: 10 }, cursor: { type: "String" }) {
+        id
+        items(first: 10, after: null) {
+          edges {
+            nod {
+              id
+            }
+          }
+          pageInfo {
+            endCursor
+          }
+        }
+      }
+
+      fragment Fragment_user_bi8zLGN1cnNvcg on User
+      @argumentDefinitions(first: { type: "Int", defaultValue: 10 }, cursor: { type: "String" }) {
+        id
+        items(first: 10, after: $cursor) {
+          edges {
+            nod {
+              id
+            }
+          }
+          pageInfo {
+            endCursor
+          }
+        }
+      }
+    `);
+    const result = transform({ documentFiles: [{ document: document1 }, { document: document2 }] });
+
+    expect(printDocuments([result.documentFiles[0]])).toBe(printDocuments([{ document: expectedDocument1 }]));
+    expect(printDocuments([result.documentFiles[1]])).toBe(printDocuments([{ document: expectedDocument2 }]));
+  });
 });
 
-describe('getQueryNamesPairs', () => {
+describe('getQueryInfoList', () => {
   it('generates pairs fragment names and variable names', () => {
     const documentFiles: Types.DocumentFile[] = [
       {
         document: parse(/* GraphQL */ `
-          query ($a: Int, $b: String) {
+          query TestQuery($a: Int, $b: String) {
             viewer {
               ...Fragment1_user
               ...Fragment2_user
@@ -95,13 +320,17 @@ describe('getQueryNamesPairs', () => {
         `),
       },
     ];
-    const result = exportedForTesting.getQueryNamesPairs({
+    const result = exportedForTesting.getOperationInfoList({
       documentFiles: documentFiles,
     });
 
-    expect(result).toEqual([
-      { variableNames: ['a', 'b'], fragmentNames: ['Fragment1_user', 'Fragment2_user', 'Fragment3_user'] },
-      { variableNames: ['c', 'd'], fragmentNames: ['Fragment3_user'] },
+    expect(result).toStrictEqual([
+      {
+        operationName: 'TestQuery',
+        variableNames: ['a', 'b'],
+        belongsFragmentNames: ['Fragment1_user', 'Fragment2_user', 'Fragment3_user'],
+      },
+      { operationName: undefined, variableNames: ['c', 'd'], belongsFragmentNames: ['Fragment3_user'] },
     ]);
   });
 });

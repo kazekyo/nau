@@ -20,24 +20,6 @@
     tslib "^2.3.0"
     zen-observable-ts "^1.1.0"
 
-"@apollo/client@^3.4.10":
-  version "3.4.16"
-  resolved "https://registry.yarnpkg.com/@apollo/client/-/client-3.4.16.tgz#67090d5655aa843fa64d26f1913315e384a5fa0f"
-  integrity sha512-iF4zEYwvebkri0BZQyv8zfavPfVEafsK0wkOofa6eC2yZu50J18uTutKtC174rjHZ2eyxZ8tV7NvAPKRT+OtZw==
-  dependencies:
-    "@graphql-typed-document-node/core" "^3.0.0"
-    "@wry/context" "^0.6.0"
-    "@wry/equality" "^0.5.0"
-    "@wry/trie" "^0.3.0"
-    graphql-tag "^2.12.3"
-    hoist-non-react-statics "^3.3.2"
-    optimism "^0.16.1"
-    prop-types "^15.7.2"
-    symbol-observable "^4.0.0"
-    ts-invariant "^0.9.0"
-    tslib "^2.3.0"
-    zen-observable-ts "~1.1.0"
-
 "@ardatan/aggregate-error@0.0.6":
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/@ardatan/aggregate-error/-/aggregate-error-0.0.6.tgz#fe6924771ea40fc98dc7a7045c2e872dc8527609"
@@ -8946,7 +8928,7 @@ graphql-ws@^5.4.1:
   resolved "https://registry.yarnpkg.com/graphql-ws/-/graphql-ws-5.5.3.tgz#1495c1c1ad7dcd3cf76a46db629810a55d3b2d18"
   integrity sha512-Okp3gE3vq9OoeqsYVbmzKvPcvlinKNXrfVajH7D3ul1UdCg2+K2zVYbWKmqxehkAZ+GKVfngK5fzyXSsfpe+pA==
 
-graphql@^15.5.0, graphql@^15.6.1:
+graphql@^15.6.1:
   version "15.6.1"
   resolved "https://registry.yarnpkg.com/graphql/-/graphql-15.6.1.tgz#9125bdf057553525da251e19e96dab3d3855ddfc"
   integrity sha512-3i5lu0z6dRvJ48QP9kFxBkJ7h4Kso7PS8eahyTFz5Jm6CvQfLtNIE8LX9N6JLnXTuwR+sIYnXzaWp6anOg0QQw==
@@ -17731,7 +17713,7 @@ yocto-queue@^0.1.0:
   resolved "https://registry.yarnpkg.com/yocto-queue/-/yocto-queue-0.1.0.tgz#0294eb3dee05028d31ee1a5fa2c556a6aaf10a1b"
   integrity sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==
 
-zen-observable-ts@^1.1.0, zen-observable-ts@~1.1.0:
+zen-observable-ts@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/zen-observable-ts/-/zen-observable-ts-1.1.0.tgz#2d1aa9d79b87058e9b75698b92791c1838551f83"
   integrity sha512-1h4zlLSqI2cRLPJUHJFL8bCWHhkpuXkF+dbGkRaWjgDIG26DmzyshUMrdV/rL3UnR+mhaX4fRq8LPouq0MYYIA==

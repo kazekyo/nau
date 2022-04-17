@@ -2,6 +2,7 @@ import { Types } from '@graphql-codegen/plugin-helpers';
 import {
   ArgumentNode,
   ASTNode,
+  DefinitionNode,
   DirectiveNode,
   DocumentNode,
   FragmentDefinitionNode,
@@ -12,16 +13,10 @@ import {
   ValueNode,
   visit,
 } from 'graphql';
-import { encode } from 'js-base64';
-import merge from 'lodash.merge';
+import { uniq } from 'lodash';
 import { ARGUMENTS_DIRECTIVE_NAME, ARGUMENT_DEFINITIONS_DIRECTIVE_NAME } from '../utils/directive';
-import {
-  getFragmentDefinitionByName,
-  getFragmentDefinitionsByDocumentFiles,
-  getOperationDefinition,
-} from '../utils/graphqlAST';
-
-type ChangedFragments = { [key: string]: FragmentDefinitionNode[] };
+import { getFragmentDefinitionByName, getFragmentDefinitionsByDocumentFiles } from '../utils/graphqlAST';
+import { FRAGMENT_NAME_INFO_ID_1, getArgumentDefinitionDataList, getUniqueFragmentName } from './util';
 
 export const transform = ({
   documentFiles,
@@ -30,104 +25,48 @@ export const transform = ({
 }): { documentFiles: Types.DocumentFile[] } => {
   const fragmentDefinitions = getFragmentDefinitionsByDocumentFiles(documentFiles);
 
-  let changedFragments: ChangedFragments = {};
   const files = documentFiles.map((file) => {
     if (!file.document) return file;
     const result = transformDocument({ documentNode: file.document, fragmentDefinitions });
     file.document = result.documentNode;
-    changedFragments = merge(changedFragments, result.changedFragments);
     return file;
   });
 
-  return { documentFiles: replaceChangedFragments({ documentFiles: files, changedFragments }) };
+  return { documentFiles: files };
 };
 
-const replaceChangedFragments = ({
-  documentFiles,
-  changedFragments,
-}: {
-  documentFiles: Types.DocumentFile[];
-  changedFragments: ChangedFragments;
-}): Types.DocumentFile[] => {
-  Object.entries(changedFragments).forEach(([fragmentName, fragmentDefinitions]) => {
-    let targetDefinitionIndex = -1;
-    const targetDocumentFileIndex = documentFiles.findIndex((file) => {
-      if (!file.document) return false;
-      const index = file.document.definitions.findIndex((definition) => {
-        return definition.kind === Kind.FRAGMENT_DEFINITION && definition.name.value === fragmentName;
-      });
-      if (index !== -1) targetDefinitionIndex = index;
-      return index !== -1;
-    });
-    if (targetDocumentFileIndex === -1) return;
-
-    const targetDocumentFile = documentFiles[targetDocumentFileIndex];
-    if (!targetDocumentFile || !targetDocumentFile.document || targetDefinitionIndex === -1) return;
-
-    const newDefinitions = [...targetDocumentFile.document.definitions];
-    newDefinitions.splice(targetDefinitionIndex, 1, ...fragmentDefinitions);
-
-    documentFiles[targetDocumentFileIndex].document = { ...targetDocumentFile.document, definitions: newDefinitions };
-  });
-
-  const files = documentFiles.map((file) => {
-    if (!file.document) return file;
-
-    // If there is only one fragment, revert to the original name as the fragment does not need the unique name.
-    const replaceFunc = <T extends FragmentDefinitionNode | FragmentSpreadNode>(node: T): T => {
-      const pair = getFragmentNameAndDefinitionsPair({
-        targetChangedFragmentName: node.name.value,
-        changedFragments,
-      });
-      if (pair && pair.fragmentDefinitions.length === 1) {
-        return { ...node, name: { ...node.name, value: pair.originalName } };
-      }
-      return node;
-    };
-    file.document = visit(file.document, {
-      FragmentSpread: {
-        enter(node) {
-          return replaceFunc(node);
-        },
-      },
-      FragmentDefinition: {
-        enter(node) {
-          return replaceFunc(node);
-        },
-      },
-    }) as DocumentNode;
-    return file;
-  });
-
-  return files;
-};
-
-const transformDocument = ({
-  documentNode,
-  fragmentDefinitions,
-}: {
+const transformDocument = (params: {
   documentNode: DocumentNode;
   fragmentDefinitions: FragmentDefinitionNode[];
-}): { documentNode: DocumentNode; changedFragments: ChangedFragments } => {
-  const operationDefinition = getOperationDefinition(documentNode);
-  if (!operationDefinition) return { documentNode, changedFragments: {} };
+}): { documentNode: DocumentNode } => {
+  const { fragmentDefinitions } = params;
+  let documentNode = params.documentNode;
 
-  let newOperationDefinition = operationDefinition;
-  const transformResult = transformFragmentSpread({
-    targetDefinition: operationDefinition,
-    operationDefinition,
-    documentNode: documentNode,
-    fragmentDefinitions,
-    changedFragments: {},
+  let changedOriginalSpreadFragmentNames: string[] = [];
+  documentNode.definitions.forEach((definition, index) => {
+    if (definition.kind !== Kind.OPERATION_DEFINITION) return;
+    const transformResult = transformFragmentSpreadFields({
+      targetDefinition: definition,
+      operationDefinition: definition,
+      documentNode: documentNode,
+      fragmentDefinitions,
+    });
+    const definitions: DefinitionNode[] = [...transformResult.documentNode.definitions];
+    // Do not change the order of definitions because changing the order of definitions will replace wrong index
+    definitions.splice(index, 1, transformResult.newDefinition);
+    documentNode = { ...transformResult.documentNode, definitions };
+    changedOriginalSpreadFragmentNames = [
+      ...changedOriginalSpreadFragmentNames,
+      ...transformResult.changedOriginalSpreadFragmentNames,
+    ];
   });
-  newOperationDefinition = transformResult.newDefinition;
 
-  const definitions = [
-    newOperationDefinition,
-    ...documentNode.definitions.filter((definition) => definition.kind !== 'OperationDefinition'),
-  ];
+  documentNode = removeUnnecessaryFragmentDefinitions({
+    documentNode,
+    changedOriginalSpreadFragmentNames,
+  });
 
-  return { documentNode: { ...documentNode, definitions }, changedFragments: transformResult.changedFragments };
+  return { documentNode };
 };
 
 const getArgumentsDirective = (node: FragmentSpreadNode): DirectiveNode | undefined =>
@@ -145,72 +84,134 @@ const getArgumentObject = ({
   return Object.fromEntries(argumentsData);
 };
 
-const addFragmentToChangedFragment = ({
-  key,
-  changedFragments,
-  fragmentDefinition,
-}: {
-  key: string;
-  changedFragments: ChangedFragments;
-  fragmentDefinition: FragmentDefinitionNode;
-}) => {
-  if (changedFragments[key]) {
-    const definitions = changedFragments[key];
-    if (definitions.find((definition) => definition.name.value === fragmentDefinition.name.value)) {
-      return changedFragments;
-    }
-    definitions.push(fragmentDefinition);
-  }
-  changedFragments[key] = [fragmentDefinition];
-  return changedFragments;
-};
-
-const transformFragmentDefinition = (params: {
-  fragmentDefinition: FragmentDefinitionNode;
+const transformFragmentSpreadFields = <TDefinitionNode extends ASTNode>(params: {
+  targetDefinition: TDefinitionNode;
   operationDefinition: OperationDefinitionNode;
   documentNode: DocumentNode;
   fragmentDefinitions: FragmentDefinitionNode[];
-  changedFragments: ChangedFragments;
-  passedArguments?: Record<string, ValueNode>;
-  replacedFragmentName?: string;
-}): { changedFragments: ChangedFragments } => {
-  const { documentNode, operationDefinition, passedArguments, fragmentDefinitions } = params;
-  let currentFragmentDefinition = params.fragmentDefinition;
-  let changedFragments = params.changedFragments;
+}): {
+  documentNode: DocumentNode;
+  newDefinition: TDefinitionNode;
+  changedOriginalSpreadFragmentNames: string[];
+} => {
+  const { targetDefinition, operationDefinition, fragmentDefinitions } = params;
+  let documentNode = params.documentNode;
+  let changedOriginalSpreadFragmentNames: string[] = [];
+  const newDefinition = visit(targetDefinition, {
+    FragmentSpread: {
+      leave(originalNode) {
+        const next = getFragmentDefinitionByName({ fragmentDefinitions, fragmentName: originalNode.name.value });
+        if (!next) return;
 
-  // Copy the fragment and create a fragment with the new name
-  if (params.replacedFragmentName) {
-    const copiedFragmentDefinition: FragmentDefinitionNode = {
-      ...params.fragmentDefinition,
-      name: { ...params.fragmentDefinition.name, value: params.replacedFragmentName },
-    };
-    currentFragmentDefinition = copiedFragmentDefinition;
+        const argumentsDirective = getArgumentsDirective(originalNode);
+        const argumentNodes = argumentsDirective?.arguments || [];
+
+        const result = transformFragmentDefinition({
+          targetFragmentDefinition: next,
+          documentNode,
+          operationDefinition,
+          fragmentDefinitions,
+          passedArguments: argumentNodes.length > 0 ? getArgumentObject({ argumentNodes }) : undefined,
+        });
+        documentNode = result.documentNode;
+
+        changedOriginalSpreadFragmentNames = [
+          ...changedOriginalSpreadFragmentNames,
+          ...result.changedOriginalSpreadFragmentNames,
+          originalNode.name.value,
+        ];
+
+        if (!result.changedFragmentName) return;
+
+        return { ...originalNode, name: { ...originalNode.name, value: result.changedFragmentName } };
+      },
+    },
+  }) as TDefinitionNode;
+
+  return {
+    documentNode,
+    newDefinition,
+    changedOriginalSpreadFragmentNames,
+  };
+};
+
+// Remove a fragment definition if there is no place where the original fragment definition is used.
+const removeUnnecessaryFragmentDefinitions = ({
+  documentNode,
+  changedOriginalSpreadFragmentNames,
+}: {
+  documentNode: DocumentNode;
+  changedOriginalSpreadFragmentNames: string[];
+}): DocumentNode => {
+  const shouldDeleteFragmentNames: string[] = uniq(changedOriginalSpreadFragmentNames);
+  visit(documentNode, {
+    FragmentSpread: {
+      leave(node) {
+        const index = shouldDeleteFragmentNames.findIndex((name) => name === node.name.value);
+        if (index !== -1) {
+          shouldDeleteFragmentNames.splice(index, 1);
+        }
+      },
+    },
+  });
+  documentNode = {
+    ...documentNode,
+    definitions: [
+      ...documentNode.definitions.filter(
+        (definition) =>
+          definition.kind !== Kind.FRAGMENT_DEFINITION || !shouldDeleteFragmentNames.includes(definition.name.value),
+      ),
+    ],
+  };
+  return documentNode;
+};
+
+const transformFragmentDefinition = (params: {
+  targetFragmentDefinition: FragmentDefinitionNode;
+  operationDefinition: OperationDefinitionNode;
+  documentNode: DocumentNode;
+  fragmentDefinitions: FragmentDefinitionNode[];
+  passedArguments?: Record<string, ValueNode>;
+}): {
+  documentNode: DocumentNode;
+  changedOriginalSpreadFragmentNames: string[];
+  changedFragmentName?: string;
+} => {
+  const { targetFragmentDefinition, operationDefinition, passedArguments, fragmentDefinitions } = params;
+  let documentNode = params.documentNode;
+
+  let newFragmentDefinition = getRenamedFragmentDefinition({
+    node: targetFragmentDefinition,
+    argumentsObject: passedArguments,
+  });
+  const existsFragmentDefinitionInDocument = !!documentNode.definitions.find(
+    (definition) =>
+      definition.kind === Kind.FRAGMENT_DEFINITION && definition.name.value === newFragmentDefinition.name.value,
+  );
+  const isOriginalName = newFragmentDefinition.name.value === targetFragmentDefinition.name.value;
+  if (!isOriginalName && existsFragmentDefinitionInDocument) {
+    return { documentNode, changedOriginalSpreadFragmentNames: [] };
   }
 
   const valueNodeMap: Record<string, ValueNode> = {};
-  currentFragmentDefinition = visit(currentFragmentDefinition, {
-    Directive: {
-      enter(node) {
-        if (!node.arguments || node.arguments.length === 0) return;
-
-        if (node.name.value !== ARGUMENT_DEFINITIONS_DIRECTIVE_NAME) return;
-        node.arguments.forEach((argument) => {
-          if (argument.value.kind !== 'ObjectValue') return;
-          const currentArgumentName = argument.name.value;
-          // Put the passed arguments into valueMap to fit them where they are used in the fragment.
-          if (passedArguments) {
-            const passedArgumentValue = passedArguments[currentArgumentName];
-            if (passedArgumentValue) {
-              valueNodeMap[currentArgumentName] = passedArgumentValue;
-              return;
-            }
-          }
-        });
+  if (passedArguments) {
+    visit(newFragmentDefinition, {
+      Directive: {
+        enter(node) {
+          if (node.name.value !== ARGUMENT_DEFINITIONS_DIRECTIVE_NAME) return;
+          const argumentDataList = getArgumentDefinitionDataList(node);
+          argumentDataList.forEach((data) => {
+            // Put the passed arguments into valueMap to fit them where they are used in the fragment.
+            const passedArgumentValue = passedArguments[data.name.value];
+            if (!passedArgumentValue) return;
+            valueNodeMap[data.name.value] = passedArgumentValue;
+          });
+        },
       },
-    },
-  }) as FragmentDefinitionNode;
+    });
+  }
 
-  currentFragmentDefinition = visit(currentFragmentDefinition, {
+  newFragmentDefinition = visit(newFragmentDefinition, {
     Argument(node) {
       if (node.value.kind === 'Variable') {
         const variableName = node.value.name.value;
@@ -222,131 +223,58 @@ const transformFragmentDefinition = (params: {
     },
   }) as FragmentDefinitionNode;
 
-  const transformResult = transformFragmentSpread({
-    targetDefinition: currentFragmentDefinition,
+  const transformResult = transformFragmentSpreadFields({
+    targetDefinition: newFragmentDefinition,
     operationDefinition,
     documentNode,
     fragmentDefinitions,
-    changedFragments,
   });
-  currentFragmentDefinition = transformResult.newDefinition;
-  changedFragments = transformResult.changedFragments;
+  newFragmentDefinition = transformResult.newDefinition;
+  documentNode = transformResult.documentNode;
 
-  addFragmentToChangedFragment({
-    key: params.fragmentDefinition.name.value,
-    changedFragments: params.changedFragments,
-    fragmentDefinition: currentFragmentDefinition,
-  });
+  if (existsFragmentDefinitionInDocument) {
+    // // Replace the fragment definition
+    documentNode = {
+      ...documentNode,
+      definitions: [
+        ...documentNode.definitions.filter(
+          (definition) =>
+            definition.kind !== Kind.FRAGMENT_DEFINITION || definition.name.value !== newFragmentDefinition.name.value,
+        ),
+        newFragmentDefinition,
+      ],
+    };
+  } else {
+    // Add the fragment definition
+    documentNode = {
+      ...documentNode,
+      definitions: [...documentNode.definitions, newFragmentDefinition],
+    };
+  }
 
-  return { changedFragments };
+  return {
+    documentNode,
+    changedOriginalSpreadFragmentNames: transformResult.changedOriginalSpreadFragmentNames,
+    changedFragmentName: newFragmentDefinition.name.value,
+  };
 };
 
-const existsFragmentDefinitionInChangedFragments = ({
-  changedFragments,
-  newFragmentName,
-}: {
-  changedFragments: ChangedFragments;
-  newFragmentName: string;
-}): boolean => {
-  const fragmentDefinitions = Object.entries(changedFragments)
-    .map(([_, fragments]) => fragments)
-    .flat();
-  return !!fragmentDefinitions.find((definition) => definition.name.value === newFragmentName);
-};
-
-const getFragmentNameAndDefinitionsPair = ({
-  targetChangedFragmentName,
-  changedFragments,
-}: {
-  targetChangedFragmentName: string;
-  changedFragments: ChangedFragments;
-}): { originalName: string; fragmentDefinitions: FragmentDefinitionNode[] } | undefined => {
-  const pair = Object.entries(changedFragments).find(([_, definitions]) => {
-    return !!definitions.find((definition) => definition.name.value === targetChangedFragmentName);
-  });
-  if (!pair) return undefined;
-  return { originalName: pair[0], fragmentDefinitions: pair[1] };
-};
-
-const transformFragmentSpread = <TDefinitionNode extends ASTNode>(params: {
-  targetDefinition: TDefinitionNode;
-  operationDefinition: OperationDefinitionNode;
-  documentNode: DocumentNode;
-  fragmentDefinitions: FragmentDefinitionNode[];
-  changedFragments: ChangedFragments;
-}): {
-  changedFragments: ChangedFragments;
-  newDefinition: TDefinitionNode;
-} => {
-  const { targetDefinition, operationDefinition, documentNode, fragmentDefinitions } = params;
-  let changedFragments = params.changedFragments;
-  const newDefinition = visit(targetDefinition, {
-    FragmentSpread: {
-      enter(node) {
-        const next = getFragmentDefinitionByName({ fragmentDefinitions, fragmentName: node.name.value });
-        if (!next) return;
-
-        const argumentsDirective = getArgumentsDirective(node);
-        if (argumentsDirective) {
-          if (!argumentsDirective.arguments) return;
-
-          const nameReplacedNode = generateNameReplacedNode({ node, argumentNodes: argumentsDirective.arguments });
-          if (
-            existsFragmentDefinitionInChangedFragments({
-              changedFragments,
-              newFragmentName: nameReplacedNode.name.value,
-            })
-          ) {
-            return nameReplacedNode;
-          }
-
-          const result = transformFragmentDefinition({
-            fragmentDefinition: next,
-            documentNode,
-            operationDefinition,
-            changedFragments,
-            fragmentDefinitions,
-            passedArguments: getArgumentObject({ argumentNodes: argumentsDirective.arguments }),
-            replacedFragmentName: nameReplacedNode.name.value,
-          });
-          changedFragments = result.changedFragments;
-          return nameReplacedNode;
-        } else {
-          const result = transformFragmentDefinition({
-            fragmentDefinition: next,
-            documentNode: documentNode,
-            fragmentDefinitions,
-            operationDefinition,
-            changedFragments,
-          });
-          changedFragments = result.changedFragments;
-        }
-      },
-    },
-  }) as TDefinitionNode;
-  return { changedFragments, newDefinition };
-};
-
-const generateNameReplacedNode = ({
+const getRenamedFragmentDefinition = ({
   node,
-  argumentNodes,
+  argumentsObject,
 }: {
-  node: FragmentSpreadNode;
-  argumentNodes: readonly ArgumentNode[];
-}): FragmentSpreadNode => {
-  const name = { ...node.name, value: node.name.value + '_' + encodedArgumentsStr(argumentNodes) };
-  return { ...node, name };
-};
-
-export const encodedArgumentsStr = (argumentNodes: readonly ArgumentNode[]): string => {
-  const argumentsStr = [...argumentNodes]
-    .sort((a, b) => a.name.value.localeCompare(b.name.value))
-    .map((arg) => print(arg))
+  node: FragmentDefinitionNode;
+  argumentsObject?: Record<string, ValueNode>;
+}): FragmentDefinitionNode => {
+  if (!argumentsObject) return node;
+  const str = Object.entries(argumentsObject)
+    .sort(([nameA], [nameB]) => nameA.localeCompare(nameB))
+    .map(([argName, valueNode]) => `${argName}:${print(valueNode)}`)
     .join(',')
     .replace(/\s+/g, '');
-  return encode(argumentsStr, true);
-};
-
-export const exportedForTesting = {
-  replaceChangedFragments,
+  const name = {
+    ...node.name,
+    value: getUniqueFragmentName(node.name.value, `${FRAGMENT_NAME_INFO_ID_1},${str}`),
+  };
+  return { ...node, name };
 };

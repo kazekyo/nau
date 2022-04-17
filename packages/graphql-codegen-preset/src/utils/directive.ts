@@ -11,4 +11,5 @@ export const customDirectives = {
   appendNode: 'directive @appendNode(connections: [String!]) on FIELD',
   prependNode: 'directive @prependNode(connections: [String!]) on FIELD',
   deleteRecord: 'directive @deleteRecord(typename: String!) on FIELD',
+  client: 'directive @client on FIELD',
 };

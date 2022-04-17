@@ -299,7 +299,7 @@
         "fields": [
           {
             "name": "id",
-            "description": null,
+            "description": "The ID of an object",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -748,7 +748,7 @@
         "fields": [
           {
             "name": "id",
-            "description": null,
+            "description": "The ID of an object",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -2079,9 +2079,13 @@
             "name": "queryName",
             "description": null,
             "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
             },
             "defaultValue": null,
             "isDeprecated": false,
@@ -2091,6 +2095,101 @@
       },
       {
         "name": "pagination",
+        "description": null,
+        "isRepeatable": false,
+        "locations": [
+          "FIELD"
+        ],
+        "args": []
+      },
+      {
+        "name": "appendNode",
+        "description": null,
+        "isRepeatable": false,
+        "locations": [
+          "FIELD"
+        ],
+        "args": [
+          {
+            "name": "connections",
+            "description": null,
+            "type": {
+              "kind": "LIST",
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              }
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ]
+      },
+      {
+        "name": "prependNode",
+        "description": null,
+        "isRepeatable": false,
+        "locations": [
+          "FIELD"
+        ],
+        "args": [
+          {
+            "name": "connections",
+            "description": null,
+            "type": {
+              "kind": "LIST",
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              }
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ]
+      },
+      {
+        "name": "deleteRecord",
+        "description": null,
+        "isRepeatable": false,
+        "locations": [
+          "FIELD"
+        ],
+        "args": [
+          {
+            "name": "typename",
+            "description": null,
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ]
+      },
+      {
+        "name": "client",
         "description": null,
         "isRepeatable": false,
         "locations": [

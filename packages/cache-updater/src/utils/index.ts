@@ -1,2 +1,3 @@
-export * from './graphqlAST';
 export * from './directiveName';
+export * from './getNodes';
+export * from './graphqlAST';

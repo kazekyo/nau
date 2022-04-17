@@ -13,6 +13,7 @@ import { uniqWith } from 'lodash';
 import { ARGUMENT_DEFINITIONS_DIRECTIVE_NAME, REFETCHABLE_DIRECTIVE_NAME } from '../utils/directive';
 import { getFragmentDefinitionsByDocumentFiles } from '../utils/graphqlAST';
 import { nonNullable } from '../utils/nonNullable';
+import { getArgumentDefinitionDataList } from './util';
 
 export const transform = ({
   documentFiles,
@@ -119,32 +120,16 @@ const collectVariableDefinitions = ({
   visit(fragmentDefinition, {
     Directive: {
       enter(node) {
-        if (!node.arguments || node.arguments.length === 0) return false;
-        if (node.name.value !== ARGUMENT_DEFINITIONS_DIRECTIVE_NAME) return false;
-
-        // Example: node is @argumentDefinitions(arg1: { type: "Int", defaultValue: 10 })
-        node.arguments.map((argument) => {
-          if (argument.value.kind !== 'ObjectValue') return;
-          const name = argument.name.value; // Example: name is arg1
-
-          const typeField = argument.value.fields.find((field) => field.name.value === 'type');
-          let typeString: string | undefined;
-          if (typeField && typeField.value.kind === Kind.STRING) {
-            typeString = typeField.value.value; // Example: typeString is "Int"
-          }
-          if (!typeString) return false;
-
-          const defaultValueField = argument.value.fields.find((field) => field.name.value === 'defaultValue');
-          const defaultValue = defaultValueField?.value; // Example: defaultValue is 10
-
+        if (node.name.value !== ARGUMENT_DEFINITIONS_DIRECTIVE_NAME) return;
+        const argumentDataList = getArgumentDefinitionDataList(node);
+        argumentDataList.forEach((data) =>
           variableDefinitions.push({
             kind: 'VariableDefinition',
-            type: parseType(typeString),
-            variable: { kind: 'Variable', name: { kind: 'Name', value: name } },
-            defaultValue: defaultValue,
-          });
-        });
-
+            type: data.type,
+            variable: { kind: 'Variable', name: data.name },
+            defaultValue: data.defaultValue,
+          }),
+        );
         return false;
       },
     },

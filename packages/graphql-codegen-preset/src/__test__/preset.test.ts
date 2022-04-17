@@ -16,10 +16,6 @@ describe('preset', () => {
               ...Fragment_user @arguments(count: 5)
             }
           }
-        `),
-      },
-      {
-        document: parse(/* GraphQL */ `
           fragment Fragment_user on User @argumentDefinitions(count: { type: "Int", defaultValue: 1 }) {
             items(first: $count, after: $cursor) @pagination {
               edges {
@@ -36,10 +32,10 @@ describe('preset', () => {
       query TestQuery($cursor: String) {
         viewer {
           id
-          ...Fragment_user
+          ...Fragment_user_bi8xLGNvdW50OjU
         }
       }
-      fragment Fragment_user on User {
+      fragment Fragment_user_bi8xLGNvdW50OjU on User {
         items(first: 5, after: $cursor) {
           edges {
             node {

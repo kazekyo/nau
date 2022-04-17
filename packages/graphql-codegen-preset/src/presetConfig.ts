@@ -11,7 +11,7 @@ export type PresetConfig = {
    * src/:
    *  preset: @nau/graphql-codegen-preset
    *  presetConfig:
-   *    generateTypeScriptCode: false
+   *    generateTypeScriptCode: true
    *  plugins:
    *    - typescript
    *    - typescript-operations
