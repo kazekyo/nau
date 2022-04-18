@@ -7,6 +7,7 @@ import {
   TypePolicy,
 } from '@apollo/client';
 import { StoreObject } from '@apollo/client/utilities';
+import { TRelayEdge, TRelayPageInfo } from '@apollo/client/utilities/policies/pagination';
 import { decode, encode } from 'js-base64';
 import { isMatch } from 'lodash';
 import { findDirectiveName, INSERT_NODE_DIRECTIVE_NAMES } from '../../utils/directiveName';
@@ -41,6 +42,11 @@ export type PaginationMeta = {
   }[];
 };
 
+type TConnectionRelay<TNode> = {
+  edges: TRelayEdge<TNode>[];
+  pageInfo: TRelayPageInfo;
+};
+
 const ROOT_QUERY_KEY = 'ROOT_QUERY';
 
 export const generatePaginationParentTypePolicyPairs = ({
@@ -73,9 +79,9 @@ export const generatePaginationParentTypePolicyPairs = ({
           throw notFoundOriginalFieldTypePolicyError;
         }
 
-        const mergeFieldTypePolicy: FieldMergeFunction = (
-          existing: Reference,
-          incoming: Reference,
+        const mergeConnectionFieldTypePolicy: FieldMergeFunction = (
+          existing: TConnectionRelay<Reference>,
+          incoming: TConnectionRelay<Reference>,
           options,
           ...rest
         ) => {
@@ -87,12 +93,20 @@ export const generatePaginationParentTypePolicyPairs = ({
           if (!existing) return { ...incoming, args: options.args };
 
           // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          const result = originalFieldMerge(existing, incoming, options, ...rest);
+          const result = originalFieldMerge(
+            existing,
+            {
+              ...incoming,
+              edges: removeDuplidateEdgeFromIncoming({ existingEdges: existing.edges, incomingEdges: incoming.edges }),
+            },
+            options,
+            ...rest,
+          );
           // eslint-disable-next-line @typescript-eslint/no-unsafe-return
           return { ...result, args: options.args };
         };
 
-        const readFieldTypePolicy: FieldReadFunction = (existing, options, ...rest) => {
+        const readConnectionFieldTypePolicy: FieldReadFunction = (existing, options, ...rest) => {
           const originalFieldRead = originalConnectionFieldTypePolicy.read;
           if (!originalFieldRead) {
             throw notFoundOriginalFieldTypePolicyError;
@@ -128,8 +142,8 @@ export const generatePaginationParentTypePolicyPairs = ({
             ...originalTypePolicy.fields,
             [connectionFieldName]: {
               ...originalTypePolicy.fields[connectionFieldName],
-              merge: mergeFieldTypePolicy,
-              read: readFieldTypePolicy,
+              merge: mergeConnectionFieldTypePolicy,
+              read: readConnectionFieldTypePolicy,
             },
           },
         };
@@ -137,6 +151,24 @@ export const generatePaginationParentTypePolicyPairs = ({
       });
     })
     .flat();
+};
+
+const removeDuplidateEdgeFromIncoming = <TNode extends Reference>({
+  existingEdges,
+  incomingEdges,
+}: {
+  existingEdges: TRelayEdge<TNode>[];
+  incomingEdges: TRelayEdge<TNode>[];
+}): TRelayEdge<TNode>[] => {
+  if (existingEdges.length === 0) return incomingEdges;
+  return incomingEdges.filter((incomingEdge) => {
+    if (!('node' in incomingEdge)) return false;
+    const duplicateEdge = existingEdges.find((existingEdge) => {
+      if (!('node' in existingEdge)) return false;
+      return existingEdge.node.__ref === incomingEdge.node.__ref;
+    });
+    return !duplicateEdge;
+  });
 };
 
 export const generatePaginationNodeTypePolicyPairs = ({
