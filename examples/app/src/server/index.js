@@ -91,7 +91,7 @@ function removeItem(itemGlobalId, userGlobalId) {
   const deletedItem = data.item[itemId];
   delete data.item[itemId];
   data.user[userId].items = data.user[userId].items.filter((id) => id !== itemId);
-  pubsub.publish(ROBOT_REMOVED_TOPIC, itemGlobalId);
+  pubsub.publish(ROBOT_REMOVED_TOPIC, { id: deletedItem.id });
   return deletedItem;
 }
 
