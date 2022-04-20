@@ -12,6 +12,8 @@ directive @prependNode(connections: [String!]) on FIELD
 
 directive @deleteRecord(typename: String!) on FIELD
 
+directive @client on FIELD
+
 input AddItemInput {
   clientMutationId: String
   itemName: String!
@@ -70,6 +72,9 @@ type ItemEdge {
 }
 
 type ItemRemovedPayload {
+  """
+  The ID of an object
+  """
   id: ID!
 }
 
@@ -136,7 +141,7 @@ type Query {
     Returns the last n items from the list.
     """
     last: Int
-  ): ItemConnection
+  ): ItemConnection!
 
   """
   Fetches an object given its ID
@@ -162,6 +167,9 @@ type RemoveItemPayload {
 }
 
 type RemovedItem {
+  """
+  The ID of an object
+  """
   id: ID!
 }
 
@@ -207,7 +215,7 @@ type User implements Node {
     Returns the last n items from the list.
     """
     last: Int
-  ): ItemConnection
+  ): ItemConnection!
 
   """
   The name of the user.

@@ -101,7 +101,7 @@ type Query {
 
     """Returns the last n items from the list."""
     last: Int
-  ): ItemConnection
+  ): ItemConnection!
 
   """Fetches an object given its ID"""
   node(
@@ -159,7 +159,7 @@ type User implements Node {
 
     """Returns the last n items from the list."""
     last: Int
-  ): ItemConnection
+  ): ItemConnection!
 
   """The name of the user."""
   name: String

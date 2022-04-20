@@ -136,7 +136,7 @@ const userType = new GraphQLObjectType({
       description: 'The name of the user.',
     },
     items: {
-      type: itemConnection,
+      type: new GraphQLNonNull(itemConnection),
       args: { ...connectionArgs, keyword: { type: GraphQLString } },
       resolve: (user, args) => {
         const items = user.items.map(getItem);
@@ -156,7 +156,7 @@ const queryType = new GraphQLObjectType({
     },
     node: nodeField,
     items: {
-      type: itemConnection,
+      type: new GraphQLNonNull(itemConnection),
       args: { ...connectionArgs, keyword: { type: GraphQLString } },
       resolve: (_, args) => {
         const items = itemIdsAccessibleByAll.map(getItem);

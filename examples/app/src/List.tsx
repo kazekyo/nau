@@ -68,44 +68,54 @@ gql`
   }
 `;
 
-const Subscription: React.FC<{ connectionId: string }> = ({ connectionId }) => {
+type LoadNext = (count: number) => void;
+type PageInfo = {
+  hasNextPage: boolean;
+  endCursor?: string | null;
+};
+const usePagination = ({
+  id,
+  connection,
+}: {
+  id: string;
+  connection: { pageInfo: PageInfo };
+}): { hasNext: boolean; isLoadingNext: boolean; loadNext: LoadNext } => {
+  const [call, { loading, fetchMore }] = useList_PaginationQueryLazyQuery();
+
+  const hasNext = connection.pageInfo.hasNextPage;
+  const cursor = connection.pageInfo.endCursor || undefined;
+  const isLoadingNext = loading;
+  const loadNext = (count: number) => {
+    if (fetchMore) {
+      fetchMore({ variables: { id, count, cursor } });
+    } else {
+      call({ variables: { id, count, cursor } });
+    }
+  };
+
+  return { hasNext, isLoadingNext, loadNext };
+};
+
+const List: React.FC<{
+  user: List_UserFragment;
+}> = ({ user }) => {
+  // FIXME: replace
+  const connectionId =
+    'eyJwYXJlbnQiOnsiaWQiOiJWWE5sY2pveCIsInR5cGVuYW1lIjoiVXNlciJ9LCJjb25uZWN0aW9uIjp7ImZpZWxkTmFtZSI6Iml0ZW1zIiwiYXJncyI6e319LCJlZGdlIjp7InR5cGVuYW1lIjoiSXRlbUVkZ2UifX0=';
+
+  const [addItem] = useAddItemMutation();
   useItemAddedSubscription({
     variables: {
       connections: [connectionId],
     },
   });
   useItemRemovedSubscription();
-  return <></>;
-};
-
-const List: React.FC<{
-  user: List_UserFragment;
-}> = ({ user }) => {
-  const [addItem] = useAddItemMutation();
-
-  const [call, { loading, fetchMore }] = useList_PaginationQueryLazyQuery();
-
-  if (!user.items) return null;
-
-  // FIXME: replace
-  const connectionId =
-    'eyJwYXJlbnQiOnsiaWQiOiJWWE5sY2pveCIsInR5cGVuYW1lIjoiVXNlciJ9LCJjb25uZWN0aW9uIjp7ImZpZWxkTmFtZSI6Iml0ZW1zIiwiYXJncyI6e319LCJlZGdlIjp7InR5cGVuYW1lIjoiSXRlbUVkZ2UifX0=';
+  const { hasNext, isLoadingNext, loadNext } = usePagination({ id: user.id, connection: user.items });
 
   const nodes = getNodesFromConnection({ connection: user.items });
-  const hasNext = user.items.pageInfo.hasNextPage;
-  const cursor = user.items.pageInfo.endCursor;
-  const isLoadingNext = loading;
-  const loadNext = (count: number) => {
-    if (fetchMore) {
-      fetchMore({ variables: { id: user.id, count, cursor } });
-    } else {
-      call({ variables: { id: user.id, count, cursor } });
-    }
-  };
 
   return (
     <>
-      <Subscription connectionId={connectionId} />
       <div>
         <Button
           leftIcon={<AddIcon />}
@@ -136,7 +146,7 @@ const List: React.FC<{
           colorScheme="teal"
           variant="outline"
           isLoading={isLoadingNext}
-          onClick={() => loadNext(1)}
+          onClick={() => loadNext(2)}
           disabled={!hasNext}
         >
           Load more

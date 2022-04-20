@@ -124,7 +124,7 @@ export type PageInfo = {
 
 export type Query = {
   __typename?: 'Query';
-  items?: Maybe<ItemConnection>;
+  items: ItemConnection;
   /** Fetches an object given its ID */
   node?: Maybe<Node>;
   viewer?: Maybe<User>;
@@ -184,7 +184,7 @@ export type User = Node & {
   __typename?: 'User';
   /** The ID of an object */
   id: Scalars['ID'];
-  items?: Maybe<ItemConnection>;
+  items: ItemConnection;
   /** The name of the user. */
   name?: Maybe<Scalars['String']>;
 };
@@ -201,13 +201,13 @@ export type UserItemsArgs = {
 export type AppQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type AppQuery = { __typename?: 'Query', viewer?: { __typename?: 'User', id: string, name?: string | null | undefined, items?: { __typename?: 'ItemConnection', edges?: Array<{ __typename?: 'ItemEdge', cursor: string, node?: { __typename: 'Item', id: string, name: string } | null | undefined } | null | undefined> | null | undefined, pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, endCursor?: string | null | undefined, hasPreviousPage: boolean, startCursor?: string | null | undefined } } | null | undefined } | null | undefined };
+export type AppQuery = { __typename?: 'Query', viewer?: { __typename?: 'User', id: string, name?: string | null | undefined, items: { __typename?: 'ItemConnection', edges?: Array<{ __typename?: 'ItemEdge', cursor: string, node?: { __typename: 'Item', id: string, name: string } | null | undefined } | null | undefined> | null | undefined, pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, endCursor?: string | null | undefined, hasPreviousPage: boolean, startCursor?: string | null | undefined } } } | null | undefined };
 
 export type ListItem_ItemFragment = { __typename?: 'Item', id: string, name: string };
 
 export type ListItem_UserFragment = { __typename?: 'User', id: string };
 
-export type List_UserFragment = { __typename?: 'User', id: string, items?: { __typename?: 'ItemConnection', edges?: Array<{ __typename?: 'ItemEdge', cursor: string, node?: { __typename: 'Item', id: string, name: string } | null | undefined } | null | undefined> | null | undefined, pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, endCursor?: string | null | undefined, hasPreviousPage: boolean, startCursor?: string | null | undefined } } | null | undefined };
+export type List_UserFragment = { __typename?: 'User', id: string, items: { __typename?: 'ItemConnection', edges?: Array<{ __typename?: 'ItemEdge', cursor: string, node?: { __typename: 'Item', id: string, name: string } | null | undefined } | null | undefined> | null | undefined, pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, endCursor?: string | null | undefined, hasPreviousPage: boolean, startCursor?: string | null | undefined } } };
 
 export type AddItemMutationVariables = Exact<{
   input: AddItemInput;
@@ -244,9 +244,9 @@ export type List_PaginationQueryVariables = Exact<{
 }>;
 
 
-export type List_PaginationQuery = { __typename?: 'Query', node?: { __typename: 'Item', id: string } | { __typename: 'User', id: string, items?: { __typename?: 'ItemConnection', edges?: Array<{ __typename?: 'ItemEdge', cursor: string, node?: { __typename: 'Item', id: string, name: string } | null | undefined } | null | undefined> | null | undefined, pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, endCursor?: string | null | undefined, hasPreviousPage: boolean, startCursor?: string | null | undefined } } | null | undefined } | null | undefined };
+export type List_PaginationQuery = { __typename?: 'Query', node?: { __typename: 'Item', id: string } | { __typename: 'User', id: string, items: { __typename?: 'ItemConnection', edges?: Array<{ __typename?: 'ItemEdge', cursor: string, node?: { __typename: 'Item', id: string, name: string } | null | undefined } | null | undefined> | null | undefined, pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, endCursor?: string | null | undefined, hasPreviousPage: boolean, startCursor?: string | null | undefined } } } | null | undefined };
 
-export type List_User_Bi8zLgNvdW50Lgn1cnNvcixrZXl3b3JkFragment = { __typename?: 'User', id: string, items?: { __typename?: 'ItemConnection', edges?: Array<{ __typename?: 'ItemEdge', cursor: string, node?: { __typename: 'Item', id: string, name: string } | null | undefined } | null | undefined> | null | undefined, pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, endCursor?: string | null | undefined, hasPreviousPage: boolean, startCursor?: string | null | undefined } } | null | undefined };
+export type List_User_Bi8zLgNvdW50Lgn1cnNvcixrZXl3b3JkFragment = { __typename?: 'User', id: string, items: { __typename?: 'ItemConnection', edges?: Array<{ __typename?: 'ItemEdge', cursor: string, node?: { __typename: 'Item', id: string, name: string } | null | undefined } | null | undefined> | null | undefined, pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, endCursor?: string | null | undefined, hasPreviousPage: boolean, startCursor?: string | null | undefined } } };
 
 export const ListItem_ItemFragmentDoc = gql`
     fragment ListItem_item on Item {

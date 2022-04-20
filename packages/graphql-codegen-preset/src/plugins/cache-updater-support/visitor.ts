@@ -6,15 +6,19 @@ import {
   DirectiveNode,
   FieldNode,
   GraphQLList,
+  GraphQLNonNull,
   GraphQLObjectType,
+  GraphQLOutputType,
   GraphQLSchema,
   isListType,
+  isNonNullType,
   isObjectType,
   Kind,
   SelectionNode,
   TypeInfo,
 } from 'graphql';
 import { getFieldDef } from 'graphql/execution/execute';
+import { Maybe } from 'graphql/jsutils/Maybe';
 import { PAGINATION_DIRECTIVE_NAME } from '../../utils/directive';
 import { PaginationPluginConfig, PaginationRawPluginConfig } from './config';
 
@@ -176,16 +180,14 @@ export const withCacheUpdater = (typePolicies: CacheUpdaterTypePolicies) =>
     );
     if (!nodeFieldNode) return;
 
-    const connectionType = this._typeInfo.getType() as GraphQLObjectType;
+    const connectionType = this.getConnectionType(this._typeInfo.getType());
     if (!connectionType) return;
 
-    const edgesFieldDef = getFieldDef(this._schema, connectionType, 'edges');
-    if (!edgesFieldDef || !isListType(edgesFieldDef?.type)) return;
-    const edgeType = (edgesFieldDef.type as GraphQLList<GraphQLObjectType>).ofType;
+    const edgeType = this.getEdgeType(connectionType);
+    if (!edgeType) return;
 
-    const nodeFieldDef = getFieldDef(this._schema, edgeType, 'node');
-    if (!nodeFieldDef || !isObjectType(nodeFieldDef.type)) return;
-    const nodeType = nodeFieldDef.type;
+    const nodeType = this.getNodeType(edgeType);
+    if (!nodeType) return;
 
     const parentType = this._typeInfo.getParentType();
     if (!parentType) return;
@@ -200,6 +202,52 @@ export const withCacheUpdater = (typePolicies: CacheUpdaterTypePolicies) =>
       node: { typename: nodeType.toString() },
       parents: [newParentMeta],
     };
+  }
+
+  private getConnectionType(rawType: Maybe<GraphQLOutputType>): GraphQLObjectType | undefined {
+    let connectionType = rawType;
+    if (!connectionType) return;
+    if (isNonNullType(connectionType)) {
+      connectionType = connectionType.ofType as GraphQLObjectType;
+    }
+    if (!isObjectType(connectionType)) return;
+    return connectionType;
+  }
+
+  private getEdgeType(connectionType: GraphQLObjectType): GraphQLObjectType | undefined {
+    const edgesFieldDef = getFieldDef(this._schema, connectionType, 'edges');
+    if (!edgesFieldDef) return;
+
+    let edgesType = edgesFieldDef.type;
+    if (isNonNullType(edgesType)) {
+      edgesType = edgesType.ofType as GraphQLOutputType;
+    }
+    if (!isListType(edgesType)) return;
+
+    let edgeType = edgesType.ofType as Maybe<unknown>;
+    if (!edgeType) return;
+
+    if (isNonNullType(edgeType)) {
+      edgeType = edgeType.ofType;
+    }
+    if (!isObjectType(edgeType)) return;
+
+    return edgeType;
+  }
+
+  private getNodeType(edgeType: GraphQLObjectType): GraphQLObjectType | undefined {
+    const nodeFieldDef = getFieldDef(this._schema, edgeType, 'node');
+    if (!nodeFieldDef) return;
+
+    let nodeType = nodeFieldDef.type;
+    if (!nodeType) return;
+
+    if (isNonNullType(nodeType)) {
+      nodeType = nodeType.ofType as GraphQLOutputType;
+    }
+    if (!isObjectType(nodeType)) return;
+
+    return nodeType;
   }
 
   private addPaginationMetaToList(paginationMeta: PaginationMeta): void {

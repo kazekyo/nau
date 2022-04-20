@@ -593,9 +593,13 @@
               }
             ],
             "type": {
-              "kind": "OBJECT",
-              "name": "ItemConnection",
-              "ofType": null
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "ItemConnection",
+                "ofType": null
+              }
             },
             "isDeprecated": false,
             "deprecationReason": null
@@ -1002,9 +1006,13 @@
               }
             ],
             "type": {
-              "kind": "OBJECT",
-              "name": "ItemConnection",
-              "ofType": null
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "ItemConnection",
+                "ofType": null
+              }
             },
             "isDeprecated": false,
             "deprecationReason": null
