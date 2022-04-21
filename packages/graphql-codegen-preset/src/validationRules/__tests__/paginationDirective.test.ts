@@ -43,7 +43,7 @@ describe(paginationDirectiveValidationRule, () => {
         }
       }
     `);
-    expect(errors).toEqual([new GraphQLError('@pagination directive is required `after` or `before` argument.')]);
+    expect(errors).toStrictEqual([new GraphQLError('@pagination directive is required `after` or `before` argument.')]);
   });
 
   it('disallows use of @pagination directive with non-connection field', () => {
@@ -60,7 +60,7 @@ describe(paginationDirectiveValidationRule, () => {
         }
       }
     `);
-    expect(errors).toEqual([
+    expect(errors).toStrictEqual([
       new GraphQLError('@pagination can only be used with types whose name ends with "Connection".'),
     ]);
   });

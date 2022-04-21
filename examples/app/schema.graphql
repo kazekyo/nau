@@ -44,6 +44,9 @@ type ItemConnection {
 
   """Information to aid in pagination."""
   pageInfo: PageInfo!
+
+  """Information of the connection for a client"""
+  _connectionId: String!
 }
 
 """An edge in a connection."""

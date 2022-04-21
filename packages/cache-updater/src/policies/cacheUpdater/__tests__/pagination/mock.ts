@@ -4,7 +4,7 @@ import { backendNodeIdGenerator } from '../../../../utils/testing/backendNodeIdG
 import { withCacheUpdaterInternal } from '../../withCacheUpdater';
 
 type ItemsConnectionType = {
-  __connectionId: string;
+  _connectionId: string;
   edges: { node: { id: string; __typename: 'Item' }; cursor: string }[];
   pageInfo: { hasNextPage?: boolean; hasPreviousPage?: boolean; endCursor?: string; startCursor?: string };
 };
@@ -85,7 +85,7 @@ export const item21Id = backendNodeIdGenerator({ typename: 'Item', localId: '21'
 export const queryDocument = gql`
   query TestQuery($cursor: String) {
     items {
-      __connectionId @client
+      _connectionId @client
       edges {
         node {
           id
@@ -102,7 +102,7 @@ export const queryDocument = gql`
       id
       __typename
       myItems: items(first: 1, after: $cursor, search: "item") {
-        __connectionId @client
+        _connectionId @client
         edges {
           node {
             id
@@ -140,7 +140,7 @@ export const differentArgsConnectionsQueryDocument = gql`
       id
       __typename
       items1: items(first: 1, after: $cursor, search: "1") {
-        __connectionId @client
+        _connectionId @client
         edges {
           node {
             id
@@ -154,7 +154,7 @@ export const differentArgsConnectionsQueryDocument = gql`
         }
       }
       items2: items(first: 1, after: $cursor, search: "2") {
-        __connectionId @client
+        _connectionId @client
         edges {
           node {
             id

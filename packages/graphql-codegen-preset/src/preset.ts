@@ -6,28 +6,20 @@ import {
   RelayKnownArgumentNames,
   RelayNoUnusedArguments,
 } from '@relay-graphql-js/validation-rules';
-import {
-  ASTVisitor,
-  buildASTSchema,
-  extendSchema,
-  GraphQLSchema,
-  parse,
-  specifiedRules,
-  ValidationContext,
-  ValidationRule,
-} from 'graphql';
+import { ASTVisitor, buildASTSchema, GraphQLSchema, specifiedRules, ValidationContext, ValidationRule } from 'graphql';
 import cloneDeep from 'lodash.clonedeep';
 import * as paginationPlugin from './plugins/cache-updater-support';
 import { PresetConfig } from './presetConfig';
+import { addCustomClientDirective } from './schemaTransforms/addClientDirective';
+import { addConnectionId } from './schemaTransforms/addConnectionId';
 import { transform as addPaginationFields } from './transforms/addPaginationFields';
 import { transform as fixVariableNotDefinedInRoot } from './transforms/fixVariableNotDefinedInRoot';
 import { transform as generateRefetchQuery } from './transforms/generateRefetchQuery';
 import { transform as passArgumentValueToFragment } from './transforms/passArgumentValueToFragment';
 import { transform as removeCustomDirective } from './transforms/removeCustomDirective';
-import { customDirectives } from './utils/directive';
 import { paginationDirectiveValidationRule } from './validationRules/PaginationDirective';
 
-const transform = ({
+const transformDocuments = ({
   documentFiles,
 }: {
   documentFiles: Types.DocumentFile[];
@@ -38,6 +30,14 @@ const transform = ({
       result = transformFunc(result);
     },
   );
+  return result;
+};
+
+const transformSchema = (schema: GraphQLSchema, documentFiles: Types.DocumentFile[]): GraphQLSchema => {
+  let result = schema;
+  [addCustomClientDirective, addConnectionId].forEach((transform) => {
+    result = transform(result, documentFiles).schema;
+  });
   return result;
 };
 
@@ -63,31 +63,18 @@ const validationRules = (): ValidationRule[] => {
   ];
 };
 
-const addCustomClientDirective = (graphGLSchema: GraphQLSchema): GraphQLSchema => {
-  const currentDirectives = graphGLSchema.getDirectives();
-  const additionalDirectives = Object.entries(customDirectives)
-    .filter(([key, _]) => !currentDirectives.find((d) => d.name === key))
-    .map(([_, value]) => value);
-
-  if (additionalDirectives.length === 0) {
-    return graphGLSchema;
-  }
-
-  return extendSchema(graphGLSchema, parse(additionalDirectives.join('\n')));
-};
-
 export const preset: Types.OutputPreset<PresetConfig> = {
   buildGeneratesSection: (options) => {
     const originalGraphQLSchema: GraphQLSchema = options.schemaAst
       ? options.schemaAst
       : buildASTSchema(options.schema, options.config);
 
-    const schemaObject = addCustomClientDirective(originalGraphQLSchema);
+    const schemaObject = transformSchema(originalGraphQLSchema, options.documents);
 
     return validateGraphQlDocuments(schemaObject, options.documents, validationRules()).then((errors) => {
       checkValidationErrors(errors);
 
-      const transformedObject = transform({ documentFiles: options.documents });
+      const transformedObject = transformDocuments({ documentFiles: options.documents });
 
       let pluginMap = options.pluginMap;
       let plugins = options.plugins;

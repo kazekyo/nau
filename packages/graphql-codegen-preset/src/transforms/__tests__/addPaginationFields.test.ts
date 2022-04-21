@@ -37,6 +37,7 @@ describe('transform', () => {
               hasPreviousPage
               startCursor
             }
+            _connectionId @client
           }
         }
       }
@@ -87,6 +88,7 @@ describe('transform', () => {
             hasPreviousPage
             startCursor
           }
+          _connectionId @client
         }
       }
     `);
@@ -136,6 +138,7 @@ describe('transform', () => {
             hasPreviousPage
             startCursor
           }
+          _connectionId @client
         }
       }
     `);
@@ -164,6 +167,7 @@ describe('transform', () => {
               hasPreviousPage
               startCursor
             }
+            _connectionId @client
           }
         }
       }
@@ -212,6 +216,7 @@ describe('transform', () => {
               hasNextPage
               endCursor
             }
+            _connectionId @client
           }
         }
       }
@@ -249,6 +254,52 @@ describe('transform', () => {
               }
               cursor
             }
+            pageInfo {
+              hasNextPage
+              endCursor
+              hasPreviousPage
+              startCursor
+            }
+            _connectionId @client
+          }
+        }
+      }
+    `);
+    const result = transform({ documentFiles: [{ document }] });
+
+    expect(printDocuments(result.documentFiles)).toBe(printDocuments([{ document: expectedDocument }]));
+  });
+
+  it('does not add _connectionId field if there are already exists', () => {
+    const document = parse(/* GraphQL */ `
+      query TestQuery($cursor: String) {
+        viewer {
+          id
+          items(first: 1, after: $cursor) @pagination {
+            edges {
+              node {
+                id
+              }
+            }
+            _connectionId
+          }
+        }
+      }
+    `);
+
+    const expectedDocument = parse(/* GraphQL */ `
+      query TestQuery($cursor: String) {
+        viewer {
+          id
+          items(first: 1, after: $cursor) @pagination {
+            edges {
+              node {
+                id
+                __typename
+              }
+              cursor
+            }
+            _connectionId
             pageInfo {
               hasNextPage
               endCursor

@@ -2,24 +2,9 @@ import { Types } from '@graphql-codegen/plugin-helpers';
 import { ClientSideBaseVisitor, LoadedFragment } from '@graphql-codegen/visitor-plugin-common';
 import { DeleteRecordMeta, DELETE_RECORD_DIRECTIVE_NAME, PaginationMeta } from '@nau/cache-updater';
 import autoBind from 'auto-bind';
-import {
-  DirectiveNode,
-  FieldNode,
-  GraphQLList,
-  GraphQLNonNull,
-  GraphQLObjectType,
-  GraphQLOutputType,
-  GraphQLSchema,
-  isListType,
-  isNonNullType,
-  isObjectType,
-  Kind,
-  SelectionNode,
-  TypeInfo,
-} from 'graphql';
-import { getFieldDef } from 'graphql/execution/execute';
-import { Maybe } from 'graphql/jsutils/Maybe';
+import { DirectiveNode, FieldNode, GraphQLSchema, Kind, TypeInfo } from 'graphql';
 import { PAGINATION_DIRECTIVE_NAME } from '../../utils/directive';
+import { getConnectionType, getEdgeType, getNodeType } from '../../utils/graphqlSchema';
 import { PaginationPluginConfig, PaginationRawPluginConfig } from './config';
 
 export class PaginationVisitor extends ClientSideBaseVisitor<PaginationRawPluginConfig, PaginationPluginConfig> {
@@ -118,10 +103,6 @@ export const withCacheUpdater = (typePolicies: CacheUpdaterTypePolicies) =>
     }
   }
 
-  private isFieldNode(selection: SelectionNode, name: string): boolean {
-    return selection.kind === 'Field' && selection.name.value === name;
-  }
-
   private findDeleteRecordMeta(fieldNode: FieldNode): DeleteRecordMeta | undefined {
     if (!fieldNode.directives) return;
     const deleteRecordDirective = fieldNode.directives.find(
@@ -169,24 +150,13 @@ export const withCacheUpdater = (typePolicies: CacheUpdaterTypePolicies) =>
     );
     if (!paginationDirective) return;
 
-    if (!fieldNode.selectionSet) return;
-    const edgesFieldNode = fieldNode.selectionSet.selections.find((selection): selection is FieldNode =>
-      this.isFieldNode(selection, 'edges'),
-    );
-    if (!edgesFieldNode || !edgesFieldNode.selectionSet) return;
-
-    const nodeFieldNode = edgesFieldNode.selectionSet.selections.find((selection): selection is FieldNode =>
-      this.isFieldNode(selection, 'node'),
-    );
-    if (!nodeFieldNode) return;
-
-    const connectionType = this.getConnectionType(this._typeInfo.getType());
+    const connectionType = getConnectionType({ type: this._typeInfo.getType() });
     if (!connectionType) return;
 
-    const edgeType = this.getEdgeType(connectionType);
+    const edgeType = getEdgeType({ connectionType, schema: this._schema });
     if (!edgeType) return;
 
-    const nodeType = this.getNodeType(edgeType);
+    const nodeType = getNodeType({ edgeType, schema: this._schema });
     if (!nodeType) return;
 
     const parentType = this._typeInfo.getParentType();
@@ -202,52 +172,6 @@ export const withCacheUpdater = (typePolicies: CacheUpdaterTypePolicies) =>
       node: { typename: nodeType.toString() },
       parents: [newParentMeta],
     };
-  }
-
-  private getConnectionType(rawType: Maybe<GraphQLOutputType>): GraphQLObjectType | undefined {
-    let connectionType = rawType;
-    if (!connectionType) return;
-    if (isNonNullType(connectionType)) {
-      connectionType = connectionType.ofType as GraphQLObjectType;
-    }
-    if (!isObjectType(connectionType)) return;
-    return connectionType;
-  }
-
-  private getEdgeType(connectionType: GraphQLObjectType): GraphQLObjectType | undefined {
-    const edgesFieldDef = getFieldDef(this._schema, connectionType, 'edges');
-    if (!edgesFieldDef) return;
-
-    let edgesType = edgesFieldDef.type;
-    if (isNonNullType(edgesType)) {
-      edgesType = edgesType.ofType as GraphQLOutputType;
-    }
-    if (!isListType(edgesType)) return;
-
-    let edgeType = edgesType.ofType as Maybe<unknown>;
-    if (!edgeType) return;
-
-    if (isNonNullType(edgeType)) {
-      edgeType = edgeType.ofType;
-    }
-    if (!isObjectType(edgeType)) return;
-
-    return edgeType;
-  }
-
-  private getNodeType(edgeType: GraphQLObjectType): GraphQLObjectType | undefined {
-    const nodeFieldDef = getFieldDef(this._schema, edgeType, 'node');
-    if (!nodeFieldDef) return;
-
-    let nodeType = nodeFieldDef.type;
-    if (!nodeType) return;
-
-    if (isNonNullType(nodeType)) {
-      nodeType = nodeType.ofType as GraphQLOutputType;
-    }
-    if (!isObjectType(nodeType)) return;
-
-    return nodeType;
   }
 
   private addPaginationMetaToList(paginationMeta: PaginationMeta): void {

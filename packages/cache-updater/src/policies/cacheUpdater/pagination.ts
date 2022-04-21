@@ -132,7 +132,7 @@ export const generatePaginationParentTypePolicyPairs = ({
           // eslint-disable-next-line @typescript-eslint/no-unsafe-return
           return {
             ...originalResult,
-            __connectionId: connectionId,
+            _connectionId: connectionId,
           };
         };
 

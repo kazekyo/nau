@@ -50,6 +50,7 @@ describe('preset', () => {
             hasPreviousPage
             startCursor
           }
+          _connectionId @client
         }
       }
     `);

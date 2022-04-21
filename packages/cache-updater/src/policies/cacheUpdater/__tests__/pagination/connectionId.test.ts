@@ -10,14 +10,14 @@ import {
   ConnectionIdOnlyQueryDataType,
 } from './connectionId.mock';
 
-describe('__connectionId', () => {
+describe('_connectionId', () => {
   let cache: InMemoryCache;
   beforeEach(() => {
     cache = new InMemoryCache({
       typePolicies: testTypePolicies,
     });
   });
-  it('gets __connectionId of the connection of Root Query', async () => {
+  it('gets _connectionId of the connection of Root Query', async () => {
     const mocks = [{ request: { query: queryDocument }, result: { data: queryMockData } }];
     const wrapper = mockedWrapperComponent({ mocks, cache });
     const useQueryHookResult = renderHook(() => useQuery<QueryDataType>(queryDocument), { wrapper });
@@ -27,10 +27,10 @@ describe('__connectionId', () => {
       connection: { fieldName: 'items', args: {} },
       edge: { typename: 'ItemEdge' },
     });
-    expect(useQueryHookResult.result.current.data?.items.__connectionId).toBe(connectionId);
+    expect(useQueryHookResult.result.current.data?.items._connectionId).toBe(connectionId);
   });
 
-  it('gets __connectionId of the connection of a type', async () => {
+  it('gets _connectionId of the connection of a type', async () => {
     const mocks = [{ request: { query: queryDocument }, result: { data: queryMockData } }];
     const wrapper = mockedWrapperComponent({ mocks, cache });
     const useQueryHookResult = renderHook(() => useQuery<QueryDataType>(queryDocument), { wrapper });
@@ -40,10 +40,10 @@ describe('__connectionId', () => {
       connection: { fieldName: 'items', args: { search: 'item' } },
       edge: { typename: 'ItemEdge' },
     });
-    expect(useQueryHookResult.result.current.data?.viewer.myItems.__connectionId).toBe(connectionId);
+    expect(useQueryHookResult.result.current.data?.viewer.myItems._connectionId).toBe(connectionId);
   });
 
-  it('gets __connectionId of the connection with no edges etc. ', async () => {
+  it('gets _connectionId of the connection with no edges etc. ', async () => {
     const mocks = [
       { request: { query: connectionIdOnlyQueryDocument }, result: { data: connectionIdOnlyQueryMockData } },
     ];
@@ -63,7 +63,7 @@ describe('__connectionId', () => {
       connection: { fieldName: 'items', args: {} },
       edge: { typename: 'ItemEdge' },
     });
-    expect(useQueryHookResult.result.current.data?.items.__connectionId).toBe(connectionId1);
-    expect(useQueryHookResult.result.current.data?.viewer.items.__connectionId).toBe(connectionId2);
+    expect(useQueryHookResult.result.current.data?.items._connectionId).toBe(connectionId1);
+    expect(useQueryHookResult.result.current.data?.viewer.items._connectionId).toBe(connectionId2);
   });
 });

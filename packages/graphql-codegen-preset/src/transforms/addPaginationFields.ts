@@ -1,5 +1,5 @@
 import { Types } from '@graphql-codegen/plugin-helpers';
-import { DocumentNode, FieldNode, visit } from 'graphql';
+import { DocumentNode, FieldNode, Kind, visit } from 'graphql';
 import { SelectionNode } from 'graphql/language';
 import { PAGINATION_DIRECTIVE_NAME } from '../utils/directive';
 
@@ -29,6 +29,12 @@ const nodeField: FieldNode = {
   },
 };
 
+const connectionIdField: FieldNode = {
+  kind: Kind.FIELD,
+  name: { kind: Kind.NAME, value: '_connectionId' },
+  directives: [{ kind: Kind.DIRECTIVE, name: { kind: Kind.NAME, value: 'client' } }],
+};
+
 export const transform = ({
   documentFiles,
 }: {
@@ -48,6 +54,7 @@ export const transform = ({
 
           let newFieldNode = addPageInfoField({ connectionFieldNode: fieldNode });
           newFieldNode = addEdgesRelatedFields({ connectionFieldNode: newFieldNode });
+          newFieldNode = addConnectionIdField({ connectionFieldNode: newFieldNode });
 
           return newFieldNode;
         },
@@ -61,23 +68,6 @@ export const transform = ({
 
 const isFieldNode = ({ selection, name }: { selection: SelectionNode; name: string }) => {
   return selection.kind === 'Field' && selection.name.value === name;
-};
-
-const addPageInfoField = ({ connectionFieldNode }: { connectionFieldNode: FieldNode }): FieldNode => {
-  if (!connectionFieldNode.selectionSet) return connectionFieldNode;
-
-  const selections = connectionFieldNode.selectionSet.selections;
-
-  const pageInfoIndex = selections.findIndex((selection) => isFieldNode({ selection, name: 'pageInfo' }));
-  if (pageInfoIndex > -1) return connectionFieldNode; // If the pageInfo field is already exists, do nothing
-
-  return {
-    ...connectionFieldNode,
-    selectionSet: {
-      ...connectionFieldNode.selectionSet,
-      selections: [...selections, pageInfoField],
-    },
-  };
 };
 
 // Add the field, but do nothing if the field already exists
@@ -102,6 +92,15 @@ const addFieldWithoutDuplication = ({
       selections: [...selections, addingField],
     },
   };
+};
+
+const addPageInfoField = ({ connectionFieldNode }: { connectionFieldNode: FieldNode }): FieldNode => {
+  if (!connectionFieldNode.selectionSet) return connectionFieldNode;
+  return addFieldWithoutDuplication({ fieldNode: connectionFieldNode, addingField: pageInfoField });
+};
+
+const addConnectionIdField = ({ connectionFieldNode }: { connectionFieldNode: FieldNode }): FieldNode => {
+  return addFieldWithoutDuplication({ fieldNode: connectionFieldNode, addingField: connectionIdField });
 };
 
 const addNodeRelatedFields = ({ edgesFieldNode }: { edgesFieldNode: FieldNode }): FieldNode => {

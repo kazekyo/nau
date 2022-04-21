@@ -169,7 +169,7 @@ describe('@appendNode', () => {
       () =>
         useSubscription(subscriptionDocument, {
           variables: {
-            connections: [useQueryHookResult.result.current.data?.viewer.myItems.__connectionId],
+            connections: [useQueryHookResult.result.current.data?.viewer.myItems._connectionId],
           },
         }),
       { wrapper: subscriptionWrapper },

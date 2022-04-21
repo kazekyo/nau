@@ -121,7 +121,7 @@ export const withCacheUpdater = (typePolicies: CacheUpdaterTypePolicies) =>
     typePolicies,
   });`,
     );
-    expect(result.prepend).toEqual([
+    expect(result.prepend).toStrictEqual([
       "import { TypePolicy } from '@apollo/client';",
       "import { withCacheUpdaterInternal } from '@nau/cache-updater';",
     ]);

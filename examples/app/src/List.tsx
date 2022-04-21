@@ -21,11 +21,10 @@ export const ListFragments = {
       keyword: { type: "String" }
     )
     @refetchable(queryName: "List_PaginationQuery") {
-      id
+      id # TODO : Add automatically
       items(first: $count, after: $cursor, keyword: $keyword) @pagination {
         edges {
           node {
-            id
             ...ListItem_item
           }
         }
@@ -99,14 +98,10 @@ const usePagination = ({
 const List: React.FC<{
   user: List_UserFragment;
 }> = ({ user }) => {
-  // FIXME: replace
-  const connectionId =
-    'eyJwYXJlbnQiOnsiaWQiOiJWWE5sY2pveCIsInR5cGVuYW1lIjoiVXNlciJ9LCJjb25uZWN0aW9uIjp7ImZpZWxkTmFtZSI6Iml0ZW1zIiwiYXJncyI6e319LCJlZGdlIjp7InR5cGVuYW1lIjoiSXRlbUVkZ2UifX0=';
-
   const [addItem] = useAddItemMutation();
   useItemAddedSubscription({
     variables: {
-      connections: [connectionId],
+      connections: [user.items._connectionId],
     },
   });
   useItemRemovedSubscription();
@@ -123,7 +118,7 @@ const List: React.FC<{
             void addItem({
               variables: {
                 input: { itemName: 'new item', userId: user.id },
-                connections: [connectionId],
+                connections: [user.items._connectionId],
               },
             })
           }
