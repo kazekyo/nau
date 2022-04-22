@@ -1,14 +1,14 @@
-import { gql } from '@apollo/client';
+import { gql, useLazyQuery, useMutation, useSubscription } from '@apollo/client';
 import { AddIcon } from '@chakra-ui/icons';
 import { Box, Button } from '@chakra-ui/react';
 import { getNodesFromConnection } from '@nau/cache-updater';
 import * as React from 'react';
 import {
+  AddItemMutationDocument,
+  ItemAddedSubscriptionDocument,
+  ItemRemovedSubscriptionDocument,
+  List_PaginationQueryDocument,
   List_UserFragment,
-  useAddItemMutation,
-  useItemAddedSubscription,
-  useItemRemovedSubscription,
-  useList_PaginationQueryLazyQuery,
 } from './generated/graphql';
 import ListItem, { ListItemFragments } from './ListItem';
 
@@ -79,7 +79,7 @@ const usePagination = ({
   id: string;
   connection: { pageInfo: PageInfo };
 }): { hasNext: boolean; isLoadingNext: boolean; loadNext: LoadNext } => {
-  const [call, { loading, fetchMore }] = useList_PaginationQueryLazyQuery();
+  const [call, { loading, fetchMore }] = useLazyQuery(List_PaginationQueryDocument);
 
   const hasNext = connection.pageInfo.hasNextPage;
   const cursor = connection.pageInfo.endCursor || undefined;
@@ -98,13 +98,13 @@ const usePagination = ({
 const List: React.FC<{
   user: List_UserFragment;
 }> = ({ user }) => {
-  const [addItem] = useAddItemMutation();
-  useItemAddedSubscription({
+  const [addItem] = useMutation(AddItemMutationDocument);
+  useSubscription(ItemAddedSubscriptionDocument, {
     variables: {
       connections: [user.items._connectionId],
     },
   });
-  useItemRemovedSubscription();
+  useSubscription(ItemRemovedSubscriptionDocument);
   const { hasNext, isLoadingNext, loadNext } = usePagination({ id: user.id, connection: user.items });
 
   const nodes = getNodesFromConnection({ connection: user.items });

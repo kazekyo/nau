@@ -1,8 +1,8 @@
-import { gql } from '@apollo/client';
+import { gql, useQuery } from '@apollo/client';
 import { Box, Divider } from '@chakra-ui/react';
 import React from 'react';
 import './App.css';
-import { useAppQuery } from './generated/graphql';
+import { AppQueryDocument } from './generated/graphql';
 import List, { ListFragments } from './List';
 
 gql`
@@ -17,7 +17,7 @@ gql`
 `;
 
 const App: React.FC = () => {
-  const { loading, error, data } = useAppQuery();
+  const { loading, error, data } = useQuery(AppQueryDocument);
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error :(</p>;

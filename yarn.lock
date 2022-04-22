@@ -2079,6 +2079,18 @@
     lodash "~4.17.0"
     tslib "~2.3.0"
 
+"@graphql-codegen/plugin-helpers@^2.4.0":
+  version "2.4.2"
+  resolved "https://registry.yarnpkg.com/@graphql-codegen/plugin-helpers/-/plugin-helpers-2.4.2.tgz#e4f6b74dddcf8a9974fef5ce48562ae0980f9fed"
+  integrity sha512-LJNvwAPv/sKtI3RnRDm+nPD+JeOfOuSOS4FFIpQCMUCyMnFcchV/CPTTv7tT12fLUpEg6XjuFfDBvOwndti30Q==
+  dependencies:
+    "@graphql-tools/utils" "^8.5.2"
+    change-case-all "1.0.14"
+    common-tags "1.8.2"
+    import-from "4.0.0"
+    lodash "~4.17.0"
+    tslib "~2.3.0"
+
 "@graphql-codegen/schema-ast@^2.2.0":
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/@graphql-codegen/schema-ast/-/schema-ast-2.2.0.tgz#9615a2793f8e5726a1c95da9442e4cd20b0f95bc"
@@ -2099,6 +2111,17 @@
     open "7.1.0"
     tslib "~2.0.0"
 
+"@graphql-codegen/typed-document-node@^2.2.8":
+  version "2.2.8"
+  resolved "https://registry.yarnpkg.com/@graphql-codegen/typed-document-node/-/typed-document-node-2.2.8.tgz#e8c6c7d0b4607b37682002e50922205a8bf33e0a"
+  integrity sha512-72qTGNOMVnT51Fenk1MvavOwdyJewCZlrEp0miiTjtOSiTPzAm1acOck7cx8smNWyxNaDh3g4Jf60MkS8VCySw==
+  dependencies:
+    "@graphql-codegen/plugin-helpers" "^2.4.0"
+    "@graphql-codegen/visitor-plugin-common" "2.7.4"
+    auto-bind "~4.0.0"
+    change-case-all "1.0.14"
+    tslib "~2.3.0"
+
 "@graphql-codegen/typescript-operations@^2.1.4":
   version "2.1.8"
   resolved "https://registry.yarnpkg.com/@graphql-codegen/typescript-operations/-/typescript-operations-2.1.8.tgz#07f0df130a5f04844188cea1b7f1a45ca28e68ad"
@@ -2108,17 +2131,6 @@
     "@graphql-codegen/typescript" "^2.2.4"
     "@graphql-codegen/visitor-plugin-common" "2.4.0"
     auto-bind "~4.0.0"
-    tslib "~2.3.0"
-
-"@graphql-codegen/typescript-react-apollo@^3.1.4":
-  version "3.1.6"
-  resolved "https://registry.yarnpkg.com/@graphql-codegen/typescript-react-apollo/-/typescript-react-apollo-3.1.6.tgz#469c72ecefe528abd215c2159b378328ef975c71"
-  integrity sha512-/MI8LwFnZo8fz6Xy7ffUc7DjiLPWmd5YqvOieMMOaE2CClKaYxAYpitAK5BpoBMZ8xVo5YcLR2+0A5ztL0bfng==
-  dependencies:
-    "@graphql-codegen/plugin-helpers" "^2.2.0"
-    "@graphql-codegen/visitor-plugin-common" "2.4.0"
-    auto-bind "~4.0.0"
-    change-case-all "1.0.14"
     tslib "~2.3.0"
 
 "@graphql-codegen/typescript@^2.2.2", "@graphql-codegen/typescript@^2.2.4":
@@ -2137,6 +2149,22 @@
   integrity sha512-wcUqpbvhLlOwsriyI+ZTuE0Fx7AIIbcL80+KjgNGrMjLZJLTyMJGpYwc87I876EPIcyC35+LO15nwy2cR2tbxQ==
   dependencies:
     "@graphql-codegen/plugin-helpers" "^2.2.0"
+    "@graphql-tools/optimize" "^1.0.1"
+    "@graphql-tools/relay-operation-optimizer" "^6.3.7"
+    "@graphql-tools/utils" "^8.3.0"
+    auto-bind "~4.0.0"
+    change-case-all "1.0.14"
+    dependency-graph "^0.11.0"
+    graphql-tag "^2.11.0"
+    parse-filepath "^1.0.2"
+    tslib "~2.3.0"
+
+"@graphql-codegen/visitor-plugin-common@2.7.4":
+  version "2.7.4"
+  resolved "https://registry.yarnpkg.com/@graphql-codegen/visitor-plugin-common/-/visitor-plugin-common-2.7.4.tgz#fbc8aec9df0035b8f29fa64a6356cbb02062da5d"
+  integrity sha512-aaDoEudDD+B7DK/UwDSL2Fzej75N9hNJ3N8FQuTIeDyw6FNGWUxmkjVBLQGlzfnYfK8IYkdfYkrPn3Skq0pVxA==
+  dependencies:
+    "@graphql-codegen/plugin-helpers" "^2.4.0"
     "@graphql-tools/optimize" "^1.0.1"
     "@graphql-tools/relay-operation-optimizer" "^6.3.7"
     "@graphql-tools/utils" "^8.3.0"
@@ -2366,6 +2394,13 @@
     "@ardatan/aggregate-error" "0.0.6"
     camel-case "4.1.1"
     tslib "~2.0.1"
+
+"@graphql-tools/utils@^8.5.2":
+  version "8.6.9"
+  resolved "https://registry.yarnpkg.com/@graphql-tools/utils/-/utils-8.6.9.tgz#fe1b81df29c9418b41b7a1ffe731710b93d3a1fe"
+  integrity sha512-Z1X4d4GCT81+8CSt6SgU4t1w1UAUsAIRb67mI90k/zAs+ArkB95iE3bWXuJCUmd1+r8DGGtmUNOArtd6wkt+OQ==
+  dependencies:
+    tslib "~2.3.0"
 
 "@graphql-tools/wrap@^8.1.0":
   version "8.2.0"
@@ -6233,6 +6268,11 @@ common-tags@1.8.0, common-tags@^1.8.0:
   version "1.8.0"
   resolved "https://registry.yarnpkg.com/common-tags/-/common-tags-1.8.0.tgz#8e3153e542d4a39e9b10554434afaaf98956a937"
   integrity sha512-6P6g0uetGpW/sdyUy/iQQCbFF0kWVMSIVSyYz7Zgjcgh8mgw8PQzDNZeyZ5DQ2gM7LBoZPHmnjz8rUthkBG5tw==
+
+common-tags@1.8.2:
+  version "1.8.2"
+  resolved "https://registry.yarnpkg.com/common-tags/-/common-tags-1.8.2.tgz#94ebb3c076d26032745fd54face7f688ef5ac9c6"
+  integrity sha512-gk/Z852D2Wtb//0I+kRFNKKE9dIIVirjoqPoA1wJU+XePVXZfGeBpk45+A1rKO4Q43prqWBNY/MiIeRLbPWUaA==
 
 commondir@^1.0.1:
   version "1.0.1"
