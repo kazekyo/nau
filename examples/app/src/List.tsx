@@ -1,6 +1,7 @@
 import { gql, useMutation, useSubscription } from '@apollo/client';
 import { AddIcon } from '@chakra-ui/icons';
 import { Box, Button } from '@chakra-ui/react';
+import { usePagination } from '@nau/core';
 import * as React from 'react';
 import {
   AddItemMutationDocument,
@@ -10,7 +11,6 @@ import {
   List_UserFragment,
 } from './generated/graphql';
 import ListItem, { ListItemFragments } from './ListItem';
-import { usePagination } from '@nau/cache-updater';
 
 export const ListFragments = {
   user: gql`

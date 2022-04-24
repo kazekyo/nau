@@ -1,5 +1,5 @@
 import { TypePolicy } from '@apollo/client';
-import { withCacheUpdaterInternal } from '@nau/cache-updater';
+import { withCacheUpdaterInternal } from '@nau/core';
 import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
 export type Maybe<T> = T | null;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };

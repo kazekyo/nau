@@ -61,7 +61,7 @@
     "@graphql-codegen/typed-document-node": "^2.2.8",
     "@graphql-codegen/typescript": "^2.2.2",
     "@graphql-codegen/typescript-operations": "^2.1.4",
-    "@nau/cache-updater": "*",
+    "@nau/core": "^0.3.0",
     "@nau/graphql-codegen-preset": "*"
   }
 }

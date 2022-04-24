@@ -2,7 +2,7 @@ import { ApolloClient, ApolloProvider, from, HttpLink, InMemoryCache, split } fr
 import { WebSocketLink } from '@apollo/client/link/ws';
 import { relayStylePagination } from '@apollo/client/utilities';
 import { ChakraProvider } from '@chakra-ui/react';
-import { isSubscriptionOperation, createCacheUpdaterLink } from '@nau/cache-updater';
+import { createCacheUpdaterLink, isSubscriptionOperation } from '@nau/core';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';

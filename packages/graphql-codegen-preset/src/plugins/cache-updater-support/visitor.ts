@@ -1,6 +1,6 @@
 import { Types } from '@graphql-codegen/plugin-helpers';
 import { ClientSideBaseVisitor, LoadedFragment } from '@graphql-codegen/visitor-plugin-common';
-import { DeleteRecordMeta, DELETE_RECORD_DIRECTIVE_NAME, PaginationMeta } from '@nau/cache-updater';
+import { DeleteRecordMeta, DELETE_RECORD_DIRECTIVE_NAME, PaginationMeta } from '@nau/core';
 import autoBind from 'auto-bind';
 import { DirectiveNode, FieldNode, GraphQLSchema, Kind, TypeInfo } from 'graphql';
 import { PAGINATION_DIRECTIVE_NAME } from '../../utils/directive';
@@ -30,10 +30,7 @@ export class PaginationVisitor extends ClientSideBaseVisitor<PaginationRawPlugin
   }
 
   public getImports(): string[] {
-    return [
-      `import { TypePolicy } from '@apollo/client';`,
-      `import { withCacheUpdaterInternal } from '@nau/cache-updater';`,
-    ];
+    return [`import { TypePolicy } from '@apollo/client';`, `import { withCacheUpdaterInternal } from '@nau/core';`];
   }
 
   public getContent(): string {
