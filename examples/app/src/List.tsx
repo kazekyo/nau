@@ -1,7 +1,6 @@
-import { gql, useLazyQuery, useMutation, useSubscription } from '@apollo/client';
+import { gql, useMutation, useSubscription } from '@apollo/client';
 import { AddIcon } from '@chakra-ui/icons';
 import { Box, Button } from '@chakra-ui/react';
-import { getNodesFromConnection } from '@nau/cache-updater';
 import * as React from 'react';
 import {
   AddItemMutationDocument,
@@ -11,6 +10,7 @@ import {
   List_UserFragment,
 } from './generated/graphql';
 import ListItem, { ListItemFragments } from './ListItem';
+import { usePagination } from '@nau/cache-updater';
 
 export const ListFragments = {
   user: gql`
@@ -67,47 +67,20 @@ gql`
   }
 `;
 
-type LoadNext = (count: number) => void;
-type PageInfo = {
-  hasNextPage: boolean;
-  endCursor?: string | null;
-};
-const usePagination = ({
-  id,
-  connection,
-}: {
-  id: string;
-  connection: { pageInfo: PageInfo };
-}): { hasNext: boolean; isLoadingNext: boolean; loadNext: LoadNext } => {
-  const [call, { loading, fetchMore }] = useLazyQuery(List_PaginationQueryDocument);
-
-  const hasNext = connection.pageInfo.hasNextPage;
-  const cursor = connection.pageInfo.endCursor || undefined;
-  const isLoadingNext = loading;
-  const loadNext = (count: number) => {
-    if (fetchMore) {
-      fetchMore({ variables: { id, count, cursor } });
-    } else {
-      call({ variables: { id, count, cursor } });
-    }
-  };
-
-  return { hasNext, isLoadingNext, loadNext };
-};
-
 const List: React.FC<{
   user: List_UserFragment;
 }> = ({ user }) => {
-  const [addItem] = useMutation(AddItemMutationDocument);
   useSubscription(ItemAddedSubscriptionDocument, {
     variables: {
       connections: [user.items._connectionId],
     },
   });
   useSubscription(ItemRemovedSubscriptionDocument);
-  const { hasNext, isLoadingNext, loadNext } = usePagination({ id: user.id, connection: user.items });
-
-  const nodes = getNodesFromConnection({ connection: user.items });
+  const [addItem] = useMutation(AddItemMutationDocument);
+  const { nodes, hasNext, loadNext, isLoading } = usePagination(List_PaginationQueryDocument, {
+    id: user.id,
+    connection: user.items,
+  });
 
   return (
     <>
@@ -140,7 +113,7 @@ const List: React.FC<{
           mt="3"
           colorScheme="teal"
           variant="outline"
-          isLoading={isLoadingNext}
+          isLoading={isLoading}
           onClick={() => loadNext(2)}
           disabled={!hasNext}
         >
