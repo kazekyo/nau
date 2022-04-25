@@ -1,6 +1,6 @@
 import { Types } from '@graphql-codegen/plugin-helpers';
 import { DocumentNode, FieldNode, Kind, visit } from 'graphql';
-import { SelectionNode } from 'graphql/language';
+import { SelectionNode, SelectionSetNode } from 'graphql/language';
 import { PAGINATION_DIRECTIVE_NAME } from '../utils/directive';
 
 const pageInfoField: FieldNode = {
@@ -44,19 +44,33 @@ export const transform = ({
     if (!file.document) return file;
 
     file.document = visit(file.document, {
-      Field: {
-        enter(fieldNode) {
-          if (!fieldNode.directives) return;
-          const paginationDirective = fieldNode.directives.find(
-            (directive) => directive.name.value === PAGINATION_DIRECTIVE_NAME,
-          );
-          if (!paginationDirective) return;
+      SelectionSet: {
+        leave(selectionSetNode) {
+          let existsConnectionField = false;
+          const selections = selectionSetNode.selections.map((selection) => {
+            if (selection.kind !== Kind.FIELD || !selection.directives) return selection;
+            const paginationDirective = selection.directives.find(
+              (directive) => directive.name.value === PAGINATION_DIRECTIVE_NAME,
+            );
+            if (!paginationDirective) return selection;
 
-          let newFieldNode = addPageInfoField({ connectionFieldNode: fieldNode });
-          newFieldNode = addEdgesRelatedFields({ connectionFieldNode: newFieldNode });
-          newFieldNode = addConnectionIdField({ connectionFieldNode: newFieldNode });
+            existsConnectionField = true;
 
-          return newFieldNode;
+            let newFieldNode = addPageInfoField({ connectionFieldNode: selection });
+            newFieldNode = addEdgesRelatedFields({ connectionFieldNode: newFieldNode });
+            newFieldNode = addConnectionIdField({ connectionFieldNode: newFieldNode });
+
+            return newFieldNode;
+          });
+
+          if (!existsConnectionField) return;
+
+          const newSelectionSetNode = addFieldToSelectionSetNodeWithoutDuplication({
+            selectionSetNode: { ...selectionSetNode, selections },
+            additionalFields: [idField, typenameField],
+          });
+
+          return newSelectionSetNode;
         },
       },
     }) as DocumentNode;
@@ -66,48 +80,65 @@ export const transform = ({
   return { documentFiles: files };
 };
 
-const isFieldNode = ({ selection, name }: { selection: SelectionNode; name: string }) => {
+const isSameNameFieldNode = ({ selection, name }: { selection: SelectionNode; name: string }) => {
   return selection.kind === 'Field' && selection.name.value === name;
 };
 
 // Add the field, but do nothing if the field already exists
 const addFieldWithoutDuplication = ({
   fieldNode,
-  addingField,
+  additionalFields,
 }: {
   fieldNode: FieldNode;
-  addingField: FieldNode;
+  additionalFields: FieldNode[];
 }): FieldNode => {
   if (!fieldNode.selectionSet) return fieldNode;
-
-  const selections = fieldNode.selectionSet.selections;
-  const name = addingField.name.value;
-  const index = selections.findIndex((selection) => isFieldNode({ selection, name }));
-  if (index > -1) return fieldNode;
+  const selectionSet = addFieldToSelectionSetNodeWithoutDuplication({
+    selectionSetNode: fieldNode.selectionSet,
+    additionalFields,
+  });
 
   return {
     ...fieldNode,
-    selectionSet: {
-      ...fieldNode.selectionSet,
-      selections: [...selections, addingField],
-    },
+    selectionSet,
+  };
+};
+
+// Add the field, but do nothing if the field already exists
+const addFieldToSelectionSetNodeWithoutDuplication = ({
+  selectionSetNode,
+  additionalFields,
+}: {
+  selectionSetNode: SelectionSetNode;
+  additionalFields: FieldNode[];
+}): SelectionSetNode => {
+  const selections = selectionSetNode.selections;
+
+  const fieldNodes = additionalFields.filter(
+    (fieldNode) => !selections.find((selection) => isSameNameFieldNode({ selection, name: fieldNode.name.value })),
+  );
+  if (fieldNodes.length === 0) return selectionSetNode;
+
+  return {
+    ...selectionSetNode,
+    selections: [...selections, ...fieldNodes],
   };
 };
 
 const addPageInfoField = ({ connectionFieldNode }: { connectionFieldNode: FieldNode }): FieldNode => {
   if (!connectionFieldNode.selectionSet) return connectionFieldNode;
-  return addFieldWithoutDuplication({ fieldNode: connectionFieldNode, addingField: pageInfoField });
+  return addFieldWithoutDuplication({ fieldNode: connectionFieldNode, additionalFields: [pageInfoField] });
 };
 
 const addConnectionIdField = ({ connectionFieldNode }: { connectionFieldNode: FieldNode }): FieldNode => {
-  return addFieldWithoutDuplication({ fieldNode: connectionFieldNode, addingField: connectionIdField });
+  return addFieldWithoutDuplication({ fieldNode: connectionFieldNode, additionalFields: [connectionIdField] });
 };
 
 const addNodeRelatedFields = ({ edgesFieldNode }: { edgesFieldNode: FieldNode }): FieldNode => {
   if (!edgesFieldNode.selectionSet) return edgesFieldNode;
 
   const selections = edgesFieldNode.selectionSet.selections;
-  const nodeIndex = selections.findIndex((selection) => isFieldNode({ selection, name: 'node' }));
+  const nodeIndex = selections.findIndex((selection) => isSameNameFieldNode({ selection, name: 'node' }));
   if (nodeIndex === -1) {
     // When this function is called, curser exists, so node field must be included for consistency.
     return {
@@ -119,9 +150,10 @@ const addNodeRelatedFields = ({ edgesFieldNode }: { edgesFieldNode: FieldNode })
     };
   }
 
-  let nodeFieldNode = selections[nodeIndex] as FieldNode;
-  nodeFieldNode = addFieldWithoutDuplication({ fieldNode: nodeFieldNode, addingField: idField });
-  nodeFieldNode = addFieldWithoutDuplication({ fieldNode: nodeFieldNode, addingField: typenameField });
+  const nodeFieldNode = addFieldWithoutDuplication({
+    fieldNode: selections[nodeIndex] as FieldNode,
+    additionalFields: [idField, typenameField],
+  });
 
   const newSelections = [...selections];
   newSelections[nodeIndex] = nodeFieldNode;
@@ -140,14 +172,14 @@ const addEdgesRelatedFields = ({ connectionFieldNode }: { connectionFieldNode: F
 
   const selections = connectionFieldNode.selectionSet.selections;
 
-  const edgesIndex = selections.findIndex((selection) => isFieldNode({ selection, name: 'edges' }));
+  const edgesIndex = selections.findIndex((selection) => isSameNameFieldNode({ selection, name: 'edges' }));
 
   // If there is no edges field, do nothing. Because it does not contain any nodes to paginate.
   if (edgesIndex === -1) return connectionFieldNode;
 
   let edgesFieldNode = selections[edgesIndex] as FieldNode;
 
-  edgesFieldNode = addFieldWithoutDuplication({ fieldNode: edgesFieldNode, addingField: cursorField });
+  edgesFieldNode = addFieldWithoutDuplication({ fieldNode: edgesFieldNode, additionalFields: [cursorField] });
   edgesFieldNode = addNodeRelatedFields({ edgesFieldNode });
 
   const newSelections = [...selections];

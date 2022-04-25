@@ -21,7 +21,6 @@ export const ListFragments = {
       keyword: { type: "String" }
     )
     @refetchable(queryName: "List_PaginationQuery") {
-      id # TODO : Add automatically
       items(first: $count, after: $cursor, keyword: $keyword) @pagination {
         edges {
           node {

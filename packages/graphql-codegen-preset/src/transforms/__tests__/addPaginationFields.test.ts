@@ -7,7 +7,6 @@ describe('transform', () => {
     const document = parse(/* GraphQL */ `
       query TestQuery($cursor: String) {
         viewer {
-          id
           items(first: 1, after: $cursor) @pagination {
             edges {
               node {
@@ -21,7 +20,6 @@ describe('transform', () => {
     const expectedDocument = parse(/* GraphQL */ `
       query TestQuery($cursor: String) {
         viewer {
-          id
           items(first: 1, after: $cursor) @pagination {
             edges {
               node {
@@ -39,6 +37,8 @@ describe('transform', () => {
             }
             _connectionId @client
           }
+          id
+          __typename
         }
       }
     `);
@@ -55,7 +55,6 @@ describe('transform', () => {
         }
       }
       fragment Fragment_user on User {
-        id
         items(first: 1, after: $cursor) @pagination {
           edges {
             node {
@@ -72,7 +71,6 @@ describe('transform', () => {
         }
       }
       fragment Fragment_user on User {
-        id
         items(first: 1, after: $cursor) @pagination {
           edges {
             node {
@@ -90,6 +88,8 @@ describe('transform', () => {
           }
           _connectionId @client
         }
+        id
+        __typename
       }
     `);
     const result = transform({ documentFiles: [{ document }] });
@@ -105,7 +105,6 @@ describe('transform', () => {
         }
       }
       fragment Fragment_user on User {
-        id
         items(first: 1, after: $cursor) @pagination {
           edges {
             item: node {
@@ -113,6 +112,8 @@ describe('transform', () => {
             }
           }
         }
+        id
+        __typename
       }
     `);
     const expectedDocument = parse(/* GraphQL */ `
@@ -122,7 +123,6 @@ describe('transform', () => {
         }
       }
       fragment Fragment_user on User {
-        id
         items(first: 1, after: $cursor) @pagination {
           edges {
             item: node {
@@ -140,6 +140,8 @@ describe('transform', () => {
           }
           _connectionId @client
         }
+        id
+        __typename
       }
     `);
     const result = transform({ documentFiles: [{ document }] });
@@ -152,6 +154,7 @@ describe('transform', () => {
       query TestQuery($cursor: String) {
         viewer {
           id
+          __typename
           items(first: 1, after: $cursor) @pagination {
             edges {
               node {
@@ -181,7 +184,6 @@ describe('transform', () => {
     const document = parse(/* GraphQL */ `
       query TestQuery($cursor: String) {
         viewer {
-          id
           items(first: 1, after: $cursor) @pagination {
             edges {
               node {
@@ -203,7 +205,6 @@ describe('transform', () => {
     const expectedDocument = parse(/* GraphQL */ `
       query TestQuery($cursor: String) {
         viewer {
-          id
           items(first: 1, after: $cursor) @pagination {
             edges {
               node {
@@ -218,6 +219,8 @@ describe('transform', () => {
             }
             _connectionId @client
           }
+          id
+          __typename
         }
       }
     `);
@@ -226,11 +229,10 @@ describe('transform', () => {
     expect(printDocuments(result.documentFiles)).toBe(printDocuments([{ document: expectedDocument }]));
   });
 
-  it('does not add id field if there are already exists', () => {
+  it('does not add node id field if there are already exists', () => {
     const document = parse(/* GraphQL */ `
       query TestQuery($cursor: String) {
         viewer {
-          id
           items(first: 1, after: $cursor) @pagination {
             edges {
               node {
@@ -245,7 +247,6 @@ describe('transform', () => {
     const expectedDocument = parse(/* GraphQL */ `
       query TestQuery($cursor: String) {
         viewer {
-          id
           items(first: 1, after: $cursor) @pagination {
             edges {
               node {
@@ -262,6 +263,8 @@ describe('transform', () => {
             }
             _connectionId @client
           }
+          id
+          __typename
         }
       }
     `);
@@ -274,7 +277,6 @@ describe('transform', () => {
     const document = parse(/* GraphQL */ `
       query TestQuery($cursor: String) {
         viewer {
-          id
           items(first: 1, after: $cursor) @pagination {
             edges {
               node {
@@ -290,7 +292,6 @@ describe('transform', () => {
     const expectedDocument = parse(/* GraphQL */ `
       query TestQuery($cursor: String) {
         viewer {
-          id
           items(first: 1, after: $cursor) @pagination {
             edges {
               node {
@@ -307,6 +308,8 @@ describe('transform', () => {
               startCursor
             }
           }
+          id
+          __typename
         }
       }
     `);

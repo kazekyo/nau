@@ -12,7 +12,6 @@ describe('preset', () => {
         document: parse(/* GraphQL */ `
           query TestQuery($cursor: String) {
             viewer {
-              id
               ...Fragment_user @arguments(count: 5)
             }
           }
@@ -31,7 +30,6 @@ describe('preset', () => {
     const expectedDocument = parse(/* GraphQL */ `
       query TestQuery($cursor: String) {
         viewer {
-          id
           ...Fragment_user_bi8xLGNvdW50OjU
         }
       }
@@ -52,6 +50,8 @@ describe('preset', () => {
           }
           _connectionId @client
         }
+        id
+        __typename
       }
     `);
 
