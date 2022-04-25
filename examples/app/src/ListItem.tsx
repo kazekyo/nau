@@ -1,8 +1,9 @@
 import { gql, useMutation } from '@apollo/client';
-import { Box, Button, Spacer } from '@chakra-ui/react';
 import { DeleteIcon } from '@chakra-ui/icons';
+import { Box, Button, Spacer } from '@chakra-ui/react';
 import * as React from 'react';
 import { FC } from 'react';
+import { ListItem_ItemFragment, ListItem_UserFragment, RemoveItemMutationDocument } from './generated/graphql';
 
 export const ListItemFragments = {
   user: gql`
@@ -18,7 +19,7 @@ export const ListItemFragments = {
   `,
 };
 
-const REMOVE_ROBOT = gql`
+gql`
   mutation RemoveItemMutation($input: RemoveItemInput!) {
     removeItem(input: $input) {
       removedItem {
@@ -29,10 +30,10 @@ const REMOVE_ROBOT = gql`
 `;
 
 const ListItem: FC<{
-  user: { id: string };
-  item: { id: string; name: string };
+  user: ListItem_UserFragment;
+  item: ListItem_ItemFragment;
 }> = ({ user, item }) => {
-  const [removeItem] = useMutation(REMOVE_ROBOT);
+  const [removeItem] = useMutation(RemoveItemMutationDocument);
 
   return (
     <Box maxW="md" borderWidth="1px" borderRadius="lg">
