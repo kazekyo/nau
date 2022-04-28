@@ -15,6 +15,20 @@ describe('preset', () => {
               ...Fragment_user @arguments(count: 5)
             }
           }
+          mutation AddItemMutation($input: AddItemInput!, $connections: [String!]!) {
+            addItem(input: $input) {
+              item @prependNode(connections: $connections) {
+                name
+              }
+            }
+          }
+          subscription ItemAddedSubscription($connections: [String!]!) {
+            itemAdded {
+              item @prependNode(connections: $connections) {
+                name
+              }
+            }
+          }
           fragment Fragment_user on User @argumentDefinitions(count: { type: "Int", defaultValue: 1 }) {
             items(first: $count, after: $cursor) @pagination {
               edges {
@@ -31,6 +45,24 @@ describe('preset', () => {
       query TestQuery($cursor: String) {
         viewer {
           ...Fragment_user_bi8xLGNvdW50OjU
+        }
+      }
+      mutation AddItemMutation($input: AddItemInput!, $connections: [String!]!) {
+        addItem(input: $input) {
+          item @prependNode(connections: $connections) {
+            name
+            id
+            __typename
+          }
+        }
+      }
+      subscription ItemAddedSubscription($connections: [String!]!) {
+        itemAdded {
+          item @prependNode(connections: $connections) {
+            name
+            id
+            __typename
+          }
         }
       }
       fragment Fragment_user_bi8xLGNvdW50OjU on User {

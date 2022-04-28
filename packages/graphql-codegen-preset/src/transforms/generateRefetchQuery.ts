@@ -1,4 +1,5 @@
 import { Types } from '@graphql-codegen/plugin-helpers';
+import { ARGUMENT_DEFINITIONS_DIRECTIVE_NAME, REFETCHABLE_DIRECTIVE_NAME } from '@nau/core';
 import {
   DocumentNode,
   FragmentDefinitionNode,
@@ -10,7 +11,6 @@ import {
   visit,
 } from 'graphql';
 import { uniqWith } from 'lodash';
-import { ARGUMENT_DEFINITIONS_DIRECTIVE_NAME, REFETCHABLE_DIRECTIVE_NAME } from '../utils/directive';
 import { getFragmentDefinitionsByDocumentFiles } from '../utils/graphqlAST';
 import { nonNullable } from '../utils/nonNullable';
 import { getArgumentDefinitionDataList } from './util';

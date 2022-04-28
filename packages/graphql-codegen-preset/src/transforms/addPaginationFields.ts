@@ -1,39 +1,17 @@
 import { Types } from '@graphql-codegen/plugin-helpers';
+import { PAGINATION_DIRECTIVE_NAME } from '@nau/core';
 import { DocumentNode, FieldNode, Kind, visit } from 'graphql';
-import { SelectionNode, SelectionSetNode } from 'graphql/language';
-import { PAGINATION_DIRECTIVE_NAME } from '../utils/directive';
-
-const pageInfoField: FieldNode = {
-  kind: 'Field',
-  name: { kind: 'Name', value: 'pageInfo' },
-  selectionSet: {
-    kind: 'SelectionSet',
-    selections: [
-      { kind: 'Field', name: { kind: 'Name', value: 'hasNextPage' } },
-      { kind: 'Field', name: { kind: 'Name', value: 'endCursor' } },
-      { kind: 'Field', name: { kind: 'Name', value: 'hasPreviousPage' } },
-      { kind: 'Field', name: { kind: 'Name', value: 'startCursor' } },
-    ],
-  },
-};
-
-const cursorField: FieldNode = { kind: 'Field', name: { kind: 'Name', value: 'cursor' } };
-const idField: FieldNode = { kind: 'Field', name: { kind: 'Name', value: 'id' } };
-const typenameField: FieldNode = { kind: 'Field', name: { kind: 'Name', value: '__typename' } };
-const nodeField: FieldNode = {
-  kind: 'Field',
-  name: { kind: 'Name', value: 'node' },
-  selectionSet: {
-    kind: 'SelectionSet',
-    selections: [idField, typenameField],
-  },
-};
-
-const connectionIdField: FieldNode = {
-  kind: Kind.FIELD,
-  name: { kind: Kind.NAME, value: '_connectionId' },
-  directives: [{ kind: Kind.DIRECTIVE, name: { kind: Kind.NAME, value: 'client' } }],
-};
+import {
+  addFieldToSelectionSetNodeWithoutDuplication,
+  addFieldWithoutDuplication,
+  connectionIdField,
+  cursorField,
+  idField,
+  isSameNameFieldNode,
+  nodeField,
+  pageInfoField,
+  typenameField,
+} from '../utils/graphqlAST';
 
 export const transform = ({
   documentFiles,
@@ -78,51 +56,6 @@ export const transform = ({
   });
 
   return { documentFiles: files };
-};
-
-const isSameNameFieldNode = ({ selection, name }: { selection: SelectionNode; name: string }) => {
-  return selection.kind === 'Field' && selection.name.value === name;
-};
-
-// Add the field, but do nothing if the field already exists
-const addFieldWithoutDuplication = ({
-  fieldNode,
-  additionalFields,
-}: {
-  fieldNode: FieldNode;
-  additionalFields: FieldNode[];
-}): FieldNode => {
-  if (!fieldNode.selectionSet) return fieldNode;
-  const selectionSet = addFieldToSelectionSetNodeWithoutDuplication({
-    selectionSetNode: fieldNode.selectionSet,
-    additionalFields,
-  });
-
-  return {
-    ...fieldNode,
-    selectionSet,
-  };
-};
-
-// Add the field, but do nothing if the field already exists
-const addFieldToSelectionSetNodeWithoutDuplication = ({
-  selectionSetNode,
-  additionalFields,
-}: {
-  selectionSetNode: SelectionSetNode;
-  additionalFields: FieldNode[];
-}): SelectionSetNode => {
-  const selections = selectionSetNode.selections;
-
-  const fieldNodes = additionalFields.filter(
-    (fieldNode) => !selections.find((selection) => isSameNameFieldNode({ selection, name: fieldNode.name.value })),
-  );
-  if (fieldNodes.length === 0) return selectionSetNode;
-
-  return {
-    ...selectionSetNode,
-    selections: [...selections, ...fieldNodes],
-  };
 };
 
 const addPageInfoField = ({ connectionFieldNode }: { connectionFieldNode: FieldNode }): FieldNode => {

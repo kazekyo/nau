@@ -1,3 +1,4 @@
+import { DirectiveName } from '@nau/core';
 import {
   DirectiveNode,
   FieldNode,
@@ -7,7 +8,8 @@ import {
   GraphQLOutputType,
   ValidationRule,
 } from 'graphql';
-import { PAGINATION_DIRECTIVE_NAME } from '../utils/directive';
+
+const PAGINATION_DIRECTIVE_NAME: DirectiveName = 'pagination';
 
 function hasAfterArgument(fieldNode: FieldNode): boolean {
   return !!(fieldNode.arguments && fieldNode.arguments.find((arg) => arg.name.value === 'after'));

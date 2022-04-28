@@ -41,8 +41,7 @@ const deleteRecord = ({
     field?.selectionSet?.selections
       .filter(
         (selection): selection is FieldNode =>
-          !!findDirectiveName({ fieldOrSelection: selection, directiveNames: ['deleteRecord'] }) &&
-          selection.kind === 'Field',
+          !!findDirectiveName({ node: selection, directiveNames: ['deleteRecord'] }) && selection.kind === 'Field',
       )
       .map((selection) => selection.name.value) || [];
 

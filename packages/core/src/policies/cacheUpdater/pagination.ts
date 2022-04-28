@@ -193,7 +193,7 @@ const insertNode = ({ object, options }: { object: Reference; options: FieldFunc
   const connectionInfos = getConnectionInfos(storeFieldName);
 
   const directiveName = findDirectiveName({
-    fieldOrSelection: field,
+    node: field,
     directiveNames: INSERT_NODE_DIRECTIVE_NAMES,
   });
   if (!directiveName) return;

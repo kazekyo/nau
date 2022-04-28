@@ -1,4 +1,5 @@
 import { Types } from '@graphql-codegen/plugin-helpers';
+import { ARGUMENT_DEFINITIONS_DIRECTIVE_NAME } from '@nau/core';
 import {
   ASTNode,
   DocumentNode,
@@ -8,7 +9,6 @@ import {
   OperationDefinitionNode,
   visit,
 } from 'graphql';
-import { ARGUMENT_DEFINITIONS_DIRECTIVE_NAME } from '../utils/directive';
 import {
   getFragmentDefinitionByName,
   getFragmentDefinitionsByDocumentFiles,

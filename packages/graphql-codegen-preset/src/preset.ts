@@ -12,6 +12,7 @@ import * as paginationPlugin from './plugins/cache-updater-support';
 import { PresetConfig } from './presetConfig';
 import { addCustomClientDirective } from './schemaTransforms/addClientDirective';
 import { addConnectionId } from './schemaTransforms/addConnectionId';
+import { transform as addFieldsForAddingNode } from './transforms/addFieldsForAddingNode';
 import { transform as addPaginationFields } from './transforms/addPaginationFields';
 import { transform as fixVariableNotDefinedInRoot } from './transforms/fixVariableNotDefinedInRoot';
 import { transform as generateRefetchQuery } from './transforms/generateRefetchQuery';
@@ -25,11 +26,15 @@ const transformDocuments = ({
   documentFiles: Types.DocumentFile[];
 }): { documentFiles: Types.DocumentFile[] } => {
   let result = { documentFiles };
-  [passArgumentValueToFragment, generateRefetchQuery, fixVariableNotDefinedInRoot, addPaginationFields].forEach(
-    (transformFunc) => {
-      result = transformFunc(result);
-    },
-  );
+  [
+    passArgumentValueToFragment,
+    generateRefetchQuery,
+    fixVariableNotDefinedInRoot,
+    addPaginationFields,
+    addFieldsForAddingNode,
+  ].forEach((transformFunc) => {
+    result = transformFunc(result);
+  });
   return result;
 };
 

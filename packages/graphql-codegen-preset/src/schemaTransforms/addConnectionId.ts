@@ -1,4 +1,5 @@
 import { Types } from '@graphql-codegen/plugin-helpers';
+import { PAGINATION_DIRECTIVE_NAME } from '@nau/core';
 import {
   concatAST,
   extendSchema,
@@ -12,7 +13,6 @@ import {
   visitWithTypeInfo,
 } from 'graphql';
 import { uniq } from 'lodash';
-import { PAGINATION_DIRECTIVE_NAME } from '../utils/directive';
 import { getConnectionType, getEdgeType, getNodeType } from '../utils/graphqlSchema';
 import { nonNullable } from '../utils/nonNullable';
 

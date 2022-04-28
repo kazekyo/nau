@@ -14,9 +14,9 @@ import ListItem from './ListItem';
 
 gql`
   fragment List_user on User
-  @argumentDefinitions(count: { type: "Int", defaultValue: 2 }, cursor: { type: "String" }, keyword: { type: "String" })
+  @argumentDefinitions(count: { type: "Int", defaultValue: 2 }, cursor: { type: "String" })
   @refetchable(queryName: "List_PaginationQuery") {
-    items(first: $count, after: $cursor, keyword: $keyword) @pagination {
+    items(first: $count, after: $cursor) @pagination {
       edges {
         node {
           ...ListItem_item
@@ -29,7 +29,6 @@ gql`
   mutation AddItemMutation($input: AddItemInput!, $connections: [String!]!) {
     addItem(input: $input) {
       item @prependNode(connections: $connections) {
-        id
         ...ListItem_item
       }
     }
@@ -38,8 +37,7 @@ gql`
   subscription ItemAddedSubscription($connections: [String!]!) {
     itemAdded {
       item @prependNode(connections: $connections) {
-        id
-        name
+        ...ListItem_item
       }
     }
   }

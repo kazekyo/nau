@@ -1,4 +1,5 @@
 import { Types } from '@graphql-codegen/plugin-helpers';
+import { ARGUMENTS_DIRECTIVE_NAME, ARGUMENT_DEFINITIONS_DIRECTIVE_NAME } from '@nau/core';
 import {
   ArgumentNode,
   ASTNode,
@@ -14,7 +15,6 @@ import {
   visit,
 } from 'graphql';
 import { uniq } from 'lodash';
-import { ARGUMENTS_DIRECTIVE_NAME, ARGUMENT_DEFINITIONS_DIRECTIVE_NAME } from '../utils/directive';
 import { getFragmentDefinitionByName, getFragmentDefinitionsByDocumentFiles } from '../utils/graphqlAST';
 import { FRAGMENT_NAME_INFO_ID_1, getArgumentDefinitionDataList, getUniqueFragmentName } from './util';
 

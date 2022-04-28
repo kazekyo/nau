@@ -1,6 +1,6 @@
+import { ARGUMENT_DEFINITIONS_DIRECTIVE_NAME } from '@nau/core';
 import { DirectiveNode, FragmentDefinitionNode, Kind, NameNode, parseType, TypeNode, ValueNode } from 'graphql';
 import { decode, encode } from 'js-base64';
-import { ARGUMENT_DEFINITIONS_DIRECTIVE_NAME } from '../utils/directive';
 
 export const mergeCustomizer = (objValue: unknown, srcValue: unknown): unknown => {
   if (Array.isArray(objValue) && Array.isArray(srcValue)) {

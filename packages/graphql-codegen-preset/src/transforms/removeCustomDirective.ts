@@ -1,11 +1,11 @@
 import { Types } from '@graphql-codegen/plugin-helpers';
-import { DocumentNode, visit } from 'graphql';
 import {
   ARGUMENTS_DIRECTIVE_NAME,
   ARGUMENT_DEFINITIONS_DIRECTIVE_NAME,
   PAGINATION_DIRECTIVE_NAME,
   REFETCHABLE_DIRECTIVE_NAME,
-} from '../utils/directive';
+} from '@nau/core';
+import { DocumentNode, visit } from 'graphql';
 
 const DIRECTIVES = [
   ARGUMENT_DEFINITIONS_DIRECTIVE_NAME,
