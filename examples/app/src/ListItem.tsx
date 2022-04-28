@@ -5,21 +5,16 @@ import * as React from 'react';
 import { FC } from 'react';
 import { ListItem_ItemFragment, ListItem_UserFragment, RemoveItemMutationDocument } from './generated/graphql';
 
-export const ListItemFragments = {
-  user: gql`
-    fragment ListItem_user on User {
-      id
-    }
-  `,
-  item: gql`
-    fragment ListItem_item on Item {
-      id
-      name
-    }
-  `,
-};
-
 gql`
+  fragment ListItem_user on User {
+    id
+  }
+
+  fragment ListItem_item on Item {
+    id
+    name
+  }
+
   mutation RemoveItemMutation($input: RemoveItemInput!) {
     removeItem(input: $input) {
       removedItem {

@@ -3,7 +3,7 @@ import { Box, Divider } from '@chakra-ui/react';
 import React from 'react';
 import './App.css';
 import { AppQueryDocument } from './generated/graphql';
-import List, { ListFragments } from './List';
+import List from './List';
 
 gql`
   query AppQuery {
@@ -13,7 +13,6 @@ gql`
       ...List_user
     }
   }
-  ${ListFragments.user}
 `;
 
 const App: React.FC = () => {

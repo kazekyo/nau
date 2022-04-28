@@ -10,32 +10,22 @@ import {
   List_PaginationQueryDocument,
   List_UserFragment,
 } from './generated/graphql';
-import ListItem, { ListItemFragments } from './ListItem';
-
-export const ListFragments = {
-  user: gql`
-    fragment List_user on User
-    @argumentDefinitions(
-      count: { type: "Int", defaultValue: 2 }
-      cursor: { type: "String" }
-      keyword: { type: "String" }
-    )
-    @refetchable(queryName: "List_PaginationQuery") {
-      items(first: $count, after: $cursor, keyword: $keyword) @pagination {
-        edges {
-          node {
-            ...ListItem_item
-          }
-        }
-      }
-      ...ListItem_user
-    }
-    ${ListItemFragments.user}
-    ${ListItemFragments.item}
-  `,
-};
+import ListItem from './ListItem';
 
 gql`
+  fragment List_user on User
+  @argumentDefinitions(count: { type: "Int", defaultValue: 2 }, cursor: { type: "String" }, keyword: { type: "String" })
+  @refetchable(queryName: "List_PaginationQuery") {
+    items(first: $count, after: $cursor, keyword: $keyword) @pagination {
+      edges {
+        node {
+          ...ListItem_item
+        }
+      }
+    }
+    ...ListItem_user
+  }
+
   mutation AddItemMutation($input: AddItemInput!, $connections: [String!]!) {
     addItem(input: $input) {
       item @prependNode(connections: $connections) {
@@ -44,10 +34,7 @@ gql`
       }
     }
   }
-  ${ListItemFragments.item}
-`;
 
-gql`
   subscription ItemAddedSubscription($connections: [String!]!) {
     itemAdded {
       item @prependNode(connections: $connections) {
@@ -56,9 +43,7 @@ gql`
       }
     }
   }
-`;
 
-gql`
   subscription ItemRemovedSubscription {
     itemRemoved {
       id @deleteRecord(typename: "Item")
