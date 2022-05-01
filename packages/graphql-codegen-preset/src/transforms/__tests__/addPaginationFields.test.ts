@@ -180,7 +180,7 @@ describe('transform', () => {
     expect(printDocuments(result.documentFiles)).toBe(printDocuments([{ document }]));
   });
 
-  it('does not add pageInfo field if there are already exists', () => {
+  it('does not add pageInfo related fields if there is pageInfo field already exists', () => {
     const document = parse(/* GraphQL */ `
       query TestQuery($cursor: String) {
         viewer {
@@ -313,6 +313,95 @@ describe('transform', () => {
         }
       }
     `);
+    const result = transform({ documentFiles: [{ document }] });
+
+    expect(printDocuments(result.documentFiles)).toBe(printDocuments([{ document: expectedDocument }]));
+  });
+
+  it('adds fileds when using fragments', () => {
+    const document = parse(/* GraphQL */ `
+      query TestQuery($cursor: String) {
+        viewer {
+          ...Fragment_user
+        }
+      }
+      fragment Fragment_user on User {
+        ... on User {
+          items(first: 1, after: $cursor) @pagination {
+            ... on ItemConnection {
+              ... on ItemConnection {
+                ...Fragment_connection
+              }
+            }
+          }
+        }
+      }
+      fragment Fragment_connection on ItemConnection {
+        edges {
+          ...Fragment_edge
+        }
+      }
+      fragment Fragment_edge on ItemEdge {
+        ... on ItemEdge {
+          ... on ItemEdge {
+            node {
+              ...Fragment_node
+            }
+          }
+        }
+      }
+      fragment Fragment_node on Item {
+        name
+      }
+    `);
+    const expectedDocument = parse(/* GraphQL */ `
+      query TestQuery($cursor: String) {
+        viewer {
+          ...Fragment_user
+        }
+      }
+      fragment Fragment_user on User {
+        ... on User {
+          items(first: 1, after: $cursor) @pagination {
+            ... on ItemConnection {
+              ... on ItemConnection {
+                ...Fragment_connection
+              }
+            }
+            pageInfo {
+              hasNextPage
+              endCursor
+              hasPreviousPage
+              startCursor
+            }
+            _connectionId @client
+          }
+          id
+          __typename
+        }
+      }
+      fragment Fragment_connection on ItemConnection {
+        edges {
+          ...Fragment_edge
+          cursor
+        }
+      }
+      fragment Fragment_edge on ItemEdge {
+        ... on ItemEdge {
+          ... on ItemEdge {
+            node {
+              ...Fragment_node
+              id
+              __typename
+            }
+          }
+        }
+      }
+      fragment Fragment_node on Item {
+        name
+      }
+    `);
+
     const result = transform({ documentFiles: [{ document }] });
 
     expect(printDocuments(result.documentFiles)).toBe(printDocuments([{ document: expectedDocument }]));

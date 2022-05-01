@@ -41,17 +41,20 @@ export const nodeField: FieldNode = {
   },
 };
 
+export const edgesField: FieldNode = {
+  kind: 'Field',
+  name: { kind: 'Name', value: 'edges' },
+  selectionSet: {
+    kind: 'SelectionSet',
+    selections: [nodeField, cursorField],
+  },
+};
+
 export const connectionIdField: FieldNode = {
   kind: Kind.FIELD,
   name: { kind: Kind.NAME, value: '_connectionId' },
   directives: [{ kind: Kind.DIRECTIVE, name: { kind: Kind.NAME, value: 'client' } }],
 };
-
-export function getOperationDefinition(doc: DocumentNode): OperationDefinitionNode | undefined {
-  return doc.definitions.filter(
-    (definition) => definition.kind === 'OperationDefinition',
-  )[0] as OperationDefinitionNode;
-}
 
 export function getOperationDefinitions(doc: DocumentNode): OperationDefinitionNode[] {
   return doc.definitions.filter((definition) => definition.kind === 'OperationDefinition') as OperationDefinitionNode[];

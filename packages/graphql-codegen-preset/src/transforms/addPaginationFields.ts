@@ -1,54 +1,61 @@
 import { Types } from '@graphql-codegen/plugin-helpers';
-import { PAGINATION_DIRECTIVE_NAME } from '@nau/core';
-import { DocumentNode, FieldNode, Kind, visit } from 'graphql';
+import {
+  DocumentNode,
+  FieldNode,
+  FragmentDefinitionNode,
+  FragmentSpreadNode,
+  Kind,
+  SelectionNode,
+  SelectionSetNode,
+  visit,
+} from 'graphql';
 import {
   addFieldToSelectionSetNodeWithoutDuplication,
   addFieldWithoutDuplication,
   connectionIdField,
   cursorField,
+  getDirectives,
+  getFragmentDefinitionByName,
+  getFragmentDefinitionsByDocumentFiles,
   idField,
-  isSameNameFieldNode,
   nodeField,
   pageInfoField,
   typenameField,
 } from '../utils/graphqlAST';
+import { nonNullable } from '../utils/nonNullable';
+
+type ConnectionRelatedFieldName = 'edges' | 'node' | 'cursor' | 'pageInfo' | 'id' | '__typename';
 
 export const transform = ({
   documentFiles,
 }: {
   documentFiles: Types.DocumentFile[];
 }): { documentFiles: Types.DocumentFile[] } => {
-  const files = documentFiles.map((file) => {
+  let fragmentDefinitions = getFragmentDefinitionsByDocumentFiles(documentFiles);
+  let changedFragmentDefinitions: FragmentDefinitionNode[] = [];
+
+  let files = documentFiles.map((file) => {
     if (!file.document) return file;
+    const result = addFields({ documentNode: file.document, fragmentDefinitions });
+    file.document = result.documentNode;
+    fragmentDefinitions = result.fragmentDefinitions;
+    changedFragmentDefinitions = mergeFragmentDefinitions(
+      changedFragmentDefinitions,
+      result.changedFragmentDefinitions,
+    );
+    return file;
+  });
 
+  files = files.map((file) => {
+    if (!file.document) return file;
     file.document = visit(file.document, {
-      SelectionSet: {
-        leave(selectionSetNode) {
-          let existsConnectionField = false;
-          const selections = selectionSetNode.selections.map((selection) => {
-            if (selection.kind !== Kind.FIELD || !selection.directives) return selection;
-            const paginationDirective = selection.directives.find(
-              (directive) => directive.name.value === PAGINATION_DIRECTIVE_NAME,
-            );
-            if (!paginationDirective) return selection;
-
-            existsConnectionField = true;
-
-            let newFieldNode = addPageInfoField({ connectionFieldNode: selection });
-            newFieldNode = addEdgesRelatedFields({ connectionFieldNode: newFieldNode });
-            newFieldNode = addConnectionIdField({ connectionFieldNode: newFieldNode });
-
-            return newFieldNode;
-          });
-
-          if (!existsConnectionField) return;
-
-          const newSelectionSetNode = addFieldToSelectionSetNodeWithoutDuplication({
-            selectionSetNode: { ...selectionSetNode, selections },
-            additionalFields: [idField, typenameField],
-          });
-
-          return newSelectionSetNode;
+      FragmentDefinition: {
+        leave(fragmentDefinitionNode) {
+          const fragmentDefinition = changedFragmentDefinitions.find(
+            (definition) => definition.name.value === fragmentDefinitionNode.name.value,
+          );
+          if (!fragmentDefinition) return;
+          return fragmentDefinition;
         },
       },
     }) as DocumentNode;
@@ -58,71 +65,344 @@ export const transform = ({
   return { documentFiles: files };
 };
 
-const addPageInfoField = ({ connectionFieldNode }: { connectionFieldNode: FieldNode }): FieldNode => {
-  if (!connectionFieldNode.selectionSet) return connectionFieldNode;
-  return addFieldWithoutDuplication({ fieldNode: connectionFieldNode, additionalFields: [pageInfoField] });
-};
+const addFields = ({
+  documentNode,
+  fragmentDefinitions,
+}: {
+  documentNode: DocumentNode;
+  fragmentDefinitions: FragmentDefinitionNode[];
+}): {
+  documentNode: DocumentNode;
+  fragmentDefinitions: FragmentDefinitionNode[];
+  changedFragmentDefinitions: FragmentDefinitionNode[];
+} => {
+  let newFragmentDefinitions = fragmentDefinitions;
+  let changedFragmentDefinitions: FragmentDefinitionNode[] = [];
 
-const addConnectionIdField = ({ connectionFieldNode }: { connectionFieldNode: FieldNode }): FieldNode => {
-  return addFieldWithoutDuplication({ fieldNode: connectionFieldNode, additionalFields: [connectionIdField] });
-};
+  const document = visit(documentNode, {
+    SelectionSet: {
+      leave(selectionSetNode) {
+        let existsConnectionField = false;
+        const selections = selectionSetNode.selections.map((selection) => {
+          if (selection.kind !== Kind.FIELD || !selection.directives) return selection;
+          if (getDirectives({ node: selection, directiveNames: ['pagination'] }).length === 0) return selection;
 
-const addNodeRelatedFields = ({ edgesFieldNode }: { edgesFieldNode: FieldNode }): FieldNode => {
-  if (!edgesFieldNode.selectionSet) return edgesFieldNode;
+          existsConnectionField = true;
 
-  const selections = edgesFieldNode.selectionSet.selections;
-  const nodeIndex = selections.findIndex((selection) => isSameNameFieldNode({ selection, name: 'node' }));
-  if (nodeIndex === -1) {
-    // When this function is called, curser exists, so node field must be included for consistency.
-    return {
-      ...edgesFieldNode,
-      selectionSet: {
-        ...edgesFieldNode.selectionSet,
-        selections: [...selections, nodeField],
+          let newFieldNode = selection;
+          if (newFieldNode.selectionSet) {
+            const result = transformSelectionSet({
+              targetFieldNames: ['edges', 'pageInfo'],
+              selectionSet: newFieldNode.selectionSet,
+              fragmentDefinitions: newFragmentDefinitions,
+              canAddSelections: true,
+            });
+            newFragmentDefinitions = result.fragmentDefinitions;
+            changedFragmentDefinitions = mergeFragmentDefinitions(
+              changedFragmentDefinitions,
+              result.changedFragmentDefinitions,
+            );
+            if (result.hasChangedSelectionSet) {
+              newFieldNode = { ...newFieldNode, selectionSet: result.selectionSet };
+            }
+          }
+
+          newFieldNode = addFieldWithoutDuplication({
+            fieldNode: newFieldNode,
+            additionalFields: [connectionIdField],
+          });
+          return newFieldNode;
+        });
+
+        if (!existsConnectionField) return;
+
+        const newSelectionSetNode = addFieldToSelectionSetNodeWithoutDuplication({
+          selectionSetNode: { ...selectionSetNode, selections },
+          additionalFields: [idField, typenameField],
+        });
+
+        return newSelectionSetNode;
       },
+    },
+  }) as DocumentNode;
+
+  return {
+    documentNode: document,
+    fragmentDefinitions: newFragmentDefinitions,
+    changedFragmentDefinitions: changedFragmentDefinitions,
+  };
+};
+
+const fieldNameToFieldNode: { [key in Exclude<ConnectionRelatedFieldName, 'edges'>]: FieldNode } = {
+  id: idField,
+  __typename: typenameField,
+  node: nodeField,
+  cursor: cursorField,
+  pageInfo: pageInfoField,
+};
+
+const transformSelectionSet = (params: {
+  targetFieldNames: ConnectionRelatedFieldName[];
+  selectionSet: SelectionSetNode;
+  fragmentDefinitions: FragmentDefinitionNode[];
+  canAddSelections: boolean;
+}): {
+  selectionSet: SelectionSetNode;
+  fragmentDefinitions: FragmentDefinitionNode[];
+  hasChangedSelectionSet: boolean;
+  fieldNamesNotInExistence: ConnectionRelatedFieldName[];
+  changedFragmentDefinitions: FragmentDefinitionNode[];
+} => {
+  const { targetFieldNames, canAddSelections } = params;
+  let fragmentDefinitions = params.fragmentDefinitions;
+  let selectionSet = params.selectionSet;
+  let hasChangedSelectionSet = false;
+  let changedFragmentDefinitions: FragmentDefinitionNode[] = [];
+
+  const fieldsInExistence = fieldNodesInSelections({
+    fieldNames: targetFieldNames,
+    selections: selectionSet.selections,
+  });
+  if (fieldsInExistence.length === targetFieldNames.length) {
+    return {
+      selectionSet,
+      fragmentDefinitions,
+      hasChangedSelectionSet,
+      fieldNamesNotInExistence: [],
+      changedFragmentDefinitions,
     };
   }
 
-  const nodeFieldNode = addFieldWithoutDuplication({
-    fieldNode: selections[nodeIndex] as FieldNode,
-    additionalFields: [idField, typenameField],
+  const resultBasedOnSelections = transformSelectionSetBasedOnSelections({
+    fieldsInExistence,
+    selectionSet,
+    fragmentDefinitions,
+    canAddSelections,
   });
+  selectionSet = resultBasedOnSelections.selectionSet;
+  fragmentDefinitions = resultBasedOnSelections.fragmentDefinitions;
+  hasChangedSelectionSet = resultBasedOnSelections.hasChangedSelectionSet;
+  changedFragmentDefinitions = resultBasedOnSelections.changedFragmentDefinitions;
 
-  const newSelections = [...selections];
-  newSelections[nodeIndex] = nodeFieldNode;
+  const resultBasedOnSpreadFragments = transformFragmentDefinitionsBasedOnSpreadFragments({
+    targetFieldNames,
+    selectionSet,
+    fragmentDefinitions,
+  });
+  changedFragmentDefinitions = mergeFragmentDefinitions(
+    changedFragmentDefinitions,
+    resultBasedOnSpreadFragments.changedFragmentDefinitions,
+  );
+  fragmentDefinitions = resultBasedOnSpreadFragments.fragmentDefinitions;
+  const fieldNamesNotInExistence = resultBasedOnSpreadFragments.fieldNamesNotInExistence;
 
+  if (fieldNamesNotInExistence.length === 0 || !canAddSelections) {
+    return {
+      selectionSet,
+      fragmentDefinitions,
+      hasChangedSelectionSet,
+      fieldNamesNotInExistence,
+      changedFragmentDefinitions,
+    };
+  }
+
+  const newSelections = [
+    ...selectionSet.selections,
+    ...fieldNamesNotInExistence
+      .map((name) => (name === 'edges' ? null : fieldNameToFieldNode[name]))
+      .filter(nonNullable),
+  ];
   return {
-    ...edgesFieldNode,
-    selectionSet: {
-      ...edgesFieldNode.selectionSet,
-      selections: newSelections,
-    },
+    selectionSet: { ...selectionSet, selections: newSelections },
+    fragmentDefinitions,
+    hasChangedSelectionSet: true,
+    fieldNamesNotInExistence: [],
+    changedFragmentDefinitions,
   };
 };
 
-const addEdgesRelatedFields = ({ connectionFieldNode }: { connectionFieldNode: FieldNode }): FieldNode => {
-  if (!connectionFieldNode.selectionSet) return connectionFieldNode;
+const fieldNodesInSelections = ({
+  fieldNames,
+  selections,
+}: {
+  fieldNames: ConnectionRelatedFieldName[];
+  selections: readonly SelectionNode[];
+}) => {
+  const flattenSelections = flatSelections({ selections: selections });
+  return flattenSelections.filter(
+    (selection): selection is FieldNode =>
+      selection.kind === Kind.FIELD && !!fieldNames.find((name) => name === selection.name.value),
+  );
+};
 
-  const selections = connectionFieldNode.selectionSet.selections;
+const transformSelectionSetBasedOnSelections = (params: {
+  selectionSet: SelectionSetNode;
+  fieldsInExistence: FieldNode[];
+  fragmentDefinitions: FragmentDefinitionNode[];
+  canAddSelections: boolean;
+}): {
+  selectionSet: SelectionSetNode;
+  fragmentDefinitions: FragmentDefinitionNode[];
+  hasChangedSelectionSet: boolean;
+  changedFragmentDefinitions: FragmentDefinitionNode[];
+  fieldsInExistence: FieldNode[];
+} => {
+  const { fieldsInExistence, selectionSet } = params;
+  let fragmentDefinitions = params.fragmentDefinitions;
+  let changedFragmentDefinitions: FragmentDefinitionNode[] = [];
 
-  const edgesIndex = selections.findIndex((selection) => isSameNameFieldNode({ selection, name: 'edges' }));
+  const changedFieldNodes: FieldNode[] = [];
 
-  // If there is no edges field, do nothing. Because it does not contain any nodes to paginate.
-  if (edgesIndex === -1) return connectionFieldNode;
+  fieldsInExistence.forEach((field) => {
+    const nextSelectionSet = field.selectionSet;
+    if (!nextSelectionSet) return;
+    let result: ReturnType<typeof transformSelectionSet> | undefined;
+    const nextFunc = (names: ConnectionRelatedFieldName[]) =>
+      transformSelectionSet({
+        targetFieldNames: names,
+        selectionSet: nextSelectionSet,
+        fragmentDefinitions: fragmentDefinitions,
+        canAddSelections: true,
+      });
 
-  let edgesFieldNode = selections[edgesIndex] as FieldNode;
+    if (field.name.value === 'edges') {
+      result = nextFunc(['node', 'cursor']);
+    } else if (field.name.value === 'node') {
+      result = nextFunc(['id', '__typename']);
+    } else if (field.name.value === 'pageInfo') {
+      // If pageInfo exists, do not add its child fields (e.g., hasNextPage). Respect the user's writing.
+    }
 
-  edgesFieldNode = addFieldWithoutDuplication({ fieldNode: edgesFieldNode, additionalFields: [cursorField] });
-  edgesFieldNode = addNodeRelatedFields({ edgesFieldNode });
+    if (!result) return;
 
-  const newSelections = [...selections];
-  newSelections[edgesIndex] = edgesFieldNode;
+    fragmentDefinitions = result.fragmentDefinitions;
+    changedFragmentDefinitions = mergeFragmentDefinitions(
+      changedFragmentDefinitions,
+      result.changedFragmentDefinitions,
+    );
+    if (result.hasChangedSelectionSet) {
+      changedFieldNodes.push({ ...field, selectionSet: result.selectionSet });
+    }
+  });
+
+  if (changedFieldNodes.length === 0) {
+    return {
+      selectionSet,
+      fragmentDefinitions,
+      changedFragmentDefinitions,
+      hasChangedSelectionSet: false,
+      fieldsInExistence,
+    };
+  }
+
+  // Apply changedFieldNode to selectionSet.selections
+  const newSelectionSet = visit(selectionSet, {
+    Field: {
+      leave(field) {
+        if (!field.loc) return;
+        const changedFieldNode = changedFieldNodes.find(
+          (changedNode) =>
+            changedNode.loc && changedNode.loc.start === field.loc?.start && changedNode.loc.end === field.loc.end,
+        );
+        if (changedFieldNode) return changedFieldNode;
+      },
+    },
+  }) as SelectionSetNode;
 
   return {
-    ...connectionFieldNode,
-    selectionSet: {
-      ...connectionFieldNode.selectionSet,
-      selections: newSelections,
-    },
+    selectionSet: newSelectionSet,
+    fragmentDefinitions,
+    changedFragmentDefinitions,
+    hasChangedSelectionSet: true,
+    fieldsInExistence,
   };
+};
+
+const transformFragmentDefinitionsBasedOnSpreadFragments = (params: {
+  targetFieldNames: ConnectionRelatedFieldName[];
+  selectionSet: SelectionSetNode;
+  fragmentDefinitions: FragmentDefinitionNode[];
+}): {
+  fragmentDefinitions: FragmentDefinitionNode[];
+  changedFragmentDefinitions: FragmentDefinitionNode[];
+  fieldNamesNotInExistence: ConnectionRelatedFieldName[];
+} => {
+  const { targetFieldNames, selectionSet } = params;
+  let fragmentDefinitions = params.fragmentDefinitions;
+  let changedFragmentDefinitions: FragmentDefinitionNode[] = [];
+
+  const selections = flatSelections({ selections: selectionSet.selections });
+  let fieldNamesNotInExistence = targetFieldNames.filter(
+    (name) => !selections.find((selection) => selection.kind === Kind.FIELD && selection.name.value === name),
+  );
+
+  const fragmentSpreads = selections.filter(
+    (selection): selection is FragmentSpreadNode => selection.kind === Kind.FRAGMENT_SPREAD,
+  );
+  let foundFieldNames: ConnectionRelatedFieldName[] = [];
+  fragmentSpreads.forEach((spread) => {
+    const definition = getFragmentDefinitionByName({ fragmentName: spread.name.value, fragmentDefinitions });
+    if (!definition) return;
+    const result = transformSelectionSet({
+      selectionSet: definition.selectionSet,
+      targetFieldNames: fieldNamesNotInExistence,
+      fragmentDefinitions,
+      canAddSelections: false,
+    });
+    fragmentDefinitions = result.fragmentDefinitions;
+    changedFragmentDefinitions = mergeFragmentDefinitions(
+      changedFragmentDefinitions,
+      result.changedFragmentDefinitions,
+    );
+    if (result.hasChangedSelectionSet) {
+      const newFragmentDefinition = { ...definition, selectionSet: result.selectionSet };
+      changedFragmentDefinitions = mergeFragmentDefinitions(changedFragmentDefinitions, [newFragmentDefinition]);
+      replaceFragmentDefinition(fragmentDefinitions, newFragmentDefinition);
+    }
+
+    const resultFoundFieldNames = fieldNamesNotInExistence.filter(
+      (name) => !result.fieldNamesNotInExistence.includes(name),
+    );
+    foundFieldNames = [...foundFieldNames, ...resultFoundFieldNames];
+  });
+
+  fieldNamesNotInExistence = fieldNamesNotInExistence.filter((name) => !foundFieldNames.includes(name));
+
+  return {
+    fragmentDefinitions,
+    fieldNamesNotInExistence,
+    changedFragmentDefinitions,
+  };
+};
+
+const flatSelections = ({ selections }: { selections: readonly SelectionNode[] }): SelectionNode[] => {
+  return selections
+    .map((selection) => {
+      if (selection.kind !== Kind.INLINE_FRAGMENT) return selection;
+      return flatSelections({ selections: selection.selectionSet.selections });
+    })
+    .flat();
+};
+
+const replaceFragmentDefinition = (
+  fragmentDefinitions: FragmentDefinitionNode[],
+  newFragmentDefinition: FragmentDefinitionNode,
+): void => {
+  const index = fragmentDefinitions.findIndex(
+    (fragmentDefinition) => fragmentDefinition.name.value === newFragmentDefinition.name.value,
+  );
+  if (index >= 0) {
+    fragmentDefinitions[index] = newFragmentDefinition;
+  }
+};
+
+const mergeFragmentDefinitions = (
+  a: FragmentDefinitionNode[],
+  b: FragmentDefinitionNode[],
+): FragmentDefinitionNode[] => {
+  return [
+    // Remove same name fragments
+    ...a.filter((aDefinition) => !b.find((bDefinition) => bDefinition.name.value === aDefinition.name.value)),
+    ...b,
+  ];
 };

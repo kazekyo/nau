@@ -249,7 +249,6 @@ const transformFragmentDefinition = (params: {
 
   if (variableNames.length === 0) return { documentNode, changed: transformResult.changed };
 
-  // const originalFragmentName = currentFragmentDefinition.name.value;
   const uniqueFragmentName = getUniqueFragmentName(
     currentFragmentDefinition.name.value,
     `${FRAGMENT_NAME_INFO_ID_3},${variableNames.join(',')}`,
