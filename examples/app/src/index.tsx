@@ -7,6 +7,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
 import { withCacheUpdater } from './generated/graphql';
+import introspectionResult from './generated/introspection-result.json';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
 
@@ -27,6 +28,7 @@ const splitLink = split(
 
 const client = new ApolloClient({
   cache: new InMemoryCache({
+    possibleTypes: introspectionResult.possibleTypes,
     typePolicies: withCacheUpdater({
       User: {
         fields: {

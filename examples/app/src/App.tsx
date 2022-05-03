@@ -9,7 +9,6 @@ gql`
   query AppQuery {
     viewer {
       id
-      name
       ...List_user
     }
   }
@@ -27,7 +26,7 @@ const App: React.FC = () => {
       <Box p="6">
         <Box pt="3" pb="2" d="flex" alignItems="baseline">
           <Box fontWeight="semibold" fontSize="xl" lineHeight="tight">
-            {data.viewer?.name}'s items
+            My items
           </Box>
           <Box ml="3" color="gray.500" fontWeight="semibold" fontSize="sm">
             User ID: {data.viewer?.id}

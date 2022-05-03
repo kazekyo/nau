@@ -11,12 +11,10 @@ generates:
       - typescript
       - typescript-operations
       - typed-document-node
-    config:
-      dedupeOperationSuffix: true
-  ./graphql.schema.json:
+  src/generated/introspection-result.json:
     preset: '@nau/graphql-codegen-preset'
     plugins:
-      - introspection
+      - fragment-matcher
   ./schema.graphql:
     preset: '@nau/graphql-codegen-preset'
     plugins:
