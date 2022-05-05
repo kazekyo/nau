@@ -17,9 +17,8 @@ gql`
 const App: React.FC = () => {
   const { loading, error, data } = useQuery(AppQueryDocument);
 
-  if (loading) return <p>Loading...</p>;
+  if (loading || !data) return <p>Loading...</p>;
   if (error) return <p>Error :(</p>;
-  if (!data) return null;
 
   return (
     <div className="App">

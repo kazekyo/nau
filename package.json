@@ -33,6 +33,8 @@
   },
   "scripts": {
     "test": "jest",
-    "lint": "eslint \"packages/**/src/**/*.{js,jsx,ts,tsx}\""
+    "lint": "eslint \"packages/**/src/**/*.{js,jsx,ts,tsx}\"",
+    "start:docs": "cd docs && yarn start",
+    "build:docs": "cd docs && yarn build"
   }
 }

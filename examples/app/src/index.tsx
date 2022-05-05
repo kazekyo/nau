@@ -28,6 +28,7 @@ const splitLink = split(
 
 const client = new ApolloClient({
   cache: new InMemoryCache({
+    addTypename: true,
     possibleTypes: introspectionResult.possibleTypes,
     typePolicies: withCacheUpdater({
       User: {

@@ -49,9 +49,7 @@ gql`
   }
 `;
 
-const List: React.FC<{
-  user: List_UserFragment;
-}> = ({ user }) => {
+const List: React.FC<{ user: List_UserFragment }> = ({ user }) => {
   useSubscription(ItemAddedSubscriptionDocument, {
     variables: {
       connections: [user.items._connectionId],
@@ -90,7 +88,7 @@ const List: React.FC<{
           );
         })}
       </div>
-      {hasNext ? (
+      {hasNext && (
         <Button
           mt="3"
           colorScheme="teal"
@@ -101,7 +99,7 @@ const List: React.FC<{
         >
           Load more
         </Button>
-      ) : null}
+      )}
     </>
   );
 };
