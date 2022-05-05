@@ -34,7 +34,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
 
       - name: Install dependencies
-        run: yarn
+        run: yarn && yarn run lerna bootstrap
 
       - name: Run ${{ matrix.command }}
         run: yarn ${{ matrix.command }}
