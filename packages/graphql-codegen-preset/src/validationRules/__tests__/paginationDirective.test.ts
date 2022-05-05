@@ -1,7 +1,7 @@
 import { readFileSync } from 'fs';
 import { buildSchema, GraphQLError, parse, validate } from 'graphql';
 import path from 'path';
-import { paginationDirectiveValidationRule } from '../PaginationDirective';
+import { paginationDirectiveValidationRule } from '../paginationDirective';
 
 const filePath = path.join(__dirname, '../../utils/testing/example.graphql');
 const schemaString = readFileSync(filePath, { encoding: 'utf-8' });

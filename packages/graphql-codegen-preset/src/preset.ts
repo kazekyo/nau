@@ -18,7 +18,7 @@ import { transform as fixVariableNotDefinedInRoot } from './transforms/fixVariab
 import { transform as generateRefetchQuery } from './transforms/generateRefetchQuery';
 import { transform as passArgumentValueToFragment } from './transforms/passArgumentValueToFragment';
 import { transform as removeCustomDirective } from './transforms/removeCustomDirective';
-import { paginationDirectiveValidationRule } from './validationRules/PaginationDirective';
+import { paginationDirectiveValidationRule } from './validationRules/paginationDirective';
 
 const transformDocuments = ({
   documentFiles,
