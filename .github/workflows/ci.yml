@@ -2,6 +2,8 @@ name: CI
 
 on:
   push:
+    branches:
+      - main
     paths-ignore:
       - '**.md*'
   pull_request:
@@ -32,7 +34,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
 
       - name: Install dependencies
-        run: yarn run lerna bootstrap
+        run: yarn
 
       - name: Run ${{ matrix.command }}
         run: yarn ${{ matrix.command }}
