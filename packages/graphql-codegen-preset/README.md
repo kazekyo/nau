@@ -1,11 +1,11 @@
-# `codegen-preset`
+# @nau/graphql-codegen-preset
 
-> TODO: description
+> A GraphQL Code Generator preset for [Nau](https://github.com/kazekyo/nau)
 
-## Usage
+See documents for more information.
 
-```
-const codegenPreset = require('codegen-preset');
+## Install
 
-// TODO: DEMONSTRATE API
+```sh
+yarn add --dev @nau/graphql-codegen-preset
 ```

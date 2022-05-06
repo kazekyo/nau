@@ -4248,31 +4248,10 @@
   dependencies:
     "@types/lodash" "*"
 
-"@types/lodash.ismatch@^4.4.6":
-  version "4.4.6"
-  resolved "https://registry.yarnpkg.com/@types/lodash.ismatch/-/lodash.ismatch-4.4.6.tgz#7ef39e51e56e562e579b1416c4edbb57295b239c"
-  integrity sha512-Qy6R9c+LOc3M+kBTDgQGAWxzcrXFKznXuIyg8tbw2/Ct3D3lBmQd3yMTD+NjGzIATgUr0v4uWzW3+ALid+LXsQ==
-  dependencies:
-    "@types/lodash" "*"
-
-"@types/lodash.merge@^4.6.6":
-  version "4.6.6"
-  resolved "https://registry.yarnpkg.com/@types/lodash.merge/-/lodash.merge-4.6.6.tgz#b84b403c1d31bc42d51772d1cd5557fa008cd3d6"
-  integrity sha512-IB90krzMf7YpfgP3u/EvZEdXVvm4e3gJbUvh5ieuI+o+XqiNEt6fCzqNRaiLlPVScLI59RxIGZMQ3+Ko/DJ8vQ==
-  dependencies:
-    "@types/lodash" "*"
-
 "@types/lodash.mergewith@4.6.6":
   version "4.6.6"
   resolved "https://registry.yarnpkg.com/@types/lodash.mergewith/-/lodash.mergewith-4.6.6.tgz#c4698f5b214a433ff35cb2c75ee6ec7f99d79f10"
   integrity sha512-RY/8IaVENjG19rxTZu9Nukqh0W2UrYgmBj5sdns4hWRZaV8PqR7wIKHFKzvOTjo4zVRV7sVI+yFhAJql12Kfqg==
-  dependencies:
-    "@types/lodash" "*"
-
-"@types/lodash.uniqwith@^4.5.6":
-  version "4.5.6"
-  resolved "https://registry.yarnpkg.com/@types/lodash.uniqwith/-/lodash.uniqwith-4.5.6.tgz#b03b0155c740263bf0249d3ccebd6ff006878ec5"
-  integrity sha512-0xx5IqFuDdAeghWRRoCSXk8Nrhxv5RsZS51Nt/TyRPp05pvZKu2ioD+AVGFF6vWh9fPd/In9fB96k/Y3KCGnlA==
   dependencies:
     "@types/lodash" "*"
 
@@ -4290,11 +4269,6 @@
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/@types/minimist/-/minimist-1.2.2.tgz#ee771e2ba4b3dc5b372935d549fd9617bf345b8c"
   integrity sha512-jhuKLIRrhvCPLqwPcx6INqmKeiA5EWrsCOPhrlFSrbrmU4ZMPjj5Ul/oLCMDO98XRUIwVm78xICz4EPCektzeQ==
-
-"@types/nanoid-dictionary@^4.2.0":
-  version "4.2.0"
-  resolved "https://registry.yarnpkg.com/@types/nanoid-dictionary/-/nanoid-dictionary-4.2.0.tgz#5a3ae86d7c0db2d3ecf5b1233fc27f5874903f77"
-  integrity sha512-DyQddKC2AYsInXBMqKSwhom4gpouV8SF1smsCPSzR8hp20vZJ5o5Yxg7qXThCHwr/H6VMq01UArEGbF0q2FXig==
 
 "@types/node@*", "@types/node@^16.7.10":
   version "16.11.1"
@@ -11827,11 +11801,6 @@ lodash.uniq@^4.5.0:
   resolved "https://registry.yarnpkg.com/lodash.uniq/-/lodash.uniq-4.5.0.tgz#d0225373aeb652adc1bc82e4945339a842754773"
   integrity sha1-0CJTc662Uq3BvILklFM5qEJ1R3M=
 
-lodash.uniqwith@^4.5.0:
-  version "4.5.0"
-  resolved "https://registry.yarnpkg.com/lodash.uniqwith/-/lodash.uniqwith-4.5.0.tgz#7a0cbf65f43b5928625a9d4d0dc54b18cadc7ef3"
-  integrity sha1-egy/ZfQ7WShiWp1NDcVLGMrcfvM=
-
 "lodash@>=3.5 <5", lodash@^4.17.11, lodash@^4.17.14, lodash@^4.17.15, lodash@^4.17.19, lodash@^4.17.20, lodash@^4.17.21, lodash@^4.17.5, lodash@^4.7.0, lodash@~4.17.0, lodash@~4.17.15:
   version "4.17.21"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
@@ -12427,12 +12396,7 @@ nan@^2.12.1:
   resolved "https://registry.yarnpkg.com/nan/-/nan-2.15.0.tgz#3f34a473ff18e15c1b5626b62903b5ad6e665fee"
   integrity sha512-8ZtvEnA2c5aYCZYd1cvgdnU6cqwixRoYg70xPLWUws5ORTa/lnw+u4amixRS/Ac5U5mQVgp9pnlSUnbNWFaWZQ==
 
-nanoid-dictionary@^4.3.0:
-  version "4.3.0"
-  resolved "https://registry.yarnpkg.com/nanoid-dictionary/-/nanoid-dictionary-4.3.0.tgz#d4cefa1e4c06b1f576789eeb2646101f8c5419e8"
-  integrity sha512-Xw1+/QnRGWO1KJ0rLfU1xR85qXmAHyLbE3TUkklu9gOIDburP6CsUnLmTaNECGpBh5SHb2uPFmx0VT8UPyoeyw==
-
-nanoid@^3.1.25, nanoid@^3.1.30:
+nanoid@^3.1.30:
   version "3.1.30"
   resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-3.1.30.tgz#63f93cc548d2a113dc5dfbc63bfa09e2b9b64362"
   integrity sha512-zJpuPDwOv8D2zq2WRoMe1HsfZthVewpel9CAvTfc/2mBD1uUT/agc5f7GHGWXlYkFvi1mVxe4IjvP2HNrop7nQ==

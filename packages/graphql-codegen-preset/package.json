@@ -1,7 +1,7 @@
 {
   "name": "@nau/graphql-codegen-preset",
   "version": "0.3.0",
-  "description": "TODO",
+  "description": "A GraphQL Code Generator preset for Nau",
   "author": "kazekyo",
   "bugs": {
     "url": "https://github.com/kazekyo/nau/issues"
@@ -10,18 +10,14 @@
     "@graphql-codegen/plugin-helpers": "^2.1.1",
     "@graphql-codegen/visitor-plugin-common": "^2.2.1",
     "@graphql-tools/utils": "^8.2.4",
+    "@nau/core": "^0.3.0",
     "@relay-graphql-js/validation-rules": "^0.0.1",
     "js-base64": "^3.6.0",
-    "lodash.clonedeep": "^4.5.0",
-    "lodash.merge": "^4.6.2",
-    "lodash.uniqwith": "^4.5.0"
+    "lodash.clonedeep": "^4.5.0"
   },
   "devDependencies": {
     "@graphql-codegen/testing": "^1.17.7",
-    "@nau/core": "^0.3.0",
-    "@types/lodash.clonedeep": "^4.5.6",
-    "@types/lodash.merge": "^4.6.6",
-    "@types/lodash.uniqwith": "^4.5.6"
+    "@types/lodash.clonedeep": "^4.5.6"
   },
   "files": [
     "dist"
