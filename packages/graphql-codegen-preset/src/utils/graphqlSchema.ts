@@ -1,6 +1,7 @@
 import { GraphQLObjectType, GraphQLOutputType, GraphQLSchema, isListType, isNonNullType, isObjectType } from 'graphql';
 import { getFieldDef } from 'graphql/execution/execute';
 import { Maybe } from 'graphql/jsutils/Maybe';
+import { edgesField, nodeField } from './graphqlAST';
 
 export const getConnectionType = ({ type }: { type: Maybe<GraphQLOutputType> }): GraphQLObjectType | undefined => {
   let connectionType = type;
@@ -20,7 +21,7 @@ export const getEdgeType = ({
   connectionType: GraphQLObjectType;
   schema: GraphQLSchema;
 }): GraphQLObjectType | undefined => {
-  const edgesFieldDef = getFieldDef(schema, connectionType, 'edges');
+  const edgesFieldDef = getFieldDef(schema, connectionType, edgesField);
   if (!edgesFieldDef) return;
 
   let edgesType = edgesFieldDef.type;
@@ -47,7 +48,7 @@ export const getNodeType = ({
   edgeType: GraphQLObjectType;
   schema: GraphQLSchema;
 }): GraphQLObjectType | undefined => {
-  const nodeFieldDef = getFieldDef(schema, edgeType, 'node');
+  const nodeFieldDef = getFieldDef(schema, edgeType, nodeField);
   if (!nodeFieldDef) return;
 
   let nodeType = nodeFieldDef.type;

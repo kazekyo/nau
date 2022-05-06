@@ -36,7 +36,11 @@ export const plugin: PluginFunction<
   ];
   const typeInfo = new TypeInfo(schema);
   const visitor = new PaginationVisitor(schema, allFragments, config, documentFiles, typeInfo);
-  visit(allAst, visitWithTypeInfo(typeInfo, { leave: visitor })) as DocumentNode;
+
+  visit(
+    allAst,
+    visitWithTypeInfo(typeInfo, { Directive: visitor.Directive.bind(visitor), Field: visitor.Field.bind(visitor) }),
+  ) as DocumentNode;
 
   return {
     prepend: visitor.getImports(),
