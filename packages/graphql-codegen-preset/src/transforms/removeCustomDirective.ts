@@ -5,7 +5,7 @@ import {
   PAGINATION_DIRECTIVE_NAME,
   REFETCHABLE_DIRECTIVE_NAME,
 } from '@nau/core';
-import { DocumentNode, visit } from 'graphql';
+import { visit } from 'graphql';
 
 const DIRECTIVES = [
   ARGUMENT_DEFINITIONS_DIRECTIVE_NAME,
@@ -30,7 +30,7 @@ export const transform = ({
           }
         },
       },
-    }) as DocumentNode;
+    });
     return file;
   });
 

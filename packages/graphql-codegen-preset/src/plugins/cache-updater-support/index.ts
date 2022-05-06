@@ -1,15 +1,6 @@
 import { PluginFunction, PluginValidateFn, Types } from '@graphql-codegen/plugin-helpers';
 import { LoadedFragment } from '@graphql-codegen/visitor-plugin-common';
-import {
-  concatAST,
-  DocumentNode,
-  FragmentDefinitionNode,
-  GraphQLSchema,
-  Kind,
-  TypeInfo,
-  visit,
-  visitWithTypeInfo,
-} from 'graphql';
+import { concatAST, FragmentDefinitionNode, GraphQLSchema, Kind, TypeInfo, visit, visitWithTypeInfo } from 'graphql';
 import { extname } from 'path';
 import { nonNullable } from '../../utils/nonNullable';
 import { PaginationPluginConfig, PaginationRawPluginConfig } from './config';
@@ -40,7 +31,7 @@ export const plugin: PluginFunction<
   visit(
     allAst,
     visitWithTypeInfo(typeInfo, { Directive: visitor.Directive.bind(visitor), Field: visitor.Field.bind(visitor) }),
-  ) as DocumentNode;
+  );
 
   return {
     prepend: visitor.getImports(),

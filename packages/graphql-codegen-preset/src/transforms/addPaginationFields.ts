@@ -58,7 +58,7 @@ export const transform = ({
           return fragmentDefinition;
         },
       },
-    }) as DocumentNode;
+    });
     return file;
   });
 
@@ -124,7 +124,7 @@ const addFields = ({
         return newSelectionSetNode;
       },
     },
-  }) as DocumentNode;
+  });
 
   return {
     documentNode: document,
@@ -307,7 +307,7 @@ const transformSelectionSetBasedOnSelections = (params: {
         if (changedFieldNode) return changedFieldNode;
       },
     },
-  }) as SelectionSetNode;
+  });
 
   return {
     selectionSet: newSelectionSet,

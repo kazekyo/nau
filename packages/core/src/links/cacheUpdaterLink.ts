@@ -1,5 +1,5 @@
 import { ApolloLink, Operation } from '@apollo/client';
-import { DocumentNode, visit } from 'graphql/language';
+import { visit } from 'graphql/language';
 import { uniq } from 'lodash';
 import { CACHE_UPDATER_DIRECTIVE_NAMES, DELETE_VARIABLES_DIRECTIVE_NAMES } from '../utils';
 import { isQueryOperation } from '../utils/graphqlAST';
@@ -41,7 +41,7 @@ const transform = (operation: Operation): Operation => {
         }
       },
     },
-  }) as DocumentNode;
+  });
 
   operation.variables = Object.fromEntries(
     Object.entries(operation.variables).filter(([key]) => !argumentNames.includes(key)),

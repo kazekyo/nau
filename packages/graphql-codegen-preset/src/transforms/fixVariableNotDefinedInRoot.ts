@@ -151,7 +151,7 @@ const transformFragmentSpreadFields = <
         return changedSpareadFragmentFieldNode;
       },
     },
-  }) as TDefinitionNode;
+  });
 
   if (tokens.length !== 0 && currentDefinition.kind === Kind.FRAGMENT_DEFINITION) {
     const uniqueName = getUniqueFragmentName(currentDefinition.name.value, tokens.join(','));
@@ -315,10 +315,10 @@ const fixVariables = ({
               }
             },
           },
-        }) as FragmentDefinitionNode;
+        });
       },
     },
-  }) as DocumentNode;
+  });
 };
 
 const getOperationInfoList = ({ documentFiles }: { documentFiles: Types.DocumentFile[] }): OperationInfo[] => {
@@ -375,7 +375,7 @@ const getFragmentNames = <TDefinitionNode extends ASTNode>({
         });
       },
     },
-  }) as TDefinitionNode;
+  });
   return fragmentNames;
 };
 
