@@ -1,5 +1,5 @@
 import { ARGUMENT_DEFINITIONS_DIRECTIVE_NAME } from '@nau/core';
-import { DirectiveNode, FragmentDefinitionNode, Kind, NameNode, parseType, TypeNode, ValueNode } from 'graphql';
+import { ConstValueNode, DirectiveNode, FragmentDefinitionNode, Kind, NameNode, parseType, TypeNode } from 'graphql';
 import { decode, encode } from 'js-base64';
 
 export const mergeCustomizer = (objValue: unknown, srcValue: unknown): unknown => {
@@ -24,7 +24,7 @@ export const getUniqueFragmentName = (name: string, info: string): string => {
   return `${splitName.join('_')}_${encode(decodedInfo + '/' + info, true)}`;
 };
 
-export type ArgumentDefinitionData = { name: NameNode; type: TypeNode; defaultValue?: ValueNode };
+export type ArgumentDefinitionData = { name: NameNode; type: TypeNode; defaultValue?: ConstValueNode };
 export const getArgumentDefinitionDataList = (node: DirectiveNode): ArgumentDefinitionData[] => {
   if (node.name.value !== ARGUMENT_DEFINITIONS_DIRECTIVE_NAME) return [];
   if (!node.arguments || node.arguments.length === 0) return [];
@@ -45,8 +45,12 @@ export const getArgumentDefinitionDataList = (node: DirectiveNode): ArgumentDefi
 
     const defaultValueField = argument.value.fields.find((field) => field.name.value === 'defaultValue');
     const defaultValue = defaultValueField?.value; // Example: defaultValue is 10
+    let defaultConstValue: ConstValueNode | undefined = undefined;
+    if (defaultValue && defaultValue.kind !== Kind.VARIABLE) {
+      defaultConstValue = defaultValue as ConstValueNode;
+    }
 
-    list.push({ name, type: parseType(typeString), defaultValue });
+    list.push({ name, type: parseType(typeString), defaultValue: defaultConstValue });
   });
   return list;
 };

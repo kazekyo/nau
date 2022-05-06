@@ -126,7 +126,7 @@ const transformFragmentSpreadFields = <TDefinitionNode extends ASTNode>(params: 
         return { ...originalNode, name: { ...originalNode.name, value: result.changedFragmentName } };
       },
     },
-  }) as TDefinitionNode;
+  });
 
   return {
     documentNode,
@@ -221,7 +221,7 @@ const transformFragmentDefinition = (params: {
         }
       }
     },
-  }) as FragmentDefinitionNode;
+  });
 
   const transformResult = transformFragmentSpreadFields({
     targetDefinition: newFragmentDefinition,

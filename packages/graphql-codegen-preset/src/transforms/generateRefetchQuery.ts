@@ -67,9 +67,9 @@ export const transform = ({
             variableDefinitions: [
               ...material.variableDefinitions,
               {
-                kind: 'VariableDefinition',
+                kind: Kind.VARIABLE_DEFINITION,
                 type: parseType('ID!'),
-                variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+                variable: { kind: Kind.VARIABLE, name: { kind: Kind.NAME, value: 'id' } },
               },
             ],
           },
@@ -124,9 +124,9 @@ const collectVariableDefinitions = ({
         const argumentDataList = getArgumentDefinitionDataList(node);
         argumentDataList.forEach((data) =>
           variableDefinitions.push({
-            kind: 'VariableDefinition',
+            kind: Kind.VARIABLE_DEFINITION,
             type: data.type,
-            variable: { kind: 'Variable', name: data.name },
+            variable: { kind: Kind.VARIABLE, name: data.name },
             defaultValue: data.defaultValue,
           }),
         );

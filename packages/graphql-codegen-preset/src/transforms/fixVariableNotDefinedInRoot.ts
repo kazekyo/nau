@@ -310,12 +310,12 @@ const fixVariables = ({
 
               if (argumentDefinitionData.type.kind !== 'NonNullType') {
                 // Replace with null value
-                const nullValueNode: NullValueNode = { kind: 'NullValue' };
+                const nullValueNode: NullValueNode = { kind: Kind.NULL };
                 return nullValueNode;
               }
             },
           },
-        }) as DocumentNode;
+        }) as FragmentDefinitionNode;
       },
     },
   }) as DocumentNode;

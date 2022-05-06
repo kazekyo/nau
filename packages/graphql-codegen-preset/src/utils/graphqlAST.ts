@@ -13,39 +13,39 @@ import {
 import { nonNullable } from './nonNullable';
 
 export const pageInfoField: FieldNode = {
-  kind: 'Field',
-  name: { kind: 'Name', value: 'pageInfo' },
+  kind: Kind.FIELD,
+  name: { kind: Kind.NAME, value: 'pageInfo' },
   selectionSet: {
-    kind: 'SelectionSet',
+    kind: Kind.SELECTION_SET,
     selections: [
-      { kind: 'Field', name: { kind: 'Name', value: 'hasNextPage' } },
-      { kind: 'Field', name: { kind: 'Name', value: 'endCursor' } },
-      { kind: 'Field', name: { kind: 'Name', value: 'hasPreviousPage' } },
-      { kind: 'Field', name: { kind: 'Name', value: 'startCursor' } },
+      { kind: Kind.FIELD, name: { kind: Kind.NAME, value: 'hasNextPage' } },
+      { kind: Kind.FIELD, name: { kind: Kind.NAME, value: 'endCursor' } },
+      { kind: Kind.FIELD, name: { kind: Kind.NAME, value: 'hasPreviousPage' } },
+      { kind: Kind.FIELD, name: { kind: Kind.NAME, value: 'startCursor' } },
     ],
   },
 };
 
-export const cursorField: FieldNode = { kind: 'Field', name: { kind: 'Name', value: 'cursor' } };
+export const cursorField: FieldNode = { kind: Kind.FIELD, name: { kind: Kind.NAME, value: 'cursor' } };
 
-export const idField: FieldNode = { kind: 'Field', name: { kind: 'Name', value: 'id' } };
+export const idField: FieldNode = { kind: Kind.FIELD, name: { kind: Kind.NAME, value: 'id' } };
 
-export const typenameField: FieldNode = { kind: 'Field', name: { kind: 'Name', value: '__typename' } };
+export const typenameField: FieldNode = { kind: Kind.FIELD, name: { kind: Kind.NAME, value: '__typename' } };
 
 export const nodeField: FieldNode = {
-  kind: 'Field',
-  name: { kind: 'Name', value: 'node' },
+  kind: Kind.FIELD,
+  name: { kind: Kind.NAME, value: 'node' },
   selectionSet: {
-    kind: 'SelectionSet',
+    kind: Kind.SELECTION_SET,
     selections: [idField, typenameField],
   },
 };
 
 export const edgesField: FieldNode = {
-  kind: 'Field',
-  name: { kind: 'Name', value: 'edges' },
+  kind: Kind.FIELD,
+  name: { kind: Kind.NAME, value: 'edges' },
   selectionSet: {
-    kind: 'SelectionSet',
+    kind: Kind.SELECTION_SET,
     selections: [nodeField, cursorField],
   },
 };
@@ -101,7 +101,7 @@ export const getDirectives = ({
 };
 
 export const isSameNameFieldNode = ({ selection, name }: { selection: SelectionNode; name: string }): boolean => {
-  return selection.kind === 'Field' && selection.name.value === name;
+  return selection.kind === Kind.FIELD && selection.name.value === name;
 };
 
 // Add the field, but do nothing if the field already exists
