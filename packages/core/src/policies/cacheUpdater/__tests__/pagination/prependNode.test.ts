@@ -1,8 +1,8 @@
 import { ApolloClient, InMemoryCache, useMutation, useQuery, useSubscription } from '@apollo/client';
 import { MockSubscriptionLink } from '@apollo/client/testing';
 import '@testing-library/jest-dom';
-import { act } from '@testing-library/react';
-import { renderHook } from '@testing-library/react-hooks';
+import { act, waitFor } from '@testing-library/react';
+import { renderHook } from '@testing-library/react';
 import { clientMockedWrapperComponent, mockedWrapperComponent } from '../../../../utils/testing/mockedWrapperComponent';
 import {
   DifferentArgsConnectionsQueryDataType,
@@ -50,24 +50,27 @@ describe('@prependNode', () => {
     const wrapper = mockedWrapperComponent({ mocks, cache });
 
     const useQueryHookResult = renderHook(() => useQuery<QueryDataType>(queryDocument), { wrapper });
-    await useQueryHookResult.waitForValueToChange(() => useQueryHookResult.result.current.data);
-    expect(useQueryHookResult.result.current.data).toMatchObject(queryMockData);
+
+    await waitFor(() => {
+      expect(useQueryHookResult.result.current.data).toMatchObject(queryMockData);
+    });
 
     const useMutationHookResult = renderHook(() => useMutation(mutationDocument), { wrapper });
     act(() => {
       const [add] = useMutationHookResult.result.current;
       void add({ variables: mutationVariables });
     });
-    await useQueryHookResult.waitForValueToChange(() => useQueryHookResult.result.current.data);
-    expect(useQueryHookResult.result.current.data).toMatchObject({
-      viewer: {
-        myItems: {
-          edges: [
-            { node: { id: item11Id, __typename: 'Item' }, cursor: '' },
-            { node: { id: item1Id, __typename: 'Item' }, cursor: 'cursor-1' },
-          ],
+    await waitFor(() => {
+      expect(useQueryHookResult.result.current.data).toMatchObject({
+        viewer: {
+          myItems: {
+            edges: [
+              { node: { id: item11Id, __typename: 'Item' }, cursor: '' },
+              { node: { id: item1Id, __typename: 'Item' }, cursor: 'cursor-1' },
+            ],
+          },
         },
-      },
+      });
     });
   });
 
@@ -83,22 +86,24 @@ describe('@prependNode', () => {
     const wrapper = mockedWrapperComponent({ mocks, cache });
 
     const useQueryHookResult = renderHook(() => useQuery<QueryDataType>(queryDocument), { wrapper });
-    await useQueryHookResult.waitForValueToChange(() => useQueryHookResult.result.current.data);
-    expect(useQueryHookResult.result.current.data).toMatchObject(queryMockData);
+    await waitFor(() => {
+      expect(useQueryHookResult.result.current.data).toMatchObject(queryMockData);
+    });
 
     const useMutationHookResult = renderHook(() => useMutation(mutationDocument), { wrapper });
     act(() => {
       const [add] = useMutationHookResult.result.current;
       void add({ variables: prependItemToRootMutationVariables });
     });
-    await useQueryHookResult.waitForValueToChange(() => useQueryHookResult.result.current.data);
-    expect(useQueryHookResult.result.current.data).toMatchObject({
-      items: {
-        edges: [
-          { node: { id: item11Id, __typename: 'Item' }, cursor: '' },
-          { node: { id: item1Id, __typename: 'Item' }, cursor: 'cursor-1' },
-        ],
-      },
+    await waitFor(() => {
+      expect(useQueryHookResult.result.current.data).toMatchObject({
+        items: {
+          edges: [
+            { node: { id: item11Id, __typename: 'Item' }, cursor: '' },
+            { node: { id: item1Id, __typename: 'Item' }, cursor: 'cursor-1' },
+          ],
+        },
+      });
     });
   });
 
@@ -126,8 +131,9 @@ describe('@prependNode', () => {
         wrapper,
       },
     );
-    await useQueryHookResult.waitForValueToChange(() => useQueryHookResult.result.current.data);
-    expect(useQueryHookResult.result.current.data).toMatchObject(differentArgsConnectionsQueryMockData);
+    await waitFor(() => {
+      expect(useQueryHookResult.result.current.data).toMatchObject(differentArgsConnectionsQueryMockData);
+    });
 
     const useMutationHookResult = renderHook(() => useMutation(mutationDocument), { wrapper });
     act(() => {
@@ -136,22 +142,23 @@ describe('@prependNode', () => {
       void add({ variables: differentArgsMutationVariables2 });
     });
 
-    await useQueryHookResult.waitForValueToChange(() => useQueryHookResult.result.current.data);
-    expect(useQueryHookResult.result.current.data).toMatchObject({
-      viewer: {
-        items1: {
-          edges: [
-            { node: { id: item11Id, __typename: 'Item' }, cursor: '' },
-            { node: { id: item1Id, __typename: 'Item' }, cursor: 'cursor-1' },
-          ],
+    await waitFor(() => {
+      expect(useQueryHookResult.result.current.data).toMatchObject({
+        viewer: {
+          items1: {
+            edges: [
+              { node: { id: item11Id, __typename: 'Item' }, cursor: '' },
+              { node: { id: item1Id, __typename: 'Item' }, cursor: 'cursor-1' },
+            ],
+          },
+          items2: {
+            edges: [
+              { node: { id: item12Id, __typename: 'Item' }, cursor: '' },
+              { node: { id: item2Id, __typename: 'Item' }, cursor: 'cursor-2' },
+            ],
+          },
         },
-        items2: {
-          edges: [
-            { node: { id: item12Id, __typename: 'Item' }, cursor: '' },
-            { node: { id: item2Id, __typename: 'Item' }, cursor: 'cursor-2' },
-          ],
-        },
-      },
+      });
     });
   });
 
@@ -159,13 +166,14 @@ describe('@prependNode', () => {
     const mocks = [{ request: { query: queryDocument }, result: { data: queryMockData } }];
     const wrapper = mockedWrapperComponent({ mocks, cache });
     const useQueryHookResult = renderHook(() => useQuery<QueryDataType>(queryDocument), { wrapper });
-    await useQueryHookResult.waitForValueToChange(() => useQueryHookResult.result.current.data);
-    expect(useQueryHookResult.result.current.data).toMatchObject(queryMockData);
+    await waitFor(() => {
+      expect(useQueryHookResult.result.current.data).toMatchObject(queryMockData);
+    });
 
     const link = new MockSubscriptionLink();
     const client = new ApolloClient({ link, cache });
     const subscriptionWrapper = clientMockedWrapperComponent({ client });
-    const useSubscriptionHookResult = renderHook(
+    renderHook(
       () =>
         useSubscription(subscriptionDocument, {
           variables: {
@@ -177,17 +185,17 @@ describe('@prependNode', () => {
     act(() => {
       link.simulateResult({ result: { data: subscriptionMockData } }, true);
     });
-    await useSubscriptionHookResult.waitForValueToChange(() => useQueryHookResult.result.current.data);
-
-    expect(useQueryHookResult.result.current.data).toMatchObject({
-      viewer: {
-        myItems: {
-          edges: [
-            { node: { id: item21Id, __typename: 'Item' }, cursor: '' },
-            { node: { id: item1Id, __typename: 'Item' }, cursor: 'cursor-1' },
-          ],
+    await waitFor(() => {
+      expect(useQueryHookResult.result.current.data).toMatchObject({
+        viewer: {
+          myItems: {
+            edges: [
+              { node: { id: item21Id, __typename: 'Item' }, cursor: '' },
+              { node: { id: item1Id, __typename: 'Item' }, cursor: 'cursor-1' },
+            ],
+          },
         },
-      },
+      });
     });
   });
 });

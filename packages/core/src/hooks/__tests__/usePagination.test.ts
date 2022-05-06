@@ -1,7 +1,7 @@
 import { InMemoryCache, useQuery } from '@apollo/client';
 import '@testing-library/jest-dom';
-import { act } from '@testing-library/react';
-import { renderHook } from '@testing-library/react-hooks';
+import { act, waitFor } from '@testing-library/react';
+import { renderHook } from '@testing-library/react';
 import { mockedWrapperComponent } from '../../utils/testing/mockedWrapperComponent';
 import { usePagination } from '../usePagination';
 import {
@@ -50,8 +50,9 @@ describe('usePagination', () => {
     const wrapper = mockedWrapperComponent({ mocks, cache });
 
     const useQueryHookResult = renderHook(() => useQuery<QueryDataType>(forwardQueryDocument), { wrapper });
-    await useQueryHookResult.waitForValueToChange(() => useQueryHookResult.result.current.data);
-    expect(useQueryHookResult.result.current.data).toMatchObject(forwardQueryMockData);
+    await waitFor(() => {
+      expect(useQueryHookResult.result.current.data).toMatchObject(forwardQueryMockData);
+    });
 
     const usePaginationHookResult = renderHook(
       () =>
@@ -75,7 +76,11 @@ describe('usePagination', () => {
       if (!loadNext) return;
       loadNext(2);
     });
-    await useQueryHookResult.waitForValueToChange(() => useQueryHookResult.result.current.data);
+    await waitFor(() => {
+      expect(useQueryHookResult.result.current.data?.viewer.items.pageInfo).toMatchObject({
+        hasNextPage: false,
+      });
+    });
     usePaginationHookResult.rerender();
 
     expect(usePaginationHookResult.result.current).toMatchObject({ hasNext: false, isLoading: false });
@@ -104,8 +109,9 @@ describe('usePagination', () => {
     const wrapper = mockedWrapperComponent({ mocks, cache });
 
     const useQueryHookResult = renderHook(() => useQuery<QueryDataType>(backwardQueryDocument), { wrapper });
-    await useQueryHookResult.waitForValueToChange(() => useQueryHookResult.result.current.data);
-    expect(useQueryHookResult.result.current.data).toMatchObject(backwardQueryMockData);
+    await waitFor(() => {
+      expect(useQueryHookResult.result.current.data).toMatchObject(backwardQueryMockData);
+    });
 
     const usePaginationHookResult = renderHook(
       () =>
@@ -129,7 +135,11 @@ describe('usePagination', () => {
       if (!loadPrevious) return;
       loadPrevious(2);
     });
-    await useQueryHookResult.waitForValueToChange(() => useQueryHookResult.result.current.data);
+    await waitFor(() => {
+      expect(useQueryHookResult.result.current.data?.viewer.items.pageInfo).toMatchObject({
+        hasPreviousPage: false,
+      });
+    });
     usePaginationHookResult.rerender();
 
     expect(usePaginationHookResult.result.current).toMatchObject({ hasPrevious: false, isLoading: false });
@@ -161,8 +171,9 @@ describe('usePagination', () => {
       () => useQuery<QueryDataType>(queryWithKeywordDocument, { variables: { keyword: 'test' } }),
       { wrapper },
     );
-    await useQueryHookResult.waitForValueToChange(() => useQueryHookResult.result.current.data);
-    expect(useQueryHookResult.result.current.data).toMatchObject(queryWithKeywordMockData);
+    await waitFor(() => {
+      expect(useQueryHookResult.result.current.data).toMatchObject(queryWithKeywordMockData);
+    });
 
     const usePaginationHookResult = renderHook(
       () =>
@@ -187,7 +198,11 @@ describe('usePagination', () => {
       if (!loadNext) return;
       loadNext(2);
     });
-    await useQueryHookResult.waitForValueToChange(() => useQueryHookResult.result.current.data);
+    await waitFor(() => {
+      expect(useQueryHookResult.result.current.data?.viewer.items.pageInfo).toMatchObject({
+        hasNextPage: false,
+      });
+    });
     usePaginationHookResult.rerender();
 
     expect(usePaginationHookResult.result.current).toMatchObject({ hasNext: false, isLoading: false });
