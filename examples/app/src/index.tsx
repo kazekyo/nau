@@ -4,12 +4,12 @@ import { relayStylePagination } from '@apollo/client/utilities';
 import { ChakraProvider } from '@chakra-ui/react';
 import { createCacheUpdaterLink, isSubscriptionOperation } from '@nau/core';
 import React from 'react';
-import ReactDOM from 'react-dom';
 import App from './App';
 import { withCacheUpdater } from './generated/graphql';
 import introspectionResult from './generated/introspection-result.json';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
+import { createRoot } from 'react-dom/client';
 
 const wsLink = new WebSocketLink({
   uri: 'ws://localhost:4000/subscriptions',
@@ -41,7 +41,9 @@ const client = new ApolloClient({
   link: splitLink,
 });
 
-ReactDOM.render(
+const container = document.getElementById('root');
+const root = createRoot(container!);
+root.render(
   <React.StrictMode>
     <ChakraProvider>
       <ApolloProvider client={client}>
@@ -49,7 +51,6 @@ ReactDOM.render(
       </ApolloProvider>
     </ChakraProvider>
   </React.StrictMode>,
-  document.getElementById('root'),
 );
 
 // If you want to start measuring performance in your app, pass a function
