@@ -26,7 +26,6 @@
     "react-dom": "^17.0.2",
     "react-scripts": "4.0.3",
     "subscriptions-transport-ws": "^0.9.18",
-    "typescript": "^4.1.2",
     "web-vitals": "^2.1.0"
   },
   "scripts": {
@@ -62,6 +61,7 @@
     "@graphql-codegen/typed-document-node": "^2.2.8",
     "@graphql-codegen/typescript": "^2.4.8",
     "@graphql-codegen/typescript-operations": "^2.3.5",
-    "@nau/graphql-codegen-preset": "^0.3.0"
+    "@nau/graphql-codegen-preset": "^0.3.0",
+    "typescript": "^4.6.4"
   }
 }
