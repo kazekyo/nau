@@ -4,7 +4,7 @@
 
 See documents for more information.
 
-## Install
+## Installation
 
 ```sh
 yarn add --dev @nau/graphql-codegen-preset

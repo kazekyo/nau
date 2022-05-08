@@ -4,7 +4,7 @@ Nau is a tool that makes the use of [Apollo Client](https://github.com/apollogra
 
 See documents for more information.
 
-## Install
+## Installation
 
 ```sh
 yarn add @nau/core
