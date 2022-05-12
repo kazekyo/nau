@@ -80,7 +80,7 @@ const List: React.FC<{ user: List_UserFragment }> = ({ user }) => {
         </Button>
       </div>
       <div>
-        {nodes.map((node, i) => {
+        {nodes.map((node) => {
           return (
             <Box mt="3" key={node.id}>
               <ListItem user={user} item={node} />
