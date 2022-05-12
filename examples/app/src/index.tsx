@@ -1,4 +1,4 @@
-import { ApolloClient, ApolloProvider, from, HttpLink, InMemoryCache, split } from '@apollo/client';
+import { ApolloClient, ApolloProvider, from, HttpLink, InMemoryCache, PossibleTypesMap, split } from '@apollo/client';
 import { GraphQLWsLink } from '@apollo/client/link/subscriptions';
 import { relayStylePagination } from '@apollo/client/utilities';
 import { ChakraProvider } from '@chakra-ui/react';
@@ -8,9 +8,10 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App';
 import { withCacheUpdater } from './generated/graphql';
-import introspectionResult from './generated/introspection-result.json';
+import introspection from './generated/introspection-result.json';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
+const introspectionResult = introspection as { possibleTypes: PossibleTypesMap };
 
 const wsLink = new GraphQLWsLink(createClient({ url: 'ws://localhost:4000/subscription' }));
 const httpLink = new HttpLink({ uri: 'http://localhost:4000/graphql' });
@@ -37,6 +38,7 @@ const client = new ApolloClient({
 });
 
 const container = document.getElementById('root');
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 const root = createRoot(container!);
 root.render(
   // <React.StrictMode>
