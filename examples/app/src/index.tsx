@@ -1,25 +1,20 @@
 import { ApolloClient, ApolloProvider, from, HttpLink, InMemoryCache, split } from '@apollo/client';
-import { WebSocketLink } from '@apollo/client/link/ws';
+import { GraphQLWsLink } from '@apollo/client/link/subscriptions';
 import { relayStylePagination } from '@apollo/client/utilities';
 import { ChakraProvider } from '@chakra-ui/react';
 import { createCacheUpdaterLink, isSubscriptionOperation } from '@nau/core';
+import { createClient } from 'graphql-ws';
 import React from 'react';
+import { createRoot } from 'react-dom/client';
 import App from './App';
 import { withCacheUpdater } from './generated/graphql';
 import introspectionResult from './generated/introspection-result.json';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
-import { createRoot } from 'react-dom/client';
 
-const wsLink = new WebSocketLink({
-  uri: 'ws://localhost:4000/subscriptions',
-  options: {
-    reconnect: true,
-  },
-});
+const wsLink = new GraphQLWsLink(createClient({ url: 'ws://localhost:4000/subscription' }));
 const httpLink = new HttpLink({ uri: 'http://localhost:4000/graphql' });
 const cacheUpdaterLink = createCacheUpdaterLink();
-
 const splitLink = split(
   ({ query }) => isSubscriptionOperation(query),
   from([cacheUpdaterLink, wsLink]),
@@ -44,13 +39,13 @@ const client = new ApolloClient({
 const container = document.getElementById('root');
 const root = createRoot(container!);
 root.render(
-  <React.StrictMode>
-    <ChakraProvider>
-      <ApolloProvider client={client}>
-        <App />
-      </ApolloProvider>
-    </ChakraProvider>
-  </React.StrictMode>,
+  // <React.StrictMode>
+  <ChakraProvider>
+    <ApolloProvider client={client}>
+      <App />
+    </ApolloProvider>
+  </ChakraProvider>,
+  // </React.StrictMode>,
 );
 
 // If you want to start measuring performance in your app, pass a function
