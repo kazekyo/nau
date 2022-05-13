@@ -1,6 +1,11 @@
 import { Types } from '@graphql-codegen/plugin-helpers';
 import { ClientSideBaseVisitor, LoadedFragment } from '@graphql-codegen/visitor-plugin-common';
-import { DeleteRecordMeta, DELETE_RECORD_DIRECTIVE_NAME, PaginationMeta, PAGINATION_DIRECTIVE_NAME } from '@kazekyo/nau';
+import {
+  DeleteRecordMeta,
+  DELETE_RECORD_DIRECTIVE_NAME,
+  PaginationMeta,
+  PAGINATION_DIRECTIVE_NAME,
+} from '@kazekyo/nau';
 import autoBind from 'auto-bind';
 import { DirectiveNode, FieldNode, GraphQLSchema, Kind, TypeInfo } from 'graphql';
 import { getConnectionType, getEdgeType, getNodeType } from '../../utils/graphqlSchema';
