@@ -44,5 +44,6 @@
   "peerDependencies": {
     "@apollo/client": "^3.4.10",
     "graphql": "^15.6.1"
-  }
+  },
+  "gitHead": "c458ed95f5d41db08a3db79f965562c9e22c6d7b"
 }
