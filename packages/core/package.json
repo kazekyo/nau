@@ -45,7 +45,7 @@
     "@apollo/client": "^3.4.10",
     "graphql": "^15.6.1"
   },
-  "gitHead": "6579f7231e41383ef50ade8820137e975b579047",
+  "gitHead": "9337754515288d8fbd606f67b7ed88b14c6ef678",
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org/"
