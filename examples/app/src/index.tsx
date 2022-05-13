@@ -10,7 +10,6 @@ import App from './App';
 import { withCacheUpdater } from './generated/graphql';
 import introspection from './generated/introspection-result.json';
 import './index.css';
-import reportWebVitals from './reportWebVitals';
 const introspectionResult = introspection as { possibleTypes: PossibleTypesMap };
 
 const wsLink = new GraphQLWsLink(createClient({ url: 'ws://localhost:4000/subscription' }));
@@ -49,8 +48,3 @@ root.render(
   </ChakraProvider>,
   // </React.StrictMode>,
 );
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();

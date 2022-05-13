@@ -1,4 +1,8 @@
-/* eslint-disable react-hooks/rules-of-hooks */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+
 import { ApolloServerPluginDrainHttpServer } from 'apollo-server-core';
 import { ApolloServer } from 'apollo-server-express';
 import express from 'express';
@@ -77,7 +81,7 @@ function createItem(itemName: string, userGlobalId: string) {
   const userId = parseInt(userStringId);
   data.item[newItem.id] = newItem;
   data.user[userId].items.push(newItem.id);
-  pubsub.publish(ROBOT_ADDED_TOPIC, newItem);
+  void pubsub.publish(ROBOT_ADDED_TOPIC, newItem);
   return newItem;
 }
 
@@ -97,7 +101,7 @@ function removeItem(itemGlobalId: string, userGlobalId: string) {
   const deletedItem = data.item[itemId];
   delete data.item[itemId];
   data.user[userId].items = data.user[userId].items.filter((id) => id !== itemId);
-  pubsub.publish(ROBOT_REMOVED_TOPIC, { id: deletedItem.id });
+  void pubsub.publish(ROBOT_REMOVED_TOPIC, { id: deletedItem.id });
   return deletedItem;
 }
 
@@ -322,6 +326,7 @@ async function startServer() {
     plugins: [
       ApolloServerPluginDrainHttpServer({ httpServer }),
       {
+        // eslint-disable-next-line @typescript-eslint/require-await
         async serverWillStart() {
           return {
             async drainServer() {
@@ -335,7 +340,7 @@ async function startServer() {
   await server.start();
   server.applyMiddleware({ app });
 }
-startServer();
+void startServer();
 
 const PORT = 4000;
 // Now that our HTTP server is fully set up, we can listen to it.

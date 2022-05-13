@@ -46,7 +46,7 @@ const ListItem: FC<{
             leftIcon={<DeleteIcon />}
             aria-label="Delete"
             colorScheme="red"
-            onClick={() => removeItem({ variables: { input: { itemId: item.id, userId: user.id } } })}
+            onClick={() => void removeItem({ variables: { input: { itemId: item.id, userId: user.id } } })}
           >
             Delete
           </Button>
