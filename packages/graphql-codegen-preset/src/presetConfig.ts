@@ -9,7 +9,7 @@ export type PresetConfig = {
    * ```yml
    * generates:
    * src/:
-   *  preset: @nau/graphql-codegen-preset
+   *  preset: @kazekyo/nau-graphql-codegen-preset
    *  presetConfig:
    *    generateTypeScriptCode: true
    *  plugins:

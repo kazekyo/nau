@@ -15,16 +15,16 @@ You can install packages.
 <TabItem value="npm">
 
 ```bash
-npm install @nau/core
-npm install --save-dev @nau/graphql-codegen-preset
+npm install @kazekyo/nau
+npm install --save-dev @kazekyo/nau-graphql-codegen-preset
 ```
 
 </TabItem>
 <TabItem value="yarn">
 
 ```bash
-yarn add @nau/core
-yarn add --dev @nau/graphql-codegen-preset
+yarn add @kazekyo/nau
+yarn add --dev @kazekyo/nau-graphql-codegen-preset
 ```
 
 </TabItem>

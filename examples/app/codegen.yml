@@ -4,7 +4,7 @@ documents:
   - src/**/*.tsx
 generates:
   src/generated/graphql.ts:
-    preset: '@nau/graphql-codegen-preset'
+    preset: '@kazekyo/nau-graphql-codegen-preset'
     presetConfig:
       generateTypeScriptCode: true
     plugins:
@@ -12,10 +12,10 @@ generates:
       - typescript-operations
       - typed-document-node
   src/generated/introspection-result.json:
-    preset: '@nau/graphql-codegen-preset'
+    preset: '@kazekyo/nau-graphql-codegen-preset'
     plugins:
       - fragment-matcher
   ./schema.graphql:
-    preset: '@nau/graphql-codegen-preset'
+    preset: '@kazekyo/nau-graphql-codegen-preset'
     plugins:
       - schema-ast

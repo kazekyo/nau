@@ -1,5 +1,5 @@
 import { Types } from '@graphql-codegen/plugin-helpers';
-import { PAGINATION_DIRECTIVE_NAME } from '@nau/core';
+import { PAGINATION_DIRECTIVE_NAME } from '@kazekyo/nau';
 import {
   concatAST,
   extendSchema,

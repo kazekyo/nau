@@ -1,4 +1,4 @@
-# @nau/graphql-codegen-preset
+# @kazekyo/nau-graphql-codegen-preset
 
 This preset extends your schema required to run Nau, modifies GraphQL documents you have written, and generates TypeScript Code.
 ```yaml
@@ -8,7 +8,7 @@ documents:
 generates:
   src/generated/graphql.ts:
     // highlight-start
-    preset: '@nau/graphql-codegen-preset'
+    preset: '@kazekyo/nau-graphql-codegen-preset'
     presetConfig:
       generateTypeScriptCode: true
     // highlight-end
@@ -18,12 +18,12 @@ generates:
       - typed-document-node
   src/generated/introspection-result.json:
     // highlight-next-line
-    preset: '@nau/graphql-codegen-preset'
+    preset: '@kazekyo/nau-graphql-codegen-preset'
     plugins:
       - fragment-matcher
   ./schema.graphql:
     // highlight-next-line
-    preset: '@nau/graphql-codegen-preset'
+    preset: '@kazekyo/nau-graphql-codegen-preset'
     plugins:
       - schema-ast
 ```

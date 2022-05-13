@@ -4,7 +4,7 @@ import {
   ARGUMENT_DEFINITIONS_DIRECTIVE_NAME,
   PAGINATION_DIRECTIVE_NAME,
   REFETCHABLE_DIRECTIVE_NAME,
-} from '@nau/core';
+} from '@kazekyo/nau';
 import { visit } from 'graphql';
 
 const DIRECTIVES = [

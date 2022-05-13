@@ -1,5 +1,5 @@
 import { Types } from '@graphql-codegen/plugin-helpers';
-import { DirectiveName } from '@nau/core';
+import { DirectiveName } from '@kazekyo/nau';
 import {
   DirectiveNode,
   DocumentNode,

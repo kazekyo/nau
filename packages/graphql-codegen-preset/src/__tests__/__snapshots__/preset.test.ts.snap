@@ -2,7 +2,7 @@
 
 exports[`preset generateTypeScriptCode outputs TypeScript code when the flag is true 1`] = `
 "import { TypePolicy } from '@apollo/client';
-import { withCacheUpdaterInternal } from '@nau/core';
+import { withCacheUpdaterInternal } from '@kazekyo/nau';
 
 export const paginationMetaList = [{ node: { typename: 'Item' }, parents: [{ typename: 'User', connection: { fieldName: 'items' }, edge: { typename: 'ItemEdge' } }] }];
 

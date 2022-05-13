@@ -1,5 +1,5 @@
 import { Types } from '@graphql-codegen/plugin-helpers';
-import { ARGUMENT_DEFINITIONS_DIRECTIVE_NAME } from '@nau/core';
+import { ARGUMENT_DEFINITIONS_DIRECTIVE_NAME } from '@kazekyo/nau';
 import {
   ASTNode,
   DocumentNode,

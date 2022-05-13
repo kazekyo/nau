@@ -77,7 +77,7 @@ You can easily implement pagination using the generated `List_PaginationQueryDoc
 
 ```tsx title="src/List.tsx"
 // highlight-start
-import { usePagination } from '@nau/core';
+import { usePagination } from '@kazekyo/nau';
 import { List_PaginationQueryDocument, List_UserFragment } from './generated/graphql';
 // highlight-end
 

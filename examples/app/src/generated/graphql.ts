@@ -1,5 +1,5 @@
 import { TypePolicy } from '@apollo/client';
-import { withCacheUpdaterInternal } from '@nau/core';
+import { withCacheUpdaterInternal } from '@kazekyo/nau';
 import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;

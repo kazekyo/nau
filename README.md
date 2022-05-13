@@ -17,8 +17,8 @@ Nau is a perfect fit with React, Apollo Client, GraphQL Code Generator, and Type
 
 ## Installation
 ```
-yarn add @nau/core
-yarn add --dev @nau/graphql-codegen-preset
+yarn add @kazekyo/nau
+yarn add --dev @kazekyo/nau-graphql-codegen-preset
 ```
 
 ## Documentation

@@ -1,4 +1,4 @@
-import { DirectiveName } from '@nau/core';
+import { DirectiveName } from '@kazekyo/nau';
 import {
   DirectiveNode,
   FieldNode,

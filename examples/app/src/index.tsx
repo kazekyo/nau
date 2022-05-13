@@ -2,7 +2,7 @@ import { ApolloClient, ApolloProvider, from, HttpLink, InMemoryCache, PossibleTy
 import { GraphQLWsLink } from '@apollo/client/link/subscriptions';
 import { relayStylePagination } from '@apollo/client/utilities';
 import { ChakraProvider } from '@chakra-ui/react';
-import { createCacheUpdaterLink, isSubscriptionOperation } from '@nau/core';
+import { createCacheUpdaterLink, isSubscriptionOperation } from '@kazekyo/nau';
 import { createClient } from 'graphql-ws';
 import React from 'react';
 import { createRoot } from 'react-dom/client';

@@ -43,7 +43,7 @@ The `id` argument of `usePagination` will be the `id` specified in `node(id:)`. 
 You can use return values of `usePagination` to display data and place a "read more" button.
 
 ```tsx title="src/List.tsx"
-import { usePagination } from '@nau/core';
+import { usePagination } from '@kazekyo/nau';
 import { List_PaginationQueryDocument, List_UserFragment } from './generated/graphql';
 
 gql` /* GraphQL */

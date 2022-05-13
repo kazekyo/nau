@@ -1,4 +1,4 @@
-import { ARGUMENT_DEFINITIONS_DIRECTIVE_NAME } from '@nau/core';
+import { ARGUMENT_DEFINITIONS_DIRECTIVE_NAME } from '@kazekyo/nau';
 import { ConstValueNode, DirectiveNode, FragmentDefinitionNode, Kind, NameNode, parseType, TypeNode } from 'graphql';
 import { decode, encode } from 'js-base64';
 

@@ -7,7 +7,7 @@ sidebar_position: 2
 You should be familiar with [React](https://reactjs.org/), [Apollo Client](https://www.apollographql.com/docs/react/), and [GraphQL Code Generator](https://www.graphql-code-generator.com/) as a prerequisite. If you have never used them, you will need to read their documentation first.
 
 # Configration for Nau
-First, add `@nau/graphql-codegen-preset` to your `codegen.yml`. You should add this preset to the generation process of all files under `generators`.
+First, add `@kazekyo/nau-graphql-codegen-preset` to your `codegen.yml`. You should add this preset to the generation process of all files under `generators`.
 
 
 ```yaml title="./codegen.yml"
@@ -17,7 +17,7 @@ documents:
 generates:
   src/generated/graphql.ts:
     // highlight-start
-    preset: '@nau/graphql-codegen-preset'
+    preset: '@kazekyo/nau-graphql-codegen-preset'
     presetConfig:
       generateTypeScriptCode: true
     // highlight-end
@@ -27,12 +27,12 @@ generates:
       - typed-document-node
   src/generated/introspection-result.json:
     // highlight-next-line
-    preset: '@nau/graphql-codegen-preset'
+    preset: '@kazekyo/nau-graphql-codegen-preset'
     plugins:
       - fragment-matcher
   ./schema.graphql:
     // highlight-next-line
-    preset: '@nau/graphql-codegen-preset'
+    preset: '@kazekyo/nau-graphql-codegen-preset'
     plugins:
       - schema-ast
 ```
@@ -42,12 +42,12 @@ Run GraphQL Code Generator.
 yarn graphql-codegen
 ```
 
-And Configure your cache settings for Apollo Client. Import and use `withCacheUpdater` from the generated file, and also use some functions of `@nau/core`.
+And Configure your cache settings for Apollo Client. Import and use `withCacheUpdater` from the generated file, and also use some functions of `@kazekyo/nau`.
 ```tsx title="src/index.tsx"
 import { ApolloClient, ApolloProvider, from, HttpLink, InMemoryCache, split } from '@apollo/client';
 import { WebSocketLink } from '@apollo/client/link/ws';
 // highlight-next-line
-import { createCacheUpdaterLink, isSubscriptionOperation } from '@nau/core';
+import { createCacheUpdaterLink, isSubscriptionOperation } from '@kazekyo/nau';
 // highlight-next-line
 import { withCacheUpdater } from './generated/graphql';
 // highlight-next-line

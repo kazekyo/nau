@@ -1,5 +1,5 @@
 import { Types } from '@graphql-codegen/plugin-helpers';
-import { INSERT_NODE_DIRECTIVE_NAMES } from '@nau/core';
+import { INSERT_NODE_DIRECTIVE_NAMES } from '@kazekyo/nau';
 import { visit } from 'graphql';
 import {
   addFieldToSelectionSetNodeWithoutDuplication,
