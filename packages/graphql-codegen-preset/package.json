@@ -51,5 +51,9 @@
   "peerDependencies": {
     "graphql": "^15.6.1"
   },
-  "gitHead": "c458ed95f5d41db08a3db79f965562c9e22c6d7b"
+  "gitHead": "6579f7231e41383ef50ade8820137e975b579047",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  }
 }
