@@ -318,6 +318,7 @@ async function startServer() {
   server = new ApolloServer({
     schema,
     csrfPrevention: true,
+    introspection: true,
     plugins: [
       ApolloServerPluginDrainHttpServer({ httpServer }),
       {
