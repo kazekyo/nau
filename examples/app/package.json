@@ -1,0 +1,65 @@
+{
+  "name": "example-app",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@apollo/client": "^3.6.2",
+    "@babel/cli": "^7.12.13",
+    "@babel/core": "^7.12.13",
+    "@babel/plugin-proposal-class-properties": "^7.12.13",
+    "@babel/preset-env": "^7.12.13",
+    "@babel/preset-typescript": "^7.12.13",
+    "@chakra-ui/icons": "^1.0.15",
+    "@chakra-ui/react": "^1.6.6",
+    "@emotion/react": "^11",
+    "@emotion/styled": "^11",
+    "@nau/core": "^0.3.0",
+    "@types/express": "^4.17.13",
+    "@types/node": "^17.0.32",
+    "@types/react": "^18.0.8",
+    "@types/react-dom": "^18.0.3",
+    "apollo-server-core": "^3.7.0",
+    "apollo-server-express": "^3.7.0",
+    "express": "^4.17.1",
+    "framer-motion": "^6.3.3",
+    "graphql": "^16.4.0",
+    "graphql-relay": "^0.10.0",
+    "graphql-subscriptions": "^2.0.0",
+    "graphql-ws": "^5.8.1",
+    "prettier": "^2.2.1",
+    "react": "^18.1.0",
+    "react-dom": "^18.1.0",
+    "react-scripts": "5.0.1",
+    "web-vitals": "^2.1.0",
+    "ws": "^8.6.0"
+  },
+  "scripts": {
+    "start:frontend": "PORT=3001 react-scripts start",
+    "start:server": "tsc --project server-tsconfig.json && node dist/server/index.js",
+    "build": "react-scripts build",
+    "eject": "react-scripts eject",
+    "codegen": "graphql-codegen --config codegen.yml"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@graphql-codegen/cli": "^2.6.2",
+    "@graphql-codegen/fragment-matcher": "^3.2.1",
+    "@graphql-codegen/schema-ast": "^2.2.0",
+    "@graphql-codegen/typed-document-node": "^2.2.8",
+    "@graphql-codegen/typescript": "^2.4.8",
+    "@graphql-codegen/typescript-operations": "^2.3.5",
+    "@nau/graphql-codegen-preset": "^0.3.0",
+    "typescript": "^4.6.4"
+  }
+}

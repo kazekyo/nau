@@ -1,0 +1,48 @@
+{
+  "name": "@nau/core",
+  "version": "0.3.0",
+  "description": "Nau is a tool that makes the use of Apollo Client more productive for users using Relay GraphQL Server Specification compliant backends.",
+  "author": "kazekyo",
+  "bugs": {
+    "url": "https://github.com/kazekyo/nau/issues"
+  },
+  "dependencies": {
+    "js-base64": "^3.6.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.8",
+    "react": "^18.1.0",
+    "react-dom": "^18.1.0"
+  },
+  "files": [
+    "dist"
+  ],
+  "homepage": "https://github.com/kazekyo/nau#readme",
+  "keywords": [
+    "apollo",
+    "client",
+    "relay",
+    "graphql",
+    "pagination",
+    "cache",
+    "directive"
+  ],
+  "license": "MIT",
+  "main": "dist/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kazekyo/nau.git"
+  },
+  "scripts": {
+    "test": "jest",
+    "lint": "eslint src",
+    "build": "yarn run build:types && yarn run build:js",
+    "build:types": "tsc --build tsconfig.build.json",
+    "build:js": "babel src --out-dir dist --root-mode upward --extensions \".ts,.tsx\" --source-maps inline --ignore \"**/__tests__/\",\"**/*.test.ts\",\"example\",\"**/testing/\""
+  },
+  "types": "dist/index.d.ts",
+  "peerDependencies": {
+    "@apollo/client": "^3.4.10",
+    "graphql": "^15.6.1"
+  }
+}

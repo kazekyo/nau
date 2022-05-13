@@ -1,0 +1,169 @@
+directive @arguments on FRAGMENT_SPREAD
+
+directive @argumentDefinitions on FRAGMENT_DEFINITION
+
+directive @refetchable(queryName: String!) on FRAGMENT_DEFINITION
+
+directive @pagination on FIELD
+
+directive @appendNode(connections: [String!]) on FIELD
+
+directive @prependNode(connections: [String!]) on FIELD
+
+directive @deleteRecord(typename: String!) on FIELD
+
+directive @client on FIELD
+
+input AddItemInput {
+  clientMutationId: String
+  itemName: String!
+  userId: ID!
+}
+
+type AddItemPayload {
+  clientMutationId: String
+  item: Item!
+}
+
+type Item implements Node {
+  """The ID of an object"""
+  id: ID!
+
+  """The name of the item."""
+  name: String!
+}
+
+type ItemAddedPayload {
+  item: Item!
+}
+
+"""A connection to a list of items."""
+type ItemConnection {
+  """A list of edges."""
+  edges: [ItemEdge]
+
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """Information of the connection for a client"""
+  _connectionId: String!
+}
+
+"""An edge in a connection."""
+type ItemEdge {
+  """A cursor for use in pagination"""
+  cursor: String!
+
+  """The item at the end of the edge"""
+  node: Item
+}
+
+type ItemRemovedPayload {
+  """The ID of an object"""
+  id: ID!
+}
+
+type Mutation {
+  addItem(input: AddItemInput!): AddItemPayload
+  removeItem(input: RemoveItemInput!): RemoveItemPayload
+  updateItem(input: UpdateItemInput!): UpdateItemPayload
+}
+
+"""An object with an ID"""
+interface Node {
+  """The id of the object."""
+  id: ID!
+}
+
+"""Information about pagination in a connection."""
+type PageInfo {
+  """When paginating forwards, the cursor to continue."""
+  endCursor: String
+
+  """When paginating forwards, are there more items?"""
+  hasNextPage: Boolean!
+
+  """When paginating backwards, are there more items?"""
+  hasPreviousPage: Boolean!
+
+  """When paginating backwards, the cursor to continue."""
+  startCursor: String
+}
+
+type Query {
+  items(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the first n items from the list."""
+    first: Int
+    keyword: String
+
+    """Returns the last n items from the list."""
+    last: Int
+  ): ItemConnection!
+
+  """Fetches an object given its ID"""
+  node(
+    """The ID of an object"""
+    id: ID!
+  ): Node
+  viewer: User
+}
+
+input RemoveItemInput {
+  clientMutationId: String
+  itemId: String!
+  userId: ID!
+}
+
+type RemoveItemPayload {
+  clientMutationId: String
+  removedItem: RemovedItem!
+}
+
+type RemovedItem {
+  """The ID of an object"""
+  id: ID!
+}
+
+type Subscription {
+  itemAdded: ItemAddedPayload!
+  itemRemoved: ItemRemovedPayload!
+}
+
+input UpdateItemInput {
+  clientMutationId: String
+  itemId: ID!
+  newItemName: String!
+}
+
+type UpdateItemPayload {
+  clientMutationId: String
+  item: Item!
+}
+
+type User implements Node {
+  """The ID of an object"""
+  id: ID!
+  items(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the first n items from the list."""
+    first: Int
+    keyword: String
+
+    """Returns the last n items from the list."""
+    last: Int
+  ): ItemConnection!
+
+  """The name of the user."""
+  name: String
+}
