@@ -28,7 +28,6 @@ https://www.naugraphql.com
 
 
 ## Example
-![nau-demo-gif](https://user-images.githubusercontent.com/456381/168417827-f7ab3bba-d3cd-4240-bd9f-0771de58a1ab.gif)
-
+![nau-demo](https://user-images.githubusercontent.com/456381/168417859-df6222b4-ae80-4dd1-a4ef-9117536bef14.gif)
 
 See the [live demo](https://codesandbox.io/s/nau-v0-4-0-example-app-yqckn5?file=/src/List.tsx). And the example code is [here](https://github.com/kazekyo/nau/tree/main/examples/app).
