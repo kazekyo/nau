@@ -25,3 +25,10 @@ yarn add --dev @kazekyo/nau-graphql-codegen-preset
 
 ## Documentation
 https://www.naugraphql.com
+
+
+## Example
+![nau-demo-gif](https://user-images.githubusercontent.com/456381/168417190-e371afcd-cc89-438a-873d-bea92d20985d.gif)
+
+
+See the [live demo](https://codesandbox.io/s/nau-v0-4-0-example-app-yqckn5?file=/src/List.tsx). And the example code is [here](https://github.com/kazekyo/nau/tree/main/examples/app).
