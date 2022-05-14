@@ -36,6 +36,7 @@
   "scripts": {
     "start:frontend": "PORT=3001 react-scripts start",
     "start:server": "tsc --project server-tsconfig.json && node dist/server/index.js",
+    "start": "yarn start:server & yarn start:frontend",
     "build": "react-scripts build",
     "eject": "react-scripts eject",
     "codegen": "graphql-codegen --config codegen.yml"
