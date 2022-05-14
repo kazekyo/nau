@@ -23,7 +23,7 @@ const App: React.FC = () => {
   return (
     <div className="App">
       <Box p="6">
-        <Box pt="3" pb="2" d="flex" alignItems="baseline">
+        <Box pt="3" pb="2" display="flex" alignItems="baseline">
           <Box fontWeight="semibold" fontSize="xl" lineHeight="tight">
             My items
           </Box>

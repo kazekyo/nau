@@ -33,7 +33,7 @@ const ListItem: FC<{
   return (
     <Box maxW="md" borderWidth="1px" borderRadius="lg">
       <Box p="3">
-        <Box d="flex" alignItems="center">
+        <Box display="flex" alignItems="center">
           <Box fontWeight="semibold" fontSize="md">
             {item.name}
           </Box>
