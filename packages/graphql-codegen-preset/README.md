@@ -2,7 +2,7 @@
 
 > A GraphQL Code Generator preset for [Nau](https://github.com/kazekyo/nau)
 
-See documents for more information.
+See the [documentation](https://www.naugraphql.com/docs/introduction) for more information.
 
 ## Installation
 
