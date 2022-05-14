@@ -13,4 +13,4 @@ Nau is a tool that makes [Apollo Client](https://github.com/apollographql/apollo
 
 The tool aims to help frontend developers build frontend applications more quickly, with fewer bugs, and more efficiently.
 
-Nau is inspired by [Relay](https://relay.dev/) and we have reproduced some features of Relay. However, our goal is not to create a full copy of Relay on Apollo Client. The goal is to make Apollo Client more powerful by integrating Relay GraphQL Server Specification.
+Nau is inspired by [Relay](https://relay.dev/). However, our goal is not to create a full copy of Relay on Apollo Client. The goal is to make Apollo Client more powerful by integrating Relay GraphQL Server Specification.
