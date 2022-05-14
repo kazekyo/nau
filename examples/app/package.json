@@ -10,7 +10,7 @@
     "@babel/preset-env": "^7.12.13",
     "@babel/preset-typescript": "^7.12.13",
     "@chakra-ui/icons": "^1.0.15",
-    "@chakra-ui/react": "^1.6.6",
+    "@chakra-ui/react": "^2.0.0",
     "@emotion/react": "^11",
     "@emotion/styled": "^11",
     "@kazekyo/nau": "^0.4.0",
