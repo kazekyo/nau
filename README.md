@@ -22,8 +22,4 @@ yarn add --dev @kazekyo/nau-graphql-codegen-preset
 ```
 
 ## Documentation
-TODO
-- Getting Started
-- Guides
-- API Reference
-- Directives
+https://www.naugraphql.com

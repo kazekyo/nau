@@ -16,7 +16,7 @@ function HomepageHeader() {
         <div className={styles.buttons}>
           <Link
             className={clsx('button button--secondary button--lg', styles.getStartedButton)}
-            to="/docs/introduction"
+            to="/docs/getting-started/installation"
           >
             Get Started
           </Link>
@@ -31,10 +31,7 @@ function HomepageHeader() {
 
 export default function Home(): JSX.Element {
   return (
-    <Layout
-      title={`Nau`}
-      description="A library that makes it easy and convenient for Apollo Client users to use a backend that follows Relay GraphQL Server Specification."
-    >
+    <Layout description="Nau is a tool that makes Apollo Client more productive for users using Relay GraphQL Server Specification compliant backends.">
       <HomepageHeader />
       <main>
         <HomepageFeatures />
