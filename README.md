@@ -21,7 +21,7 @@ yarn add @kazekyo/nau
 yarn add --dev @kazekyo/nau-graphql-codegen-preset
 ```
 
-> ⚠️ The packages is currently under development. All version updates may have breaking changes.
+> ⚠️ The packages are currently under development. All version updates may have breaking changes.
 
 ## Documentation
 https://www.naugraphql.com
