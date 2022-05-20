@@ -12,8 +12,8 @@ const FeatureList: FeatureItem[] = [
     title: 'Safe and quick',
     description: (
       <>
-        Nau simplifies cache operations in the Apollo Client and reduces bugs caused by human inattention. And you can
-        write code safely in TypeScript.
+        Nau simplifies cache operations in the Apollo Client and reduces bugs caused by human inattention. Moreover, you
+        can write code safely in TypeScript.
       </>
     ),
   },

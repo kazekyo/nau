@@ -7,7 +7,7 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: 'Nau',
-  tagline: 'Build your frontend apps safety and quickly with Apollo Client',
+  tagline: 'Build your frontend apps safely and quickly with Apollo Client',
   url: 'https://your-docusaurus-test-site.com',
   baseUrl: '/',
   onBrokenLinks: 'throw',
