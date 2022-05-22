@@ -1,6 +1,6 @@
 {
   "name": "@kazekyo/nau-config",
-  "version": "0.4.0",
+  "version": "0.4.0-alpha.0",
   "description": "Configuration for Nau",
   "author": "kazekyo",
   "bugs": {
