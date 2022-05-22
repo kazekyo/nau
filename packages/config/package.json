@@ -1,0 +1,47 @@
+{
+  "name": "@kazekyo/nau-config",
+  "version": "0.4.0",
+  "description": "Configuration for Nau",
+  "author": "kazekyo",
+  "bugs": {
+    "url": "https://github.com/kazekyo/nau/issues"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@relay-graphql-js/validation-rules": "^0.0.1",
+    "apollo-language-server": "^1.23.4",
+    "graphql": "15.3.0"
+  },
+  "files": [
+    "dist"
+  ],
+  "homepage": "https://www.naugraphql.com",
+  "keywords": [
+    "apollo",
+    "client",
+    "graphql",
+    "nau",
+    "directive",
+    "config",
+    "configuration"
+  ],
+  "license": "MIT",
+  "main": "dist/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kazekyo/nau.git"
+  },
+  "scripts": {
+    "test": "jest",
+    "lint": "eslint src",
+    "build": "yarn run build:types && yarn run build:js && yarn run copy:graphql",
+    "build:types": "tsc --build tsconfig.build.json",
+    "build:js": "babel src --out-dir dist --root-mode upward --extensions \".ts,.tsx\" --source-maps inline --ignore \"**/__tests__/\",\"**/*.test.ts\",\"example\",\"**/testing/\"",
+    "copy:graphql": "find . -name \\*.graphql -exec cp {} dist \\;"
+  },
+  "types": "dist/index.d.ts",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  }
+}
