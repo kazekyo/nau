@@ -4,10 +4,8 @@ const mod = require.main || module;
 
 let GraphQLModule;
 try {
-  console.log('-----try----');
   GraphQLModule = mod.require('graphql');
 } catch {
-  console.log('------cache------');
   GraphQLModule = _GraphQL;
 }
 

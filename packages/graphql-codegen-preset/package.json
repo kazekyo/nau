@@ -49,7 +49,7 @@
   },
   "types": "dist/index.d.ts",
   "peerDependencies": {
-    "graphql": "^16.0.0"
+    "graphql": "^15.6.1"
   },
   "gitHead": "6579f7231e41383ef50ade8820137e975b579047",
   "publishConfig": {

@@ -42,7 +42,7 @@
   },
   "types": "dist/index.d.ts",
   "peerDependencies": {
-    "@apollo/client": "^3.4.10",
+    "@apollo/client": "^3.6.5",
     "graphql": "^15.6.1"
   },
   "gitHead": "9337754515288d8fbd606f67b7ed88b14c6ef678",
