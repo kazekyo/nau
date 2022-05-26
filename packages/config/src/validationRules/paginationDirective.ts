@@ -1,12 +1,6 @@
-import {
-  DirectiveNode,
-  FieldNode,
-  getNullableType,
-  GraphQLError,
-  GraphQLObjectType,
-  GraphQLOutputType,
-  ValidationRule,
-} from 'graphql';
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+import { DirectiveNode, FieldNode, GraphQLOutputType, ValidationRule } from 'graphql';
+import { GraphQLError, isNonNullType, isObjectType } from '../dependencies/graphql';
 
 const PAGINATION_DIRECTIVE_NAME = 'pagination';
 
@@ -24,13 +18,14 @@ const getPaginationDirective = (fieldNode: FieldNode): DirectiveNode | undefined
 };
 
 function isPaginationType(type: GraphQLOutputType): boolean {
-  const nullableType = getNullableType(type);
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  const connectionType = isNonNullType(type) ? type.ofType : type;
 
-  if (!(nullableType instanceof GraphQLObjectType)) {
+  if (!isObjectType(connectionType)) {
     return false;
   }
 
-  return nullableType.name.endsWith('Connection');
+  return connectionType.name.endsWith('Connection');
 }
 
 export const paginationDirectiveValidationRule: ValidationRule = (context) => {

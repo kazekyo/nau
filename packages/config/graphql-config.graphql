@@ -1,0 +1,6 @@
+directive @refetchable(queryName: String!) on FRAGMENT_DEFINITION
+directive @pagination on FIELD
+directive @appendNode(connections: [String!]) on FIELD
+directive @prependNode(connections: [String!]) on FIELD
+directive @deleteRecord(typename: String!) on FIELD
+directive @client on FIELD

@@ -1,16 +1,19 @@
 {
   "name": "@kazekyo/nau-config",
-  "version": "0.4.0-alpha.0",
+  "version": "0.4.0-alpha.4",
   "description": "Configuration for Nau",
   "author": "kazekyo",
   "bugs": {
     "url": "https://github.com/kazekyo/nau/issues"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@relay-graphql-js/validation-rules": "^0.0.1"
+  },
   "devDependencies": {
-    "@relay-graphql-js/validation-rules": "^0.0.1",
-    "apollo-language-server": "^1.23.4",
-    "graphql": "15.3.0"
+    "apollo-language-server": "1.23.4"
+  },
+  "peerDependencies": {
+    "graphql": "^16.0.0"
   },
   "files": [
     "dist"

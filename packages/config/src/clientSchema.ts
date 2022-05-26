@@ -1,2 +1,3 @@
 import * as path from 'path';
-export const clientSchemaFilePath = path.join(__dirname, `client.graphql`);
+export const apolloConfigClientSchemaPath = path.join(__dirname, `apollo-config.graphql`);
+export const graphqlConfigClientSchemaPath = path.join(__dirname, `graphql-config.graphql`);

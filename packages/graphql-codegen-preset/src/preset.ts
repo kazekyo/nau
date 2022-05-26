@@ -65,7 +65,7 @@ const validationRules = (): ValidationRule[] => {
     RelayNoUnusedArguments,
     RelayKnownArgumentNames,
     paginationDirectiveValidationRule,
-  ];
+  ] as unknown[] as ValidationRule[];
 };
 
 export const preset: Types.OutputPreset<PresetConfig> = {
