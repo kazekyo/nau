@@ -11,7 +11,7 @@ const validateDocuments = (source: string) => {
   return validate(schema, parse(source), [paginationDirectiveValidationRule]);
 };
 
-describe(paginationDirectiveValidationRule, () => {
+describe('paginationDirectiveValidationRule', () => {
   it('allows use of @pagination directive', () => {
     const errors = validateDocuments(/* GraphQL */ `
       query TestQuery($cursor: String) {

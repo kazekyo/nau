@@ -34,10 +34,10 @@
   "scripts": {
     "test": "jest",
     "lint": "eslint src",
-    "build": "yarn run build:types && yarn run build:js && yarn run copy:graphql",
+    "generate:client-schema": "node scripts/generateClientSchema.js",
+    "build": "yarn run build:types && yarn run build:js && yarn run generate:client-schema",
     "build:types": "tsc --build tsconfig.build.json",
-    "build:js": "babel src --out-dir dist --root-mode upward --extensions \".ts,.tsx\" --source-maps inline --ignore \"**/__tests__/\",\"**/*.test.ts\",\"example\",\"**/testing/\"",
-    "copy:graphql": "find . -name \\*.graphql -exec cp {} dist \\;"
+    "build:js": "babel src --out-dir dist --root-mode upward --extensions \".ts,.tsx\" --source-maps inline --ignore \"**/__tests__/\",\"**/*.test.ts\",\"example\",\"**/testing/\""
   },
   "types": "dist/index.d.ts",
   "publishConfig": {

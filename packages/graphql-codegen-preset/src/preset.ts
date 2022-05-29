@@ -1,5 +1,6 @@
 import { Types } from '@graphql-codegen/plugin-helpers';
 import { checkValidationErrors, validateGraphQlDocuments } from '@graphql-tools/utils';
+import { paginationDirectiveValidationRule } from '@kazekyo/nau-config';
 import {
   RelayArgumentsOfCorrectType,
   RelayDefaultValueOfCorrectType,
@@ -18,7 +19,6 @@ import { transform as fixVariableNotDefinedInRoot } from './transforms/fixVariab
 import { transform as generateRefetchQuery } from './transforms/generateRefetchQuery';
 import { transform as passArgumentValueToFragment } from './transforms/passArgumentValueToFragment';
 import { transform as removeCustomDirective } from './transforms/removeCustomDirective';
-import { paginationDirectiveValidationRule } from './validationRules/paginationDirective';
 
 const transformDocuments = ({
   documentFiles,
