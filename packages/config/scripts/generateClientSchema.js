@@ -1,8 +1,8 @@
 const fs = require('fs');
 const clientSchema = require('../dist/clientSchema');
 
-const apolloClientSchema = clientSchema.apolloClientSchema();
+const apolloConfigClientSchema = clientSchema.apolloConfigClientSchema();
 const graphQLConfigClientSchema = clientSchema.graphQLConfigClientSchema();
 
-fs.writeFileSync(clientSchema.apolloConfigClientSchemaPath, apolloClientSchema);
+fs.writeFileSync(clientSchema.apolloConfigClientSchemaPath, apolloConfigClientSchema);
 fs.writeFileSync(clientSchema.graphqlConfigClientSchemaPath, graphQLConfigClientSchema);

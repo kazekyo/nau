@@ -1,8 +1,8 @@
-import { apolloClientSchema, graphQLConfigClientSchema } from '../clientSchema';
+import { apolloConfigClientSchema, graphQLConfigClientSchema } from '../clientSchema';
 
 describe('apolloClientSchema', () => {
   it('returns a client schema for apollo.config.js', () => {
-    expect(apolloClientSchema()).toBe(`directive @arguments on FRAGMENT_SPREAD
+    expect(apolloConfigClientSchema()).toBe(`directive @arguments on FRAGMENT_SPREAD
 directive @argumentDefinitions on FRAGMENT_DEFINITION
 directive @refetchable(queryName: String!) on FRAGMENT_DEFINITION
 directive @pagination on FIELD

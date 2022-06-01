@@ -8,7 +8,7 @@ export const graphQLConfigClientSchema = (): string => {
   return generateClientSchemaString({ exclude: ['arguments', 'argumentDefinitions'] });
 };
 
-export const apolloClientSchema = (): string => {
+export const apolloConfigClientSchema = (): string => {
   return generateClientSchemaString({ exclude: [] });
 };
 

@@ -7,35 +7,50 @@ sidebar_position: 2
 You should be familiar with [React](https://reactjs.org/), [Apollo Client](https://www.apollographql.com/docs/react/), and [GraphQL Code Generator](https://www.graphql-code-generator.com/) as a prerequisite. If you have never used them, you will need to read their documentation first.
 
 # Configration for Nau
-First, add `@kazekyo/nau-graphql-codegen-preset` to your `codegen.yml`. You should add this preset to the generation process of all files under `generators`.
-
+First, add `@kazekyo/nau-graphql-codegen-preset` to your `codegen.yml`.
 
 ```yaml title="./codegen.yml"
 schema: http://localhost:4000/graphql
-documents:
-  - src/**/*.tsx
+# Do not use the root document. For example, do not write `documents: src/**/*.graphql` this line.
 generates:
   src/generated/graphql.ts:
     // highlight-start
     preset: '@kazekyo/nau-graphql-codegen-preset'
     presetConfig:
       generateTypeScriptCode: true
+    documents:
+      - src/**/*.tsx
+      - src/**/*.graphql
     // highlight-end
     plugins:
       - typescript
       - typescript-operations
       - typed-document-node
   src/generated/introspection-result.json:
-    // highlight-next-line
-    preset: '@kazekyo/nau-graphql-codegen-preset'
     plugins:
       - fragment-matcher
-  ./schema.graphql:
-    // highlight-next-line
-    preset: '@kazekyo/nau-graphql-codegen-preset'
-    plugins:
-      - schema-ast
 ```
+
+As above, you will need to add this preset to processes that read `documents` and use it. In most cases, that means you add the preset to processes of generating files that output TypeScript code.
+
+:::info
+We recommend not using root `documents`. It means that you should **not** write the following:
+
+```yaml title="./codegen.yml"
+schema: http://localhost:4000/graphql
+// highlight-start
+documents:
+  - src/**/*.tsx
+  - src/**/*.graphql
+// highlight-end
+generates:
+  # ...
+```
+
+Using root `documents` requires using the preset in all file generation process to parse directives provided by Nau.
+
+:::
+
 
 Run GraphQL Code Generator.
 ```bash
@@ -83,4 +98,4 @@ const client = new ApolloClient({
 });
 ```
 
-That's it for the configuration!
+That's it for the configuration! If you want to set up your IDE, see also [here](/docs/guides/ide-settings).
