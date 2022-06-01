@@ -1,4 +1,4 @@
-export const customDirectives = {
+export const clientDirectives = {
   arguments: 'directive @arguments on FRAGMENT_SPREAD',
   argumentDefinitions: 'directive @argumentDefinitions on FRAGMENT_DEFINITION',
   refetchable: 'directive @refetchable(queryName: String!) on FRAGMENT_DEFINITION',

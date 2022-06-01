@@ -1,18 +1,16 @@
 {
-  "name": "@kazekyo/nau",
-  "version": "0.4.0",
-  "description": "Nau is a tool that makes the use of Apollo Client more productive for users using Relay GraphQL Server Specification compliant backends.",
+  "name": "@kazekyo/nau-config",
+  "version": "0.4.0-alpha.4",
+  "description": "Configuration for Nau",
   "author": "kazekyo",
   "bugs": {
     "url": "https://github.com/kazekyo/nau/issues"
   },
   "dependencies": {
-    "js-base64": "^3.6.0"
+    "@relay-graphql-js/validation-rules": "^0.0.1"
   },
-  "devDependencies": {
-    "@types/react": "^18.0.8",
-    "react": "^18.1.0",
-    "react-dom": "^18.1.0"
+  "peerDependencies": {
+    "graphql": "^15.6.1"
   },
   "files": [
     "dist"
@@ -21,11 +19,11 @@
   "keywords": [
     "apollo",
     "client",
-    "relay",
     "graphql",
-    "pagination",
-    "cache",
-    "directive"
+    "nau",
+    "directive",
+    "config",
+    "configuration"
   ],
   "license": "MIT",
   "main": "dist/index.js",
@@ -36,16 +34,12 @@
   "scripts": {
     "test": "jest",
     "lint": "eslint src",
-    "build": "yarn run build:types && yarn run build:js",
+    "generate:client-schema": "node scripts/generateClientSchema.js",
+    "build": "yarn run build:types && yarn run build:js && yarn run generate:client-schema",
     "build:types": "tsc --build tsconfig.build.json",
     "build:js": "babel src --out-dir dist --root-mode upward --extensions \".ts,.tsx\" --source-maps inline --ignore \"**/__tests__/\",\"**/*.test.ts\",\"example\",\"**/testing/\""
   },
   "types": "dist/index.d.ts",
-  "peerDependencies": {
-    "@apollo/client": "^3.6.5",
-    "graphql": "^15.6.1"
-  },
-  "gitHead": "9337754515288d8fbd606f67b7ed88b14c6ef678",
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org/"

@@ -1,21 +1,19 @@
-overwrite: true
 schema: http://localhost:4000/graphql
-documents:
-  - src/**/*.tsx
 generates:
   src/generated/graphql.ts:
     preset: '@kazekyo/nau-graphql-codegen-preset'
     presetConfig:
       generateTypeScriptCode: true
+    documents:
+      - src/**/*.tsx
+      - src/**/*.graphql
     plugins:
       - typescript
       - typescript-operations
       - typed-document-node
   src/generated/introspection-result.json:
-    preset: '@kazekyo/nau-graphql-codegen-preset'
     plugins:
       - fragment-matcher
   ./schema.graphql:
-    preset: '@kazekyo/nau-graphql-codegen-preset'
     plugins:
       - schema-ast

@@ -3,7 +3,7 @@ import { buildSchema, GraphQLError, parse, validate } from 'graphql';
 import path from 'path';
 import { paginationDirectiveValidationRule } from '../paginationDirective';
 
-const filePath = path.join(__dirname, '../../utils/testing/example.graphql');
+const filePath = path.join(__dirname, '../../../../graphql-codegen-preset/src/utils/testing/example.graphql');
 const schemaString = readFileSync(filePath, { encoding: 'utf-8' });
 const schema = buildSchema(schemaString);
 
@@ -11,7 +11,7 @@ const validateDocuments = (source: string) => {
   return validate(schema, parse(source), [paginationDirectiveValidationRule]);
 };
 
-describe(paginationDirectiveValidationRule, () => {
+describe('paginationDirectiveValidationRule', () => {
   it('allows use of @pagination directive', () => {
     const errors = validateDocuments(/* GraphQL */ `
       query TestQuery($cursor: String) {
