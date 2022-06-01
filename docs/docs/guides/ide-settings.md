@@ -11,7 +11,7 @@ import TabItem from '@theme/TabItem';
 
 Nau supports [Apollo Config](https://www.apollographql.com/docs/devtools/apollo-config/) and [GraphQL Config](https://www.graphql-config.com/). We are testing works with VS Code extensions [Apollo GraphQL Extension](https://marketplace.visualstudio.com/items?itemName=apollographql.vscode-apollo) and [GraphQL Extension](https://marketplace.visualstudio.com/items?itemName=GraphQL.vscode-graphql).
 
-This `@kazekyo/nau-config` package can provide directives knowledge to your IDE.
+`@kazekyo/nau-config` provides directives knowledge to your IDE.
 
 # Installation
 ````mdx-code-block
