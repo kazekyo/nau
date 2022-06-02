@@ -8,7 +8,7 @@ export const graphqlConfig = {
   clientSchemaPath: graphqlConfigClientSchemaPath,
 };
 
-export const apollo = {
+export const apolloConfig = {
   generateConfig: generateApolloConfig,
   clientSchemaPath: apolloConfigClientSchemaPath,
 };
