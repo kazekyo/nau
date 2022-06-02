@@ -8,7 +8,7 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 const config = {
   title: 'Nau',
   tagline: 'Build your frontend apps safely and quickly with Apollo Client',
-  url: 'https://your-docusaurus-test-site.com',
+  url: 'https://www.naugraphql.com',
   baseUrl: '/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
