@@ -15,7 +15,7 @@
     "@babel/preset-typescript": "^7.12.13",
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^13.2.0",
-    "@types/jest": "^27.0.1",
+    "@types/jest": "^28.1.0",
     "@typescript-eslint/eslint-plugin": "^5.23.0",
     "@typescript-eslint/parser": "^5.23.0",
     "babel-jest": "^28.1.0",
