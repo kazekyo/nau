@@ -37,8 +37,8 @@ yarn add --dev @kazekyo/nau-config
 # Apollo Config
 ```js title="apollo.config.js"
 // highlight-start
-const { apollo } = require('@kazekyo/nau-config');
-const config = apollo.generateConfig();
+const { apolloConfig } = require('@kazekyo/nau-config');
+const config = apolloConfig.generateConfig();
 // highlight-end
 module.exports = {
   client: {

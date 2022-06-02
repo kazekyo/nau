@@ -1,6 +1,6 @@
-const { apollo } = require('@kazekyo/nau-config');
+const { apolloConfig } = require('@kazekyo/nau-config');
 
-const config = apollo.generateConfig();
+const config = apolloConfig.generateConfig();
 module.exports = {
   client: {
     ...config.client,
