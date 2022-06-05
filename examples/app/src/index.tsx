@@ -40,11 +40,11 @@ const container = document.getElementById('root');
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 const root = createRoot(container!);
 root.render(
-  // <React.StrictMode>
-  <ChakraProvider>
-    <ApolloProvider client={client}>
-      <App />
-    </ApolloProvider>
-  </ChakraProvider>,
-  // </React.StrictMode>,
+  <React.StrictMode>
+    <ChakraProvider>
+      <ApolloProvider client={client}>
+        <App />
+      </ApolloProvider>
+    </ChakraProvider>
+  </React.StrictMode>,
 );
