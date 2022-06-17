@@ -15,7 +15,7 @@
     "@emotion/styled": "^11",
     "@kazekyo/nau": "^0.4.1",
     "@types/express": "^4.17.13",
-    "@types/node": "^17.0.32",
+    "@types/node": "^18.0.0",
     "@types/react": "^18.0.8",
     "@types/react-dom": "^18.0.3",
     "apollo-server-core": "^3.7.0",
