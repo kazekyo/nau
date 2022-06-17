@@ -61,6 +61,14 @@
   resolved "https://registry.yarnpkg.com/@apollo/utils.dropunuseddefinitions/-/utils.dropunuseddefinitions-1.1.0.tgz#02b04006442eaf037f4c4624146b12775d70d929"
   integrity sha512-jU1XjMr6ec9pPoL+BFWzEPW7VHHulVdGKMkPAMiCigpVIT11VmCbnij0bWob8uS3ODJ65tZLYKAh/55vLw2rbg==
 
+"@apollo/utils.keyvaluecache@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@apollo/utils.keyvaluecache/-/utils.keyvaluecache-1.0.1.tgz#46f310f859067efe9fa126156c6954f8381080d2"
+  integrity sha512-nLgYLomqjVimEzQ4cdvVQkcryi970NDvcRVPfd0OPeXhBfda38WjBq+WhQFk+czSHrmrSp34YHBxpat0EtiowA==
+  dependencies:
+    "@apollo/utils.logger" "^1.0.0"
+    lru-cache "^7.10.1"
+
 "@apollo/utils.logger@^1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@apollo/utils.logger/-/utils.logger-1.0.0.tgz#6e3460a2250c2ef7c2c3b0be6b5e148a1596f12b"
@@ -5138,12 +5146,12 @@ anymatch@^3.0.3, anymatch@~3.1.2:
     normalize-path "^3.0.0"
     picomatch "^2.0.4"
 
-apollo-datasource@^3.3.1:
-  version "3.3.1"
-  resolved "https://registry.yarnpkg.com/apollo-datasource/-/apollo-datasource-3.3.1.tgz#a1168dd68371930de3ed4245ad12fa8600efe2cc"
-  integrity sha512-Z3a8rEUXVPIZ1p8xrFL8bcNhWmhOmovgDArvwIwmJOBnh093ZpRfO+ESJEDAN4KswmyzCLDAwjsW4zQOONdRUw==
+apollo-datasource@^3.3.2:
+  version "3.3.2"
+  resolved "https://registry.yarnpkg.com/apollo-datasource/-/apollo-datasource-3.3.2.tgz#5711f8b38d4b7b53fb788cb4dbd4a6a526ea74c8"
+  integrity sha512-L5TiS8E2Hn/Yz7SSnWIVbZw0ZfEIXZCa5VUiVxD9P53JvSrf4aStvsFDlGWPvpIdCR+aly2CfoB79B9/JjKFqg==
   dependencies:
-    apollo-server-caching "^3.3.0"
+    "@apollo/utils.keyvaluecache" "^1.0.1"
     apollo-server-env "^4.2.1"
 
 apollo-reporting-protobuf@^3.3.1:
@@ -5153,18 +5161,12 @@ apollo-reporting-protobuf@^3.3.1:
   dependencies:
     "@apollo/protobufjs" "1.2.2"
 
-apollo-server-caching@^3.3.0:
-  version "3.3.0"
-  resolved "https://registry.yarnpkg.com/apollo-server-caching/-/apollo-server-caching-3.3.0.tgz#f501cbeb820a4201d98c2b768c085f22848d9dc5"
-  integrity sha512-Wgcb0ArjZ5DjQ7ID+tvxUcZ7Yxdbk5l1MxZL8D8gkyjooOkhPNzjRVQ7ubPoXqO54PrOMOTm1ejVhsF+AfIirQ==
-  dependencies:
-    lru-cache "^6.0.0"
-
 apollo-server-core@^3.7.0, apollo-server-core@^3.8.2:
-  version "3.8.2"
-  resolved "https://registry.yarnpkg.com/apollo-server-core/-/apollo-server-core-3.8.2.tgz#a065e00220d6c709b11b824197520adee6d897d2"
-  integrity sha512-cbzG928HG27W+juMVCIL1O//iyAj/Q2hnOu6YwrGrcqeE75ZIJSgSBm/gPHK20cI7nEjK2IWACx8Hj1nGAQ5Zg==
+  version "3.9.0"
+  resolved "https://registry.yarnpkg.com/apollo-server-core/-/apollo-server-core-3.9.0.tgz#44b39e378314cfc0596be7003d3f1f1397c88eea"
+  integrity sha512-WS54C33cTriDaBIcj7ijWv/fgeJICcrQKlP1Cn6pnZp/eumpMraezLeJ3gFWAXprOuR2E3fZe64lNlup0fMu8w==
   dependencies:
+    "@apollo/utils.keyvaluecache" "^1.0.1"
     "@apollo/utils.logger" "^1.0.0"
     "@apollo/utils.usagereporting" "^1.0.0"
     "@apollographql/apollo-tools" "^0.5.3"
@@ -5172,13 +5174,12 @@ apollo-server-core@^3.7.0, apollo-server-core@^3.8.2:
     "@graphql-tools/mock" "^8.1.2"
     "@graphql-tools/schema" "^8.0.0"
     "@josephg/resolvable" "^1.0.0"
-    apollo-datasource "^3.3.1"
+    apollo-datasource "^3.3.2"
     apollo-reporting-protobuf "^3.3.1"
-    apollo-server-caching "^3.3.0"
     apollo-server-env "^4.2.1"
     apollo-server-errors "^3.3.1"
-    apollo-server-plugin-base "^3.6.0"
-    apollo-server-types "^3.6.0"
+    apollo-server-plugin-base "^3.6.1"
+    apollo-server-types "^3.6.1"
     async-retry "^1.2.1"
     fast-json-stable-stringify "^2.1.0"
     graphql-tag "^2.11.0"
@@ -5217,21 +5218,21 @@ apollo-server-express@^3.7.0:
     cors "^2.8.5"
     parseurl "^1.3.3"
 
-apollo-server-plugin-base@^3.6.0:
-  version "3.6.0"
-  resolved "https://registry.yarnpkg.com/apollo-server-plugin-base/-/apollo-server-plugin-base-3.6.0.tgz#f85e19fa4a33866ef1b4235077397a63a9a7343e"
-  integrity sha512-GtXhczRGpTLQyFPWeWSnX1VcN2JaaAU7WT8PzoTQuJKYJ/Aj5mPebHbfG+PXQlDmI8IgyCKf7B1HIRnJqvAZbg==
+apollo-server-plugin-base@^3.6.1:
+  version "3.6.1"
+  resolved "https://registry.yarnpkg.com/apollo-server-plugin-base/-/apollo-server-plugin-base-3.6.1.tgz#33e9f26433d5a8b8ed5d27e9fa88de9ef0c2c704"
+  integrity sha512-bFpxzWO0LTTtSAkGVBeaAtnQXJ5ZCi8eaLN/eMSju8RByifmF3Kr6gAqcOZhOH/geQEt3Y6G8n3bR0eHTGxljQ==
   dependencies:
-    apollo-server-types "^3.6.0"
+    apollo-server-types "^3.6.1"
 
-apollo-server-types@^3.6.0:
-  version "3.6.0"
-  resolved "https://registry.yarnpkg.com/apollo-server-types/-/apollo-server-types-3.6.0.tgz#29fd8369aad99d42f72b760eb12bfe2c888da901"
-  integrity sha512-zISCkwXvwTHK2AysWSfLAUvDLSDJ0xj8pnfxDv34hqA+G9JqsLbykJdSL1Y1kT53HU4RWF6ymTuTwwOmmBiAWA==
+apollo-server-types@^3.6.0, apollo-server-types@^3.6.1:
+  version "3.6.1"
+  resolved "https://registry.yarnpkg.com/apollo-server-types/-/apollo-server-types-3.6.1.tgz#704e5309bd947306030df01f982e36d1d4753eaa"
+  integrity sha512-XOPlBlRdwP00PrG03OffGGWuzyei+J9t1rAnvyHsSdP0JCgQWigHJfvL1N9Bhgi4UTjl9JadKOJh1znLNlqIFQ==
   dependencies:
+    "@apollo/utils.keyvaluecache" "^1.0.1"
     "@apollo/utils.logger" "^1.0.0"
     apollo-reporting-protobuf "^3.3.1"
-    apollo-server-caching "^3.3.0"
     apollo-server-env "^4.2.1"
 
 "aproba@^1.0.3 || ^2.0.0", aproba@^2.0.0:
@@ -10968,7 +10969,7 @@ lru-cache@^6.0.0:
   dependencies:
     yallist "^4.0.0"
 
-lru-cache@^7.4.4, lru-cache@^7.5.1, lru-cache@^7.7.1:
+lru-cache@^7.10.1, lru-cache@^7.4.4, lru-cache@^7.5.1, lru-cache@^7.7.1:
   version "7.10.1"
   resolved "https://registry.yarnpkg.com/lru-cache/-/lru-cache-7.10.1.tgz#db577f42a94c168f676b638d15da8fb073448cab"
   integrity sha512-BQuhQxPuRl79J5zSXRP+uNzPOyZw2oFI9JLRQ80XswSvg21KMKNtQza9eF42rfI/3Z40RvzBdXgziEkudzjo8A==
@@ -12817,9 +12818,9 @@ prettier-linter-helpers@^1.0.0:
     fast-diff "^1.1.2"
 
 prettier@^2.2.1:
-  version "2.6.2"
-  resolved "https://registry.yarnpkg.com/prettier/-/prettier-2.6.2.tgz#e26d71a18a74c3d0f0597f55f01fb6c06c206032"
-  integrity sha512-PkUpF+qoXTqhOeWL9fu7As8LXsIUZ1WYaJiY/a7McAQzxjk82OF0tibkFXVCDImZtWxbvojFjerkiLb0/q8mew==
+  version "2.7.1"
+  resolved "https://registry.yarnpkg.com/prettier/-/prettier-2.7.1.tgz#e235806850d057f97bb08368a4f7d899f7760c64"
+  integrity sha512-ujppO+MkdPqoVINuDFDRLClm7D78qbDt0/NR+wp5FqEZOoTNAjPHWj17QRhu7geIHJfcNhRk1XVQmF8Bp3ye+g==
 
 pretty-bytes@^5.3.0, pretty-bytes@^5.4.1:
   version "5.6.0"
@@ -13096,12 +13097,12 @@ react-dev-utils@^12.0.1:
     text-table "^0.2.0"
 
 react-dom@^18.1.0:
-  version "18.1.0"
-  resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-18.1.0.tgz#7f6dd84b706408adde05e1df575b3a024d7e8a2f"
-  integrity sha512-fU1Txz7Budmvamp7bshe4Zi32d0ll7ect+ccxNu9FlObT605GOEB8BfO4tmRJ39R5Zj831VCpvQ05QPBW5yb+w==
+  version "18.2.0"
+  resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-18.2.0.tgz#22aaf38708db2674ed9ada224ca4aa708d821e3d"
+  integrity sha512-6IMTriUmvsjHUjNtEDudZfuDQUoWXVxKHhlEGSk81n4YFS+r/Kl99wXiwlVXtPBtJenozv2P+hxDsw9eA7Xo6g==
   dependencies:
     loose-envify "^1.1.0"
-    scheduler "^0.22.0"
+    scheduler "^0.23.0"
 
 react-error-overlay@^6.0.11:
   version "6.0.11"
@@ -13704,10 +13705,10 @@ saxes@^5.0.1:
   dependencies:
     xmlchars "^2.2.0"
 
-scheduler@^0.22.0:
-  version "0.22.0"
-  resolved "https://registry.yarnpkg.com/scheduler/-/scheduler-0.22.0.tgz#83a5d63594edf074add9a7198b1bae76c3db01b8"
-  integrity sha512-6QAm1BgQI88NPYymgGQLCZgvep4FyePDWFpXVK+zNSUgHwlqpJy8VEh8Et0KxTACS4VWwMousBElAZOH9nkkoQ==
+scheduler@^0.23.0:
+  version "0.23.0"
+  resolved "https://registry.yarnpkg.com/scheduler/-/scheduler-0.23.0.tgz#ba8041afc3d30eb206a487b6b384002e4e61fdfe"
+  integrity sha512-CtuThmgHNg7zIZWAXi3AsyIzA3n4xx7aNyjwC2VJldO2LMVDhFK+63xGqq6CsJH4rTAt6/M+N4GhZiDYPx9eUw==
   dependencies:
     loose-envify "^1.1.0"
 
