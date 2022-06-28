@@ -2445,9 +2445,9 @@
     tslib "~2.0.1"
 
 "@graphql-tools/utils@^8.1.1", "@graphql-tools/utils@^8.2.4", "@graphql-tools/utils@^8.3.0", "@graphql-tools/utils@^8.5.2", "@graphql-tools/utils@^8.6.5":
-  version "8.7.0"
-  resolved "https://registry.yarnpkg.com/@graphql-tools/utils/-/utils-8.7.0.tgz#b46aa632ea61c1d8a43bf3012d695de73a696b3b"
-  integrity sha512-71rJZJKJVOMsDlBGFq9gf1PaBbeW0kt8nZWmc50lhxYrCn0rzRY0auGrhhOWhdhZ5WsCWFxpnDurdF5VqB4Iig==
+  version "8.8.0"
+  resolved "https://registry.yarnpkg.com/@graphql-tools/utils/-/utils-8.8.0.tgz#8332ff80a1da9204ccf514750dd6f5c5cccf17dc"
+  integrity sha512-KJrtx05uSM/cPYFdTnGAS1doL5bftJLAiFCDMZ8Vkifztz3BFn3gpFiy/o4wDtM8s39G46mxmt2Km/RmeltfGw==
   dependencies:
     tslib "^2.4.0"
 
