@@ -136,4 +136,38 @@ describe('preset', () => {
       expect(result[0].content).toMatchSnapshot();
     });
   });
+
+  describe('Multiple Sections', () => {
+    it('works with no errors', async () => {
+      const input = {
+        schema: path.join(__dirname, '../utils/testing/example.graphql'),
+        generates: {
+          ['./generated.ts']: {
+            preset,
+            plugins: [],
+            presetConfig: {
+              generateTypeScriptCode: true,
+            },
+            documents: path.join(__dirname, './fixtures/exampleFile.ts'),
+          },
+          ['./generated2.ts']: {
+            preset,
+            plugins: [],
+            presetConfig: {
+              generateTypeScriptCode: true,
+            },
+            documents: path.join(__dirname, './fixtures/exampleFile.ts'),
+          },
+          ['./generated3.ts']: {
+            preset,
+            plugins: [],
+            documents: path.join(__dirname, './fixtures/exampleFile.ts'),
+          },
+        },
+      };
+
+      const result = await executeCodegen(input);
+      expect(result.length).toBe(3);
+    });
+  });
 });
