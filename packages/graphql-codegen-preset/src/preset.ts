@@ -79,7 +79,7 @@ export const preset: Types.OutputPreset<PresetConfig> = {
     return validateGraphQlDocuments(schemaObject, options.documents, validationRules()).then((errors) => {
       checkValidationErrors(errors);
 
-      const transformedObject = transformDocuments({ documentFiles: options.documents });
+      const transformedObject = transformDocuments({ documentFiles: cloneDeep(options.documents) });
 
       let pluginMap = options.pluginMap;
       let plugins = options.plugins;
