@@ -26,7 +26,7 @@ export const getEdgeType = ({
 
   let edgesType = edgesFieldDef.type;
   if (isNonNullType(edgesType)) {
-    edgesType = edgesType.ofType as GraphQLOutputType;
+    edgesType = edgesType.ofType;
   }
   if (!isListType(edgesType)) return;
 
@@ -55,7 +55,7 @@ export const getNodeType = ({
   if (!nodeType) return;
 
   if (isNonNullType(nodeType)) {
-    nodeType = nodeType.ofType as GraphQLOutputType;
+    nodeType = nodeType.ofType;
   }
   if (!isObjectType(nodeType)) return;
 
