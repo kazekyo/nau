@@ -55,7 +55,7 @@ export const usePagination = <TNode, TData = unknown, TVariables = OperationVari
     if (called && fetchMore) {
       void fetchMore({ variables: allVariables as TVariables });
     } else {
-      void call({ variables: allVariables as TVariables });
+      void call({ variables: allVariables as TVariables, fetchPolicy: 'network-only', nextFetchPolicy: 'cache-first' });
     }
   };
 
