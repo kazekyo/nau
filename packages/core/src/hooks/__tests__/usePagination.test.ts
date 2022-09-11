@@ -1,15 +1,9 @@
 import { InMemoryCache, useQuery } from '@apollo/client';
 import '@testing-library/jest-dom';
-import { act, waitFor } from '@testing-library/react';
-import { renderHook } from '@testing-library/react';
+import { act, renderHook, waitFor } from '@testing-library/react';
 import { mockedWrapperComponent } from '../../utils/testing/mockedWrapperComponent';
 import { usePagination } from '../usePagination';
-import {
-  queryWithKeywordDocument,
-  queryWithKeywordMockData,
-  paginationQueryWithKeywordDocument,
-  paginationQueryWithKeywordMockData,
-} from './usePagination.mock';
+import { NodeQueryDataType } from './usePagination.mock';
 import {
   backwardPaginationQueryDocument,
   backwardPaginationQueryMockData,
@@ -22,7 +16,15 @@ import {
   item1Id,
   item2Id,
   item3Id,
+  nodeFirstQueryDocument,
+  nodeFirstQueryMockData,
+  nodePaginationQueryDocument,
+  nodePaginationQueryMockData,
+  paginationQueryWithKeywordDocument,
+  paginationQueryWithKeywordMockData,
   QueryDataType,
+  queryWithKeywordDocument,
+  queryWithKeywordMockData,
   testTypePolicies,
   userId,
 } from './usePagination.mock';
@@ -200,6 +202,68 @@ describe('usePagination', () => {
     });
     await waitFor(() => {
       expect(useQueryHookResult.result.current.data?.viewer.items.pageInfo).toMatchObject({
+        hasNextPage: false,
+      });
+    });
+    usePaginationHookResult.rerender();
+
+    expect(usePaginationHookResult.result.current).toMatchObject({ hasNext: false, isLoading: false });
+    expect(usePaginationHookResult.result.current.nodes).toStrictEqual([
+      { id: item1Id, __typename: 'Item' },
+      { id: item2Id, __typename: 'Item' },
+      { id: item3Id, __typename: 'Item' },
+    ]);
+  });
+
+  it('merges pagination data even if node() is used in the first query', async () => {
+    const mocks = [
+      {
+        request: { query: nodeFirstQueryDocument, variables: { id: userId, count: 2 } },
+        result: { data: nodeFirstQueryMockData },
+      },
+      {
+        request: { query: nodePaginationQueryDocument, variables: { id: userId, count: 2, cursor: 'cursor-2' } },
+        result: { data: nodePaginationQueryMockData },
+      },
+    ];
+
+    const wrapper = mockedWrapperComponent({ mocks, cache });
+
+    const useQueryHookResult = renderHook(
+      () => useQuery<NodeQueryDataType>(nodeFirstQueryDocument, { variables: { id: userId, count: 2 } }),
+      { wrapper },
+    );
+    await waitFor(() => {
+      expect(useQueryHookResult.result.current.data).toMatchObject(nodeFirstQueryMockData);
+    });
+
+    const usePaginationHookResult = renderHook(
+      () =>
+        usePagination(
+          nodePaginationQueryDocument,
+          useQueryHookResult.result.current.data
+            ? {
+                id: userId,
+                connection: useQueryHookResult.result.current.data.node.items,
+              }
+            : undefined,
+        ),
+      { wrapper },
+    );
+
+    expect(usePaginationHookResult.result.current).toMatchObject({ hasNext: true, isLoading: false });
+    expect(usePaginationHookResult.result.current.nodes).toStrictEqual([
+      { id: item1Id, __typename: 'Item' },
+      { id: item2Id, __typename: 'Item' },
+    ]);
+
+    act(() => {
+      const { loadNext } = usePaginationHookResult.result.current;
+      if (!loadNext) return;
+      loadNext(2);
+    });
+    await waitFor(() => {
+      expect(useQueryHookResult.result.current.data?.node.items.pageInfo).toMatchObject({
         hasNextPage: false,
       });
     });

@@ -246,3 +246,80 @@ export const paginationQueryWithKeywordDocument = gql`
 `;
 
 export const paginationQueryWithKeywordMockData = forwardPaginationQueryMockData;
+
+export type NodeQueryDataType = {
+  node: {
+    id: string;
+    __typename: 'User';
+    items: ItemsConnectionType;
+  };
+};
+
+export const nodeFirstQueryDocument = gql`
+  query TestQuery($id: String, $count: Int, $cursor: String) {
+    node(id: $id) {
+      id
+      __typename
+      items(first: $count, after: $cursor) {
+        edges {
+          node {
+            id
+            __typename
+          }
+          cursor
+        }
+        pageInfo {
+          hasNextPage
+          endCursor
+        }
+      }
+    }
+  }
+`;
+
+export const nodeFirstQueryMockData = {
+  node: {
+    id: userId,
+    __typename: 'User',
+    items: {
+      edges: [
+        { node: { id: item1Id, __typename: 'Item' }, cursor: 'cursor-1' },
+        { node: { id: item2Id, __typename: 'Item' }, cursor: 'cursor-2' },
+      ],
+      pageInfo: { hasNextPage: true, endCursor: 'cursor-2' },
+    },
+  },
+};
+
+export const nodePaginationQueryDocument = gql`
+  query TestQuery($id: String, $count: Int, $cursor: String) {
+    node(id: $id) {
+      id
+      __typename
+      items(first: $count, after: $cursor) {
+        edges {
+          node {
+            id
+            __typename
+          }
+          cursor
+        }
+        pageInfo {
+          hasNextPage
+          endCursor
+        }
+      }
+    }
+  }
+`;
+
+export const nodePaginationQueryMockData = {
+  node: {
+    id: userId,
+    __typename: 'User',
+    items: {
+      edges: [{ node: { id: item3Id, __typename: 'Item' }, cursor: 'cursor-3' }],
+      pageInfo: { hasNextPage: false, endCursor: 'cursor-3' },
+    },
+  },
+};
