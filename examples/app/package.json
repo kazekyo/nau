@@ -1,6 +1,6 @@
 {
   "name": "example-app",
-  "version": "0.4.3",
+  "version": "0.4.4",
   "private": true,
   "dependencies": {
     "@apollo/client": "^3.6.2",
@@ -13,7 +13,7 @@
     "@chakra-ui/react": "^2.0.0",
     "@emotion/react": "^11",
     "@emotion/styled": "^11",
-    "@kazekyo/nau": "^0.4.1",
+    "@kazekyo/nau": "^0.4.4",
     "@types/express": "^4.17.13",
     "@types/node": "^18.0.0",
     "@types/react": "^18.0.8",
@@ -60,8 +60,8 @@
     "@graphql-codegen/typed-document-node": "^2.2.8",
     "@graphql-codegen/typescript": "^2.4.8",
     "@graphql-codegen/typescript-operations": "^2.3.5",
-    "@kazekyo/nau-config": "^0.4.2",
-    "@kazekyo/nau-graphql-codegen-preset": "^0.4.3",
+    "@kazekyo/nau-config": "^0.4.4",
+    "@kazekyo/nau-graphql-codegen-preset": "^0.4.4",
     "typescript": "^4.6.4"
   }
 }

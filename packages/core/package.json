@@ -1,6 +1,6 @@
 {
   "name": "@kazekyo/nau",
-  "version": "0.4.1",
+  "version": "0.4.4",
   "description": "Nau is a tool that makes the use of Apollo Client more productive for users using Relay GraphQL Server Specification compliant backends.",
   "author": "kazekyo",
   "bugs": {
