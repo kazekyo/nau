@@ -4514,10 +4514,10 @@
   resolved "https://registry.yarnpkg.com/@protobufjs/utf8/-/utf8-1.1.0.tgz#a777360b5b39a1a2e5106f8e858f2fd2d060c570"
   integrity sha1-p3c2C1s5oaLlEG+OhY8v0tBgxXA=
 
-"@relay-graphql-js/validation-rules@^0.0.1":
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/@relay-graphql-js/validation-rules/-/validation-rules-0.0.1.tgz#8f3a9c354cd9f8af69fd7adec55ffc79e3e25e1e"
-  integrity sha512-BRZhvguIjVpvUpNTMNu/WrONeA809Si5GIOdqHSZ9fTcPkkn7LOMffwHLe4scJraoBAEg6UuXeP/LqRTUNtvpg==
+"@relay-graphql-js/validation-rules@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@relay-graphql-js/validation-rules/-/validation-rules-0.1.0.tgz#29e00aa14d72a7887d25510497baa8fcd48d7889"
+  integrity sha512-Vt5KRh3RymZH3Bskrv9GP2fV2MDxYDzXejaYhUvNIq8NK+w4B4kKtcgtRG21pnM91Ak5NketVATeJMB9OPQfZw==
 
 "@rollup/plugin-babel@^5.2.0":
   version "5.3.1"
