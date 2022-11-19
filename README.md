@@ -31,3 +31,106 @@ https://www.naugraphql.com
 ![nau-demo](https://user-images.githubusercontent.com/456381/168417859-df6222b4-ae80-4dd1-a4ef-9117536bef14.gif)
 
 See the [example code](https://github.com/kazekyo/nau/tree/main/examples/app).
+
+
+You can write pagination and cache updates more easily using some GraphQL directives. :rocket:
+```src/List.tsx
+import { gql, useMutation, useSubscription } from '@apollo/client';
+import { usePagination } from '@kazekyo/nau';
+import * as React from 'react';
+import {
+  AddItemMutationDocument,
+  ItemAddedSubscriptionDocument,
+  ItemRemovedSubscriptionDocument,
+  List_PaginationQueryDocument,
+  List_UserFragment
+} from './generated/graphql';
+import ListItem from './ListItem';
+
+gql`
+  fragment List_user on User
+  @argumentDefinitions(count: { type: "Int", defaultValue: 2 }, cursor: { type: "String" })
+  @refetchable(queryName: "List_PaginationQuery") {
+    items(first: $count, after: $cursor) @pagination {
+      edges {
+        node {
+          ...ListItem_item
+        }
+      }
+    }
+    ...ListItem_user
+  }
+
+  mutation AddItemMutation($input: AddItemInput!, $connections: [String!]!) {
+    addItem(input: $input) {
+      item @prependNode(connections: $connections) {
+        ...ListItem_item
+      }
+    }
+  }
+
+  subscription ItemAddedSubscription($connections: [String!]!) {
+    itemAdded {
+      item @prependNode(connections: $connections) {
+        ...ListItem_item
+      }
+    }
+  }
+
+  subscription ItemRemovedSubscription {
+    itemRemoved {
+      id @deleteRecord(typename: "Item")
+    }
+  }
+`;
+
+const List: React.FC<{ user: List_UserFragment }> = ({ user }) => {
+  useSubscription(ItemAddedSubscriptionDocument, {
+    variables: {
+      connections: [user.items._connectionId],
+    },
+  });
+  useSubscription(ItemRemovedSubscriptionDocument);
+  const [addItem] = useMutation(AddItemMutationDocument);
+  const { nodes, hasNext, loadNext, isLoading } = usePagination(List_PaginationQueryDocument, {
+    id: user.id,
+    connection: user.items,
+  });
+
+  return (
+    <>
+      <div>
+        <button
+          onClick={() =>
+            void addItem({
+              variables: {
+                input: { itemName: 'new item', userId: user.id },
+                connections: [user.items._connectionId],
+              },
+            })
+          }
+        >
+          Add Item
+        </button>
+      </div>
+      <div>
+        {nodes.map((node) => {
+          return (
+            <div key={node.id}>
+              <ListItem user={user} item={node} />
+            </div>
+          );
+        })}
+      </div>
+      {hasNext && (
+        <button onClick={() => loadNext(2)} disabled={!hasNext}>
+          Load more
+        </button>
+      )}
+    </>
+  );
+};
+
+export default List;
+
+```
