@@ -7,7 +7,7 @@
     "url": "https://github.com/kazekyo/nau/issues"
   },
   "dependencies": {
-    "@graphql-codegen/plugin-helpers": "^2.1.1",
+    "@graphql-codegen/plugin-helpers": "^3.1.1",
     "@graphql-codegen/visitor-plugin-common": "^2.2.1",
     "@graphql-tools/utils": "^8.2.4",
     "@kazekyo/nau": "^0.4.4",
