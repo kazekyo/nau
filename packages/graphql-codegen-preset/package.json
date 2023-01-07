@@ -1,6 +1,6 @@
 {
   "name": "@kazekyo/nau-graphql-codegen-preset",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "description": "A GraphQL Code Generator preset for Nau",
   "author": "kazekyo",
   "bugs": {
