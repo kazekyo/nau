@@ -1,5 +1,5 @@
 import { Types } from '@graphql-codegen/plugin-helpers';
-import { checkValidationErrors, validateGraphQlDocuments } from '@graphql-tools/utils';
+import { validateGraphQlDocuments } from '@graphql-tools/utils';
 import { paginationDirectiveValidationRule } from '@kazekyo/nau-config';
 import {
   RelayArgumentsOfCorrectType,
@@ -19,6 +19,7 @@ import { transform as fixVariableNotDefinedInRoot } from './transforms/fixVariab
 import { transform as generateRefetchQuery } from './transforms/generateRefetchQuery';
 import { transform as passArgumentValueToFragment } from './transforms/passArgumentValueToFragment';
 import { transform as removeCustomDirective } from './transforms/removeCustomDirective';
+import { nonNullable } from './utils/nonNullable';
 
 const transformDocuments = ({
   documentFiles,
@@ -76,37 +77,45 @@ export const preset: Types.OutputPreset<PresetConfig> = {
 
     const schemaObject = transformSchema(originalGraphQLSchema, options.documents);
 
-    return validateGraphQlDocuments(schemaObject, options.documents, validationRules()).then((errors) => {
-      checkValidationErrors(errors);
+    const errors = validateGraphQlDocuments(
+      schemaObject,
+      options.documents.map((d) => d.document).filter(nonNullable),
+      validationRules(),
+    );
+    if (errors.length > 0) {
+      throw new Error(
+        `GraphQL Document Validation failed with ${errors.length} errors;
+  ${errors.map((error, index) => `Error ${index}: ${error.stack || ''}`).join('\n\n')}`,
+      );
+    }
 
-      const transformedObject = transformDocuments({ documentFiles: cloneDeep(options.documents) });
+    const transformedObject = transformDocuments({ documentFiles: cloneDeep(options.documents) });
 
-      let pluginMap = options.pluginMap;
-      let plugins = options.plugins;
-      const { generateTypeScriptCode } = options.presetConfig;
-      if (generateTypeScriptCode) {
-        pluginMap = { [`nau-pagination-code`]: paginationPlugin, ...pluginMap };
-        plugins = [
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          { [`nau-pagination-code`]: { documentFiles: cloneDeep(transformedObject.documentFiles) } },
-          ...plugins,
-        ];
-      }
-
-      const { documentFiles } = removeCustomDirective({ documentFiles: transformedObject.documentFiles });
-
-      const result = [
-        {
-          filename: options.baseOutputDir,
-          plugins: plugins,
-          pluginMap: pluginMap,
-          config: options.config,
-          schema: options.schema,
-          schemaAst: schemaObject,
-          documents: documentFiles,
-        },
+    let pluginMap = options.pluginMap;
+    let plugins = options.plugins;
+    const { generateTypeScriptCode } = options.presetConfig;
+    if (generateTypeScriptCode) {
+      pluginMap = { [`nau-pagination-code`]: paginationPlugin, ...pluginMap };
+      plugins = [
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        { [`nau-pagination-code`]: { documentFiles: cloneDeep(transformedObject.documentFiles) } },
+        ...plugins,
       ];
-      return result;
-    });
+    }
+
+    const { documentFiles } = removeCustomDirective({ documentFiles: transformedObject.documentFiles });
+
+    const result = [
+      {
+        filename: options.baseOutputDir,
+        plugins: plugins,
+        pluginMap: pluginMap,
+        config: options.config,
+        schema: options.schema,
+        schemaAst: schemaObject,
+        documents: documentFiles,
+      },
+    ];
+    return result;
   },
 };
