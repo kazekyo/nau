@@ -2390,15 +2390,15 @@
     tslib "~2.4.0"
 
 "@graphql-codegen/testing@^1.17.7":
-  version "1.18.2"
-  resolved "https://registry.yarnpkg.com/@graphql-codegen/testing/-/testing-1.18.2.tgz#47adb7d681164202e38ec700c05b9b5bde0c33c8"
-  integrity sha512-0nQJ2UJ4FBF5PtE/XjB71ZlqQd5bCWhpLSjaZLtsw1Cum04GX4Q2NVTbUKq0JZNAv5ohTJiwkEJ5zo+EPAkVdg==
+  version "1.18.3"
+  resolved "https://registry.yarnpkg.com/@graphql-codegen/testing/-/testing-1.18.3.tgz#35ffe200c13c29aa93f41cb62b043552b860c72a"
+  integrity sha512-ULw2TiADFokbM4ccecLtAf/tBoYOUKfoNPHelE7IE3Ci8gH9GGLLJzkiylz6u06WxHFl6h5njvo8c4gT1XcgTQ==
   dependencies:
     "@graphql-codegen/plugin-helpers" "^3.1.1"
     common-tags "^1.8.0"
     graphql-helix "1.13.0"
     lz-string "^1.4.4"
-    nock "13.2.9"
+    nock "13.3.0"
     tslib "~2.4.0"
 
 "@graphql-codegen/typed-document-node@^2.2.8":
@@ -12018,10 +12018,10 @@ no-case@^3.0.4:
     lower-case "^2.0.2"
     tslib "^2.0.3"
 
-nock@13.2.9:
-  version "13.2.9"
-  resolved "https://registry.yarnpkg.com/nock/-/nock-13.2.9.tgz#4faf6c28175d36044da4cfa68e33e5a15086ad4c"
-  integrity sha512-1+XfJNYF1cjGB+TKMWi29eZ0b82QOvQs2YoLNzbpWGqFMtRQHTa57osqdGj4FrFPgkO4D4AZinzUJR9VvW3QUA==
+nock@13.3.0:
+  version "13.3.0"
+  resolved "https://registry.yarnpkg.com/nock/-/nock-13.3.0.tgz#b13069c1a03f1ad63120f994b04bfd2556925768"
+  integrity sha512-HHqYQ6mBeiMc+N038w8LkMpDCRquCHWeNmN3v6645P3NhN2+qXOBqvPqo7Rt1VyCMzKhJ733wZqw5B7cQVFNPg==
   dependencies:
     debug "^4.1.0"
     json-stringify-safe "^5.0.1"
