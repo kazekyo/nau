@@ -21,7 +21,7 @@
     "apollo-server-core": "^3.7.0",
     "apollo-server-express": "^3.7.0",
     "express": "^4.17.1",
-    "framer-motion": "^8.0.1",
+    "framer-motion": "^9.0.0",
     "graphql": "^16.4.0",
     "graphql-relay": "^0.10.0",
     "graphql-subscriptions": "^2.0.0",
