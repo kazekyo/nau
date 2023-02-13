@@ -18,7 +18,7 @@
   },
   "devDependencies": {
     "@apollo/client": "^3.6.2",
-    "@graphql-codegen/cli": "^2.6.2",
+    "@graphql-codegen/cli": "^3.0.0",
     "@graphql-codegen/testing": "^1.17.7",
     "@types/lodash.clonedeep": "^4.5.6"
   },
