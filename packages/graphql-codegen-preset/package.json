@@ -9,7 +9,7 @@
   "dependencies": {
     "@graphql-codegen/plugin-helpers": "^4.0.0",
     "@graphql-codegen/visitor-plugin-common": "^3.0.0",
-    "@graphql-tools/utils": "^9.1.3",
+    "@graphql-tools/utils": "^10.0.1",
     "@kazekyo/nau": "^0.4.4",
     "@kazekyo/nau-config": "^0.4.4",
     "@relay-graphql-js/validation-rules": "^0.1.0",
