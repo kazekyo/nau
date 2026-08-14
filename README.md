@@ -3,6 +3,8 @@
 Nau
 </h1>
 
+> ⚠️ **DEPRECATED: This project is no longer maintained.** No further updates, including security fixes, will be published, and this repository has been archived. For Relay-style pagination with Apollo Client, consider using Apollo Client's built-in [`relayStylePagination`](https://www.apollographql.com/docs/react/pagination/cursor-based#relay-style-cursor-pagination) field policy.
+
 Nau is a tool that makes [Apollo Client](https://github.com/apollographql/apollo-client) more productive for users using [Relay GraphQL Server Specification](https://relay.dev/docs/guides/graphql-server-specification) compliant backends.
 
 - Make cache operations very easy
@@ -21,10 +23,8 @@ yarn add @kazekyo/nau
 yarn add --dev @kazekyo/nau-graphql-codegen-preset
 ```
 
-> ⚠️ The packages are currently under development. All version updates may have breaking changes.
-
 ## Documentation
-https://www.naugraphql.com
+The documentation site has been shut down. The source of the former documentation is available in [docs/docs](https://github.com/kazekyo/nau/tree/main/docs/docs).
 
 
 ## Example
